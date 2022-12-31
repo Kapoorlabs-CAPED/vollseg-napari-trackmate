@@ -5,6 +5,7 @@ Made by Kapoorlabs, 2022
 """
 
 import functools
+import math
 from pathlib import Path
 from typing import List, Set
 
@@ -19,6 +20,7 @@ from matplotlib.backends.backend_qt5agg import (
 )
 from psygnal import Signal
 from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
+from tqdm import tqdm
 
 
 def plugin_wrapper_track():
@@ -27,12 +29,15 @@ def plugin_wrapper_track():
     import xml.etree.ElementTree as et
 
     from csbdeep.utils import axes_check_and_normalize, axes_dict
-    from napatrackmater.bTrackmate import load_tracks
+    from napari.qt.threading import thread_worker
+    from napatrackmater.bTrackmate import load_tracks, normalizeZeroOne
+    from skimage.util import map_array
 
     from ._data_model import pandasModel
     from ._table_widget import TrackTable
 
     DEBUG = False
+    scale = 255 * 255
 
     def _raise(e):
         if isinstance(e, BaseException):
@@ -47,9 +52,47 @@ def plugin_wrapper_track():
             print("image loaded")
         return np.asarray(image)
 
+    def Relabel(image, locations):
+
+        print("Relabelling image with chosen trackmate attribute")
+        Newseg_image = np.copy(image)
+        for p in tqdm(range(0, Newseg_image.shape[0])):
+
+            sliceimage = Newseg_image[p, :]
+            originallabels = []
+            newlabels = []
+            for relabelval, centroid in locations:
+                if len(Newseg_image.shape) == 4:
+                    time, z, y, x = centroid
+                else:
+                    time, y, x = centroid
+
+                if p == int(time):
+
+                    if len(Newseg_image.shape) == 4:
+                        originallabel = sliceimage[z, y, x]
+                    else:
+                        originallabel = sliceimage[y, x]
+
+                    if originallabel == 0:
+                        relabelval = 0
+                    if math.isnan(relabelval):
+                        relabelval = -1
+                    originallabels.append(int(originallabel))
+                    newlabels.append(int(relabelval))
+
+            relabeled = map_array(
+                sliceimage, np.asarray(originallabels), np.asarray(newlabels)
+            )
+            Newseg_image[p, :] = relabeled
+
+        return Newseg_image
+
     def get_xml_data(xml_path):
 
         root = et.fromstring(codecs.open(xml_path, "r", "utf8").read())
+
+        nonlocal xcalibration, ycalibration, zcalibration, tcalibration
 
         filtered_track_ids = [
             int(track.get("TRACK_ID"))
@@ -60,6 +103,12 @@ def plugin_wrapper_track():
 
         # Extract the tracks from xml
         tracks = root.find("Model").find("AllTracks")
+        settings = root.find("Settings").find("ImageData")
+
+        xcalibration = float(settings.get("pixelwidth"))
+        ycalibration = float(settings.get("pixelheight"))
+        zcalibration = float(settings.get("voxeldepth"))
+        tcalibration = int(float(settings.get("timeinterval")))
 
         x_ls = tracks.findall("Track")
         print("total tracks", len(x_ls))
@@ -74,6 +123,7 @@ def plugin_wrapper_track():
                     DividingTrajectory,
                     split_points_times,
                 ) = load_tracks(track, track_id, filtered_track_ids)
+
         return (
             root,
             filtered_track_ids,
@@ -96,6 +146,80 @@ def plugin_wrapper_track():
         dataset_index = dataset.index
 
         return dataset, dataset_index
+
+    def get_track_dataset(track_dataset, track_dataset_index):
+
+        nonlocal AllTrackValues, AllTrackKeys
+        AllTrackValues = []
+        AllTrackKeys = []
+
+        for k in track_dataset.keys():
+            if k == "TRACK_ID":
+                Track_id = track_dataset[k].astype("float")
+                indices = np.where(Track_id == 0)
+                maxtrack_id = max(Track_id)
+                condition_indices = track_dataset_index[indices]
+                Track_id[condition_indices] = maxtrack_id + 1
+                AllTrackValues.append(Track_id)
+                AllTrackKeys.append(k)
+            else:
+                x = track_dataset[k].astype("float")
+                minval = min(x)
+                maxval = max(x)
+
+                if minval > 0 and maxval <= 1:
+
+                    x = normalizeZeroOne(x, scale=scale)
+
+                AllTrackKeys.append(k)
+                AllTrackValues.append(x)
+
+    def get_spot_dataset(spot_dataset, spot_dataset_index):
+
+        nonlocal AllKeys
+        AllKeys = []
+
+        for k in spot_dataset.keys():
+
+            if k == "TRACK_ID":
+                Track_id = spot_dataset[k].astype("float")
+                indices = np.where(Track_id == 0)
+                maxtrack_id = max(Track_id)
+                condition_indices = spot_dataset_index[indices]
+                Track_id[condition_indices] = maxtrack_id + 1
+                AllValues.append(Track_id)
+
+            if k == "POSITION_X":
+                LocationX = (
+                    spot_dataset["POSITION_X"].astype("float") / xcalibration
+                ).astype("int")
+                AllValues.append(LocationX)
+
+            if k == "POSITION_Y":
+                LocationY = (
+                    spot_dataset["POSITION_Y"].astype("float") / ycalibration
+                ).astype("int")
+                AllValues.append(LocationY)
+            if k == "POSITION_Z":
+                LocationZ = (
+                    spot_dataset["POSITION_Z"].astype("float") / zcalibration
+                ).astype("int")
+                AllValues.append(LocationZ)
+            if k == "FRAME":
+                LocationT = (spot_dataset["FRAME"].astype("float")).astype(
+                    "int"
+                )
+                AllValues.append(LocationT)
+            elif (
+                k != "TRACK_ID"
+                and k != "POSITION_X"
+                and k != "POSITION_Y"
+                and k != "POSITION_Z"
+                and k != "FRAME"
+            ):
+                AllValues.append(spot_dataset[k].astype("float"))
+
+            AllKeys.append(k)
 
     def abspath(root, relpath):
         root = Path(root)
@@ -124,6 +248,17 @@ def plugin_wrapper_track():
         return decorator_change_handler
 
     worker = None
+
+    AllTrackValues = None
+    # AllTrackID = None
+    AllTrackKeys = None
+    # AllTrackAttr = None
+    AllValues = None
+    AllKeys = None
+    xcalibration = None
+    ycalibration = None
+    zcalibration = None
+    tcalibration = None
 
     DEFAULTS_MODEL = dict(axes="TZYX")
 
@@ -156,17 +291,136 @@ def plugin_wrapper_track():
             visible=True,
             label="Track Attributes",
         ),
+        progress_bar=dict(label=" ", min=0, max=0, visible=False),
         persist=True,
         call_button=True,
     )
     def plugin_color_parameters(
-        spot_attribute, track_attribute
+        spot_attribute,
+        track_attribute,
+        progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
+
+        nonlocal worker
+        worker = _Color_tracks(spot_attribute.value, track_attribute.value)
+        worker.returned.connect(return_color_tracks)
+        if "T" in plugin.axes.value:
+            t = axes_dict(plugin.axes.value)["T"]
+            n_frames = plugin.image.value.shape[t]
+
+            def progress_thread(current_time):
+
+                progress_bar.label = "Coloring cells with chosen attribute"
+                progress_bar.range = (0, n_frames - 1)
+                progress_bar.value = current_time
+                progress_bar.show()
+
+            worker.yielded.connect(return_color_tracks)
 
         return plugin_color_parameters
 
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
+
+    def return_color_tracks(new_seg_image, attribute):
+
+        plugin.viewer.value.add_labels(new_seg_image, name=attribute)
+
+    @thread_worker(connect={"returned": return_color_tracks})
+    def _Color_tracks(spot_attribute, track_attribute):
+
+        yield 0
+
+        if spot_attribute is not None and AllKeys is not None:
+
+            attribute = spot_attribute
+            for k in range(len(AllKeys)):
+
+                if AllKeys[k] == "POSITION_X":
+                    keyX = k
+                if AllKeys[k] == "POSITION_Y":
+                    keyY = k
+                if AllKeys[k] == "POSITION_Z":
+                    keyZ = k
+                if AllKeys[k] == "FRAME":
+                    keyT = k
+
+            for count, k in enumerate(range(len(AllKeys))):
+                yield count
+                locations = []
+                if AllKeys[k] == spot_attribute:
+
+                    for attr, time, z, y, x in tqdm(
+                        zip(
+                            AllValues[k],
+                            AllValues[keyT],
+                            AllValues[keyZ],
+                            AllValues[keyY],
+                            AllValues[keyX],
+                        ),
+                        total=len(AllValues[k]),
+                    ):
+                        if len(plugin.seg_image.value.shape) == 4:
+                            centroid = (time, z, y, x)
+                        else:
+                            centroid = (time, y, x)
+
+                        locations.append([attr, centroid])
+
+        if (
+            track_attribute is not None
+            and AllTrackKeys is not None
+            and AllKeys is not None
+        ):
+
+            attribute = track_attribute
+            idattr = {}
+            for k in range(len(AllTrackKeys)):
+
+                if AllTrackKeys[k] == "TRACK_ID":
+                    p = k
+
+            for k in range(len(AllTrackKeys)):
+
+                if AllTrackKeys[k] == track_attribute:
+
+                    for attr, trackid in tqdm(
+                        zip(AllTrackValues[k], AllTrackValues[p]),
+                        total=len(AllTrackValues[k]),
+                    ):
+
+                        if math.isnan(trackid):
+                            continue
+                        else:
+                            idattr[trackid] = attr
+
+            for count, k in enumerate(range(len(AllKeys))):
+                yield count
+                locations = []
+                if AllKeys[k] == "TRACK_ID":
+
+                    for trackid, time, z, y, x in tqdm(
+                        zip(
+                            AllValues[k],
+                            AllValues[keyT],
+                            AllValues[keyZ],
+                            AllValues[keyY],
+                            AllValues[keyX],
+                        ),
+                        total=len(AllValues[k]),
+                    ):
+
+                        if len(plugin.seg_image.value.shape) == 4:
+                            centroid = (time, z, y, x)
+                        else:
+                            centroid = (time, y, x)
+
+                        attr = idattr[trackid]
+                        locations.append([attr, centroid])
+
+        new_seg_image = Relabel(plugin.seg_image.value.copy(), locations)
+
+        return new_seg_image, attribute
 
     @magicgui(
         label_head=dict(
