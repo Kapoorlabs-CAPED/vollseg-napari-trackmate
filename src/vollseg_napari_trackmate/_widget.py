@@ -106,12 +106,6 @@ def plugin_wrapper_track():
             label="Image Axes",
             value=DEFAULTS_MODEL["axes"],
         ),
-        manual_compute_button=dict(
-            widget_type="PushButton", text="Recompute with manual functions"
-        ),
-        recompute_current_button=dict(
-            widget_type="PushButton", text="Recompute current file fits"
-        ),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
         persist=True,
@@ -124,8 +118,6 @@ def plugin_wrapper_track():
         axes,
         n_tiles,
         defaults_model_button,
-        manual_compute_button,
-        recompute_current_button,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
@@ -187,12 +179,6 @@ def plugin_wrapper_track():
     tabs.addTab(table_tab, "Table")
 
     plugin.native.layout().addWidget(tabs)
-    plugin.recompute_current_button.native.setStyleSheet(
-        "background-color: green"
-    )
-    plugin.manual_compute_button.native.setStyleSheet(
-        "background-color: orange"
-    )
 
     def _selectInTable(selected_data: Set[int]):
         """Select in table in response to viewer (add, highlight).
@@ -306,20 +292,6 @@ def plugin_wrapper_track():
     def restore_function_parameters_defaults():
         for k, v in DEFAULTS_FUNC_PARAMETERS.items():
             getattr(plugin_function_parameters, k).value = v
-
-    @change_handler(plugin.manual_compute_button)
-    def _manual_compute():
-
-        ndim = len(get_data(plugin.image.value).shape)
-
-        function_calculator(ndim)
-
-    @change_handler(plugin.recompute_current_button)
-    def _recompute_current():
-
-        ndim = len(get_data(plugin.image.value).shape)
-
-        function_calculator(ndim)
 
     # -> triggered by napari (if there are any open images on plugin launch)
 
