@@ -15,7 +15,7 @@ contributions:
       python_name: vollseg_napari_trackmate._sample_data:make_sample_data
       title: Load sample data from VollSeg Napari NapaTrackMater Plugin
     - id: vollseg-napari-trackmate.widget
-      python_name: vollseg_napari_trackmate._widget:plugin_wrapper_mtrack
+      python_name: vollseg_napari_trackmate._widget:plugin_wrapper_track
       title: NapaTrackMater
   readers:
     - command: vollseg-napari-trackmate.get_reader
