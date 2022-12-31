@@ -23,7 +23,11 @@ from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 
 def plugin_wrapper_track():
 
+    import codecs
+    import xml.etree.ElementTree as et
+
     from csbdeep.utils import axes_check_and_normalize, axes_dict
+    from napatrackmater.bTrackmate import load_tracks
 
     from ._data_model import pandasModel
     from ._table_widget import TrackTable
@@ -42,6 +46,53 @@ def plugin_wrapper_track():
         if debug:
             print("image loaded")
         return np.asarray(image)
+
+    def get_xml_data(xml_path):
+
+        root = et.fromstring(codecs.open(xml_path, "r", "utf8").read())
+
+        filtered_track_ids = [
+            int(track.get("TRACK_ID"))
+            for track in root.find("Model")
+            .find("FilteredTracks")
+            .findall("TrackID")
+        ]
+
+        # Extract the tracks from xml
+        tracks = root.find("Model").find("AllTracks")
+
+        x_ls = tracks.findall("Track")
+        print("total tracks", len(x_ls))
+
+        for track in x_ls:
+
+            track_id = int(track.get("TRACK_ID"))
+
+            if track_id in filtered_track_ids:
+                (
+                    tracklets,
+                    DividingTrajectory,
+                    split_points_times,
+                ) = load_tracks(track, track_id, filtered_track_ids)
+        return (
+            root,
+            filtered_track_ids,
+            tracks,
+            tracklets,
+            DividingTrajectory,
+            split_points_times,
+        )
+
+    def get_label_data(image, debug=DEBUG):
+
+        image = image.data[0] if image.multiscale else image.data
+        if debug:
+            print("Label image loaded")
+        return np.asarray(image).astype(np.uint16)
+
+    DEFAULTS_COLOR = dict(
+        track_atribute_color="NUMBER_SPLITS", spot_attribute_color="QUALITY"
+    )
 
     def abspath(root, relpath):
         root = Path(root)
@@ -91,6 +142,29 @@ def plugin_wrapper_track():
 
         return plugin_function_parameters
 
+    @magicgui(
+        spot_attribute=dict(
+            widget_type="ComboBox",
+            visible=False,
+            label="Spot Attributes",
+            value=DEFAULTS_COLOR["spot_attribute_color"],
+        ),
+        track_attribute=dict(
+            widget_type="ComboBox",
+            visible=False,
+            label="Track Attributes",
+            value=DEFAULTS_COLOR["track_atribute_color"],
+        ),
+    )
+    def plugin_color_parameters(
+        spot_attribute,
+        track_attribute,
+        persist=False,
+        call_button=True,
+    ) -> List[napari.types.LayerDataTuple]:
+
+        return plugin_color_parameters
+
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
@@ -101,6 +175,26 @@ def plugin_wrapper_track():
             value=f'<h5><a href=" {citation}"> NapaTrackMater: Track Analysis of TrackMate in Napari</a></h5>',
         ),
         image=dict(label="Input Image"),
+        seg_image=dict(label="Optional Segmentation Image"),
+        mask_image=dict(label="Optional Mask Image"),
+        xml_path=dict(
+            widget_type="FileEdit",
+            visible=False,
+            label="TrackMate xml",
+            mode="f",
+        ),
+        track_csv=dict(
+            widget_type="FileEdit", visible=False, label="Track csv", mode="f"
+        ),
+        spot_csv=dict(
+            widget_type="FileEdit", visible=False, label="Spot csv", mode="f"
+        ),
+        edges_csv=dict(
+            widget_type="FileEdit",
+            visible=False,
+            label="Edges/Links csv",
+            mode="f",
+        ),
         axes=dict(
             widget_type="LineEdit",
             label="Image Axes",
@@ -115,6 +209,12 @@ def plugin_wrapper_track():
         viewer: napari.Viewer,
         label_head,
         image: napari.layers.Image,
+        seg_image: napari.layers.Labels,
+        mask_image: napari.layers.Labels,
+        xml_path,
+        track_csv,
+        spot_csv,
+        edges_csv,
         axes,
         n_tiles,
         defaults_model_button,
@@ -123,6 +223,18 @@ def plugin_wrapper_track():
 
         x = get_data(image)
         print(x.shape)
+        x_seg = get_label_data(seg_image)
+        x_mask = get_label_data(mask_image)
+        print(x_seg.path, x_mask.path)
+        (
+            root,
+            filtered_track_ids,
+            tracks,
+            tracklets,
+            DividingTrajectory,
+            split_points_times,
+        ) = get_xml_data(xml_path)
+
         axes = axes_check_and_normalize(axes, length=x.ndim)
         nonlocal worker
         progress_bar.label = "Starting TrackMate analysis"
@@ -161,6 +273,12 @@ def plugin_wrapper_track():
     parameter_function_tab.setLayout(_parameter_function_tab_layout)
     _parameter_function_tab_layout.addWidget(plugin_function_parameters.native)
     tabs.addTab(parameter_function_tab, "Parameter Selection")
+
+    color_tracks_tab = QWidget()
+    _color_tracks_tab_layout = QVBoxLayout()
+    color_tracks_tab.setLayout(_color_tracks_tab_layout)
+    _parameter_function_tab_layout.addWidget()
+    tabs.addTab(color_tracks_tab, "Color Tracks")
 
     canvas = FigureCanvas()
     canvas.figure.set_tight_layout(True)
