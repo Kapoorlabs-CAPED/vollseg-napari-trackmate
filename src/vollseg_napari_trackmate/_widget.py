@@ -722,14 +722,14 @@ def plugin_wrapper_track():
     table_tab.signalDataChanged.connect(_slot_data_change)
     table_tab.signalSelectionChanged.connect(_slot_selection_changed)
 
-    @change_handler(plugin.track_csv)
-    def _load_track_csv(path: str, init=True):
+    @change_handler(plugin.track_csv, init=True)
+    def _load_track_csv(path: str):
 
         track_dataset, track_dataset_index = get_csv_data(path)
         get_track_dataset(track_dataset, track_dataset_index)
 
-    @change_handler(plugin.spot_csv)
-    def _load_spot_csv(path: str, init=True):
+    @change_handler(plugin.spot_csv, init=True)
+    def _load_spot_csv(path: str):
 
         spot_dataset, spot_dataset_index = get_csv_data(path)
         get_spot_dataset(spot_dataset, spot_dataset_index)
@@ -737,8 +737,9 @@ def plugin_wrapper_track():
     @change_handler(
         plugin_color_parameters.spot_attributes,
         plugin_color_parameters.track_attributes,
+        init=True,
     )
-    def _spot_track_attribute_color(init=True):
+    def _spot_track_attribute_color():
 
         if (
             plugin_color_parameters.spot_attributes.value
@@ -759,7 +760,9 @@ def plugin_wrapper_track():
         key = plugin.track_model_type.value
         select_model_track(key)
 
-    @change_handler(plugin_function_parameters.defaults_params_button)
+    @change_handler(
+        plugin_function_parameters.defaults_params_button, init=True
+    )
     def restore_function_parameters_defaults():
         for k, v in DEFAULTS_FUNC_PARAMETERS.items():
             getattr(plugin_function_parameters, k).value = v
