@@ -302,14 +302,6 @@ def plugin_wrapper_track():
     table_tab.signalDataChanged.connect(_slot_data_change)
     table_tab.signalSelectionChanged.connect(_slot_selection_changed)
 
-    @change_handler(plugin_function_parameters.microscope_calibration)
-    def _microscope_calibration():
-        plugin_function_parameters.microscope_calibration.tooltip = (
-            "Enter the pixel unit to real unit conversion for T,Z,Y,X"
-        )
-        value = plugin_function_parameters.microscope_calibration.value
-        print(f"calibraiton in TZYX is {value}")
-
     @change_handler(plugin_function_parameters.defaults_params_button)
     def restore_function_parameters_defaults():
         for k, v in DEFAULTS_FUNC_PARAMETERS.items():
