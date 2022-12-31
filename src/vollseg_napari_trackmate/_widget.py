@@ -278,10 +278,19 @@ def plugin_wrapper_track():
     ycalibration = 1
     zcalibration = 1
     tcalibration = 1
+    track_model_type_choices = [
+        ("Dividing", "Dividing"),
+        ("Non-Dividing", "Non-Dividing"),
+        ("Both", "Both"),
+    ]
 
-    DEFAULTS_MODEL = dict(axes="TZYX")
-
+    DEFAULTS_MODEL = dict(axes="TZYX", track_model_type="Both")
+    model_selected_track = DEFAULTS_MODEL["track_model_type"]
     DEFAULTS_FUNC_PARAMETERS = dict()
+
+    def get_model_track(track_model_type):
+
+        return track_model_type
 
     @magicgui(
         defaults_params_button=dict(
@@ -484,6 +493,13 @@ def plugin_wrapper_track():
             label="Image Axes",
             value=DEFAULTS_MODEL["axes"],
         ),
+        track_model_type=dict(
+            widget_type="RadioButtons",
+            label="Track Model Type",
+            orientation="horizontal",
+            choices=track_model_type_choices,
+            value=DEFAULTS_MODEL["track_model_type"],
+        ),
         defaults_model_button=dict(
             widget_type="PushButton", text="Restore Model Defaults"
         ),
@@ -503,6 +519,7 @@ def plugin_wrapper_track():
         spot_csv,
         edges_csv,
         axes,
+        track_model_type,
         defaults_model_button,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
@@ -532,6 +549,8 @@ def plugin_wrapper_track():
         nonlocal worker
         progress_bar.label = "Starting TrackMate analysis"
 
+        track_model = get_model_track(model_selected_track)
+        print(track_model)
         if "T" in axes:
             t = axes_dict(axes)["T"]
             n_frames = x.shape[t]
@@ -686,6 +705,10 @@ def plugin_wrapper_track():
         table_tab.mySetModel(TrackModel)
         _refreshPlotData(df)
 
+    def select_model_track(key):
+        nonlocal model_selected_track
+        model_selected_track = key
+
     def widgets_inactive(*widgets, active):
         for widget in widgets:
             widget.visible = active
@@ -700,13 +723,13 @@ def plugin_wrapper_track():
     table_tab.signalSelectionChanged.connect(_slot_selection_changed)
 
     @change_handler(plugin.track_csv)
-    def _load_track_csv(path: str):
+    def _load_track_csv(path: str, init=True):
 
         track_dataset, track_dataset_index = get_csv_data(path)
         get_track_dataset(track_dataset, track_dataset_index)
 
     @change_handler(plugin.spot_csv)
-    def _load_spot_csv(path: str):
+    def _load_spot_csv(path: str, init=True):
 
         spot_dataset, spot_dataset_index = get_csv_data(path)
         get_spot_dataset(spot_dataset, spot_dataset_index)
@@ -715,7 +738,7 @@ def plugin_wrapper_track():
         plugin_color_parameters.spot_attributes,
         plugin_color_parameters.track_attributes,
     )
-    def _spot_track_attribute_color():
+    def _spot_track_attribute_color(init=True):
 
         if (
             plugin_color_parameters.spot_attributes.value
@@ -729,6 +752,12 @@ def plugin_wrapper_track():
             is not TrackAttributeBoxname
         ):
             plugin_color_parameters.spot_attributes.value = AttributeBoxname
+
+    @change_handler(plugin.track_model_type, init=True)
+    def _track_model_type_change():
+
+        key = plugin.track_model_type.value
+        select_model_track(key)
 
     @change_handler(plugin_function_parameters.defaults_params_button)
     def restore_function_parameters_defaults():
