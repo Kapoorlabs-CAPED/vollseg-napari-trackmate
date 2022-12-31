@@ -159,7 +159,7 @@ def plugin_wrapper_track():
     def plugin_color_parameters(
         spot_attribute,
         track_attribute,
-        persist=False,
+        persist=True,
         call_button=True,
     ) -> List[napari.types.LayerDataTuple]:
 
@@ -226,6 +226,7 @@ def plugin_wrapper_track():
         x_seg = get_label_data(seg_image)
         x_mask = get_label_data(mask_image)
         print(x_seg.path, x_mask.path)
+
         (
             root,
             filtered_track_ids,
@@ -277,7 +278,7 @@ def plugin_wrapper_track():
     color_tracks_tab = QWidget()
     _color_tracks_tab_layout = QVBoxLayout()
     color_tracks_tab.setLayout(_color_tracks_tab_layout)
-    _parameter_function_tab_layout.addWidget()
+    _color_tracks_tab_layout.addWidget()
     tabs.addTab(color_tracks_tab, "Color Tracks")
 
     canvas = FigureCanvas()
