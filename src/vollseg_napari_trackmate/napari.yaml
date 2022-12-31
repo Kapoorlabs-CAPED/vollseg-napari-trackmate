@@ -4,29 +4,23 @@ contributions:
   commands:
     - id: vollseg-napari-trackmate.get_reader
       python_name: vollseg_napari_trackmate._reader:napari_get_reader
-      title: Open data with vollseg-napari-trackmate
+      title: Open data with VollSeg Napari NapaTrackMater Plugin
     - id: vollseg-napari-trackmate.write_multiple
       python_name: vollseg_napari_trackmate._writer:write_multiple
-      title: Save multi-layer data with vollseg-napari-trackmate
+      title: Save multi-layer data with VollSeg Napari NapaTrackMater Plugin
     - id: vollseg-napari-trackmate.write_single_image
       python_name: vollseg_napari_trackmate._writer:write_single_image
-      title: Save image data with vollseg-napari-trackmate
+      title: Save image data with VollSeg Napari NapaTrackMater Plugin
     - id: vollseg-napari-trackmate.make_sample_data
       python_name: vollseg_napari_trackmate._sample_data:make_sample_data
-      title: Load sample data from vollseg-napari-trackmate
-    - id: vollseg-napari-trackmate.make_qwidget
-      python_name: vollseg_napari_trackmate._widget:ExampleQWidget
-      title: Make example QWidget
-    - id: vollseg-napari-trackmate.make_magic_widget
-      python_name: vollseg_napari_trackmate._widget:example_magic_widget
-      title: Make example magic widget
-    - id: vollseg-napari-trackmate.make_func_widget
-      python_name: vollseg_napari_trackmate._widget:example_function_widget
-      title: Make example function widget
+      title: Load sample data from VollSeg Napari NapaTrackMater Plugin
+    - id: vollseg-napari-trackmate.widget
+      python_name: vollseg_napari_trackmate._widget:plugin_wrapper_mtrack
+      title: NapaTrackMater
   readers:
     - command: vollseg-napari-trackmate.get_reader
       accepts_directories: false
-      filename_patterns: ['*.npy']
+      filename_patterns: ['*.xml']
   writers:
     - command: vollseg-napari-trackmate.write_multiple
       layer_types: ['image*','labels*']
@@ -36,13 +30,8 @@ contributions:
       filename_extensions: ['.npy']
   sample_data:
     - command: vollseg-napari-trackmate.make_sample_data
-      display_name: vollseg-napari-trackmate
+      display_name: VollSeg Napari NapaTrackMater Plugin
       key: unique_id.1
   widgets:
-    - command: vollseg-napari-trackmate.make_qwidget
-      display_name: Example QWidget
-    - command: vollseg-napari-trackmate.make_magic_widget
-      display_name: Example Magic Widget
-    - command: vollseg-napari-trackmate.make_func_widget
-      autogenerate: true
-      display_name: Example Function Widget
+    - command: vollseg-napari-trackmate._widget
+      display_name: NapaTrackMater
