@@ -20,11 +20,8 @@ from matplotlib.backends.backend_qt5agg import (
 from psygnal import Signal
 from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 
-ITERATIONS = 20
-MAXTRIALS = 100
 
-
-def plugin_wrapper_Track():
+def plugin_wrapper_track():
 
     from csbdeep.utils import axes_check_and_normalize, axes_dict
 

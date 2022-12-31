@@ -33,5 +33,5 @@ contributions:
       display_name: VollSeg Napari NapaTrackMater Plugin
       key: unique_id.1
   widgets:
-    - command: vollseg-napari-trackmate._widget
+    - command: vollseg-napari-trackmate.widget
       display_name: NapaTrackMater
