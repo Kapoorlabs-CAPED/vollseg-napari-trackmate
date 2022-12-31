@@ -1,0 +1,48 @@
+name: vollseg-napari-trackmate
+display_name: vollseg-napari-trackmate
+contributions:
+  commands:
+    - id: vollseg-napari-trackmate.get_reader
+      python_name: vollseg_napari_trackmate._reader:napari_get_reader
+      title: Open data with vollseg-napari-trackmate
+    - id: vollseg-napari-trackmate.write_multiple
+      python_name: vollseg_napari_trackmate._writer:write_multiple
+      title: Save multi-layer data with vollseg-napari-trackmate
+    - id: vollseg-napari-trackmate.write_single_image
+      python_name: vollseg_napari_trackmate._writer:write_single_image
+      title: Save image data with vollseg-napari-trackmate
+    - id: vollseg-napari-trackmate.make_sample_data
+      python_name: vollseg_napari_trackmate._sample_data:make_sample_data
+      title: Load sample data from vollseg-napari-trackmate
+    - id: vollseg-napari-trackmate.make_qwidget
+      python_name: vollseg_napari_trackmate._widget:ExampleQWidget
+      title: Make example QWidget
+    - id: vollseg-napari-trackmate.make_magic_widget
+      python_name: vollseg_napari_trackmate._widget:example_magic_widget
+      title: Make example magic widget
+    - id: vollseg-napari-trackmate.make_func_widget
+      python_name: vollseg_napari_trackmate._widget:example_function_widget
+      title: Make example function widget
+  readers:
+    - command: vollseg-napari-trackmate.get_reader
+      accepts_directories: false
+      filename_patterns: ['*.npy']
+  writers:
+    - command: vollseg-napari-trackmate.write_multiple
+      layer_types: ['image*','labels*']
+      filename_extensions: []
+    - command: vollseg-napari-trackmate.write_single_image
+      layer_types: ['image']
+      filename_extensions: ['.npy']
+  sample_data:
+    - command: vollseg-napari-trackmate.make_sample_data
+      display_name: vollseg-napari-trackmate
+      key: unique_id.1
+  widgets:
+    - command: vollseg-napari-trackmate.make_qwidget
+      display_name: Example QWidget
+    - command: vollseg-napari-trackmate.make_magic_widget
+      display_name: Example Magic Widget
+    - command: vollseg-napari-trackmate.make_func_widget
+      autogenerate: true
+      display_name: Example Function Widget
