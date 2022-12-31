@@ -167,7 +167,7 @@ def plugin_wrapper_track():
                 Track_id[condition_indices] = maxtrack_id + 1
                 AllTrackValues.append(Track_id)
                 AllTrackKeys.append(k)
-            else:
+            elif k != "LABEL":
                 x = track_dataset[k].astype("float")
                 minval = min(x)
                 maxval = max(x)
@@ -180,12 +180,11 @@ def plugin_wrapper_track():
                 AllTrackValues.append(x)
 
         TrackAttributeids = []
+        TrackAttributeids.append(TrackAttributeBoxname)
         for attributename in AllTrackKeys:
             TrackAttributeids.append(attributename)
-        for i in range(0, len(TrackAttributeids)):
-            plugin_color_parameters.track_attributes.addItem(
-                str(TrackAttributeids[i])
-            )
+
+        plugin_color_parameters.track_attributes.choices = TrackAttributeids
 
     def get_spot_dataset(spot_dataset, spot_dataset_index):
 
@@ -225,6 +224,7 @@ def plugin_wrapper_track():
                 AllValues.append(LocationT)
             elif (
                 k != "TRACK_ID"
+                and k != "LABEL"
                 and k != "POSITION_X"
                 and k != "POSITION_Y"
                 and k != "POSITION_Z"
@@ -235,12 +235,10 @@ def plugin_wrapper_track():
             AllKeys.append(k)
 
         Attributeids = []
+        Attributeids.append(AttributeBoxname)
         for attributename in AllKeys:
             Attributeids.append(attributename)
-        for i in range(0, len(Attributeids)):
-            plugin_color_parameters.spot_attributes.addItem(
-                str(Attributeids[i])
-            )
+        plugin_color_parameters.spot_attributes.choices = Attributeids
 
     def abspath(root, relpath):
         root = Path(root)
@@ -270,16 +268,16 @@ def plugin_wrapper_track():
 
     worker = None
 
-    AllTrackValues = None
-    # AllTrackID = None
-    AllTrackKeys = None
-    # AllTrackAttr = None
-    AllValues = None
-    AllKeys = None
-    xcalibration = None
-    ycalibration = None
-    zcalibration = None
-    tcalibration = None
+    AllTrackValues = []
+    # AllTrackID = []
+    AllTrackKeys = []
+    # AllTrackAttr = []
+    AllValues = []
+    AllKeys = []
+    xcalibration = 1
+    ycalibration = 1
+    zcalibration = 1
+    tcalibration = 1
 
     DEFAULTS_MODEL = dict(axes="TZYX")
 
@@ -327,8 +325,6 @@ def plugin_wrapper_track():
     ) -> List[napari.types.LayerDataTuple]:
 
         nonlocal worker
-
-        print(type(spot_attributes), spot_attributes)
 
         if plugin.track_csv.value is not None:
 
@@ -722,14 +718,14 @@ def plugin_wrapper_track():
     def _spot_track_attribute_color():
 
         if (
-            plugin.color_parameters.spot_attributes.value
+            plugin_color_parameters.spot_attributes.value
             is not AttributeBoxname
         ):
             plugin_color_parameters.track_attributes.value = (
                 TrackAttributeBoxname
             )
         if (
-            plugin.color_parameters.track_attributes.value
+            plugin_color_parameters.track_attributes.value
             is not TrackAttributeBoxname
         ):
             plugin_color_parameters.spot_attributes.value = AttributeBoxname
