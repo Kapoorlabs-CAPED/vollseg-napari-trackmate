@@ -145,7 +145,9 @@ def plugin_wrapper_track():
 
     def get_csv_data(csv):
 
-        dataset = pd.read_csv(csv, delimiter=",")[3:]
+        dataset = pd.read_csv(csv, delimiter=",", encoding="unicode_escape")[
+            3:
+        ]
         dataset_index = dataset.index
 
         return dataset, dataset_index
@@ -303,11 +305,15 @@ def plugin_wrapper_track():
         spot_attributes=dict(
             widget_type="ComboBox",
             visible=True,
+            choices=[AttributeBoxname],
+            value=AttributeBoxname,
             label="Spot Attributes",
         ),
         track_attributes=dict(
             widget_type="ComboBox",
             visible=True,
+            choices=[TrackAttributeBoxname],
+            value=TrackAttributeBoxname,
             label="Track Attributes",
         ),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
@@ -322,10 +328,17 @@ def plugin_wrapper_track():
 
         nonlocal worker
 
-        spot_attributes.addItem(AttributeBoxname)
-        track_attributes.addItem(TrackAttributeBoxname)
+        print(type(spot_attributes), spot_attributes)
 
-        worker = _Color_tracks(spot_attributes.value, track_attributes.value)
+        if plugin.track_csv.value is not None:
+
+            _load_track_csv(plugin.track_csv.value)
+
+        if plugin.spot_csv.value is not None:
+
+            _load_spot_csv(plugin.spot_csv.value)
+
+        worker = _Color_tracks(spot_attributes, track_attributes)
         worker.returned.connect(return_color_tracks)
         if "T" in plugin.axes.value:
             t = axes_dict(plugin.axes.value)["T"]
@@ -339,8 +352,6 @@ def plugin_wrapper_track():
                 progress_bar.show()
 
             worker.yielded.connect(return_color_tracks)
-
-        return plugin_color_parameters
 
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
@@ -691,6 +702,18 @@ def plugin_wrapper_track():
 
     table_tab.signalDataChanged.connect(_slot_data_change)
     table_tab.signalSelectionChanged.connect(_slot_selection_changed)
+
+    @change_handler(plugin.track_csv)
+    def _load_track_csv(path: str):
+
+        track_dataset, track_dataset_index = get_csv_data(path)
+        get_track_dataset(track_dataset, track_dataset_index)
+
+    @change_handler(plugin.spot_csv)
+    def _load_spot_csv(path: str):
+
+        spot_dataset, spot_dataset_index = get_csv_data(path)
+        get_spot_dataset(spot_dataset, spot_dataset_index)
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
