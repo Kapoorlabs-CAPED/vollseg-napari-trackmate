@@ -90,9 +90,12 @@ def plugin_wrapper_track():
             print("Label image loaded")
         return np.asarray(image).astype(np.uint16)
 
-    DEFAULTS_COLOR = dict(
-        track_atribute_color="NUMBER_SPLITS", spot_attribute_color="QUALITY"
-    )
+    def get_csv_data(csv):
+
+        dataset = pd.read_csv(csv, delimiter=",")[3:]
+        dataset_index = dataset.index
+
+        return dataset, dataset_index
 
     def abspath(root, relpath):
         root = Path(root)
@@ -145,22 +148,19 @@ def plugin_wrapper_track():
     @magicgui(
         spot_attribute=dict(
             widget_type="ComboBox",
-            visible=False,
+            visible=True,
             label="Spot Attributes",
-            value=DEFAULTS_COLOR["spot_attribute_color"],
         ),
         track_attribute=dict(
             widget_type="ComboBox",
-            visible=False,
+            visible=True,
             label="Track Attributes",
-            value=DEFAULTS_COLOR["track_atribute_color"],
         ),
-    )
-    def plugin_color_parameters(
-        spot_attribute,
-        track_attribute,
         persist=True,
         call_button=True,
+    )
+    def plugin_color_parameters(
+        spot_attribute, track_attribute
     ) -> List[napari.types.LayerDataTuple]:
 
         return plugin_color_parameters
@@ -179,26 +179,29 @@ def plugin_wrapper_track():
         mask_image=dict(label="Optional Mask Image"),
         xml_path=dict(
             widget_type="FileEdit",
-            visible=False,
+            visible=True,
             label="TrackMate xml",
-            mode="f",
+            mode="r",
         ),
         track_csv=dict(
-            widget_type="FileEdit", visible=False, label="Track csv", mode="f"
+            widget_type="FileEdit", visible=True, label="Track csv", mode="r"
         ),
         spot_csv=dict(
-            widget_type="FileEdit", visible=False, label="Spot csv", mode="f"
+            widget_type="FileEdit", visible=True, label="Spot csv", mode="r"
         ),
         edges_csv=dict(
             widget_type="FileEdit",
-            visible=False,
+            visible=True,
             label="Edges/Links csv",
-            mode="f",
+            mode="r",
         ),
         axes=dict(
             widget_type="LineEdit",
             label="Image Axes",
             value=DEFAULTS_MODEL["axes"],
+        ),
+        defaults_model_button=dict(
+            widget_type="PushButton", text="Restore Model Defaults"
         ),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
@@ -216,7 +219,6 @@ def plugin_wrapper_track():
         spot_csv,
         edges_csv,
         axes,
-        n_tiles,
         defaults_model_button,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
@@ -235,6 +237,12 @@ def plugin_wrapper_track():
             DividingTrajectory,
             split_points_times,
         ) = get_xml_data(xml_path)
+
+        spot_dataset, spot_dataset_index = get_csv_data(spot_csv)
+
+        track_dataset, track_dataset_index = get_csv_data(track_csv)
+
+        edges_dataset, edges_dataset_index = get_csv_data(edges_csv)
 
         axes = axes_check_and_normalize(axes, length=x.ndim)
         nonlocal worker
@@ -278,7 +286,7 @@ def plugin_wrapper_track():
     color_tracks_tab = QWidget()
     _color_tracks_tab_layout = QVBoxLayout()
     color_tracks_tab.setLayout(_color_tracks_tab_layout)
-    _color_tracks_tab_layout.addWidget()
+    _color_tracks_tab_layout.addWidget(plugin_color_parameters.native)
     tabs.addTab(color_tracks_tab, "Color Tracks")
 
     canvas = FigureCanvas()
