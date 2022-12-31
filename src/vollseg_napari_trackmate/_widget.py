@@ -38,6 +38,9 @@ def plugin_wrapper_track():
 
     DEBUG = False
     scale = 255 * 255
+    # Boxname = "TrackBox"
+    AttributeBoxname = "AttributeIDBox"
+    TrackAttributeBoxname = "TrackAttributeIDBox"
 
     def _raise(e):
         if isinstance(e, BaseException):
@@ -174,6 +177,14 @@ def plugin_wrapper_track():
                 AllTrackKeys.append(k)
                 AllTrackValues.append(x)
 
+        TrackAttributeids = []
+        for attributename in AllTrackKeys:
+            TrackAttributeids.append(attributename)
+        for i in range(0, len(TrackAttributeids)):
+            plugin_color_parameters.track_attributes.addItem(
+                str(TrackAttributeids[i])
+            )
+
     def get_spot_dataset(spot_dataset, spot_dataset_index):
 
         nonlocal AllKeys
@@ -220,6 +231,14 @@ def plugin_wrapper_track():
                 AllValues.append(spot_dataset[k].astype("float"))
 
             AllKeys.append(k)
+
+        Attributeids = []
+        for attributename in AllKeys:
+            Attributeids.append(attributename)
+        for i in range(0, len(Attributeids)):
+            plugin_color_parameters.spot_attributes.addItem(
+                str(Attributeids[i])
+            )
 
     def abspath(root, relpath):
         root = Path(root)
@@ -281,12 +300,12 @@ def plugin_wrapper_track():
         return plugin_function_parameters
 
     @magicgui(
-        spot_attribute=dict(
+        spot_attributes=dict(
             widget_type="ComboBox",
             visible=True,
             label="Spot Attributes",
         ),
-        track_attribute=dict(
+        track_attributes=dict(
             widget_type="ComboBox",
             visible=True,
             label="Track Attributes",
@@ -296,13 +315,17 @@ def plugin_wrapper_track():
         call_button=True,
     )
     def plugin_color_parameters(
-        spot_attribute,
-        track_attribute,
+        spot_attributes,
+        track_attributes,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
         nonlocal worker
-        worker = _Color_tracks(spot_attribute.value, track_attribute.value)
+
+        spot_attributes.addItem(AttributeBoxname)
+        track_attributes.addItem(TrackAttributeBoxname)
+
+        worker = _Color_tracks(spot_attributes.value, track_attributes.value)
         worker.returned.connect(return_color_tracks)
         if "T" in plugin.axes.value:
             t = axes_dict(plugin.axes.value)["T"]
@@ -668,6 +691,25 @@ def plugin_wrapper_track():
 
     table_tab.signalDataChanged.connect(_slot_data_change)
     table_tab.signalSelectionChanged.connect(_slot_selection_changed)
+
+    @change_handler(
+        plugin_color_parameters.spot_attributes,
+        plugin_color_parameters.track_attributes,
+    )
+    def _spot_track_attribute_color():
+
+        if (
+            plugin.color_parameters.spot_attributes.value
+            is not AttributeBoxname
+        ):
+            plugin_color_parameters.track_attributes.value = (
+                TrackAttributeBoxname
+            )
+        if (
+            plugin.color_parameters.track_attributes.value
+            is not TrackAttributeBoxname
+        ):
+            plugin_color_parameters.spot_attributes.value = AttributeBoxname
 
     @change_handler(plugin_function_parameters.defaults_params_button)
     def restore_function_parameters_defaults():
