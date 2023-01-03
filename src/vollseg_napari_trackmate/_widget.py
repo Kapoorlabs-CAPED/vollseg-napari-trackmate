@@ -854,6 +854,8 @@ def plugin_wrapper_track():
         for i in range(stat_ax.shape[0]):
             for j in range(stat_ax.shape[1]):
                 stat_ax[i, j].cla()
+
+        print(Timespeed, Allspeedmean, Allspeedvar)
         stat_ax[0, 0].errorbar(
             Timespeed,
             Allspeedmean,
