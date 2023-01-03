@@ -697,7 +697,7 @@ def plugin_wrapper_track():
     def _refreshStatPlotData():
 
         Attr = {}
-        print(AllKeys)
+        print(AllKeys, len(AllKeys))
         for k in range(len(AllKeys)):
             if AllKeys[k] == "TRACK_ID":
                 trackid_key = k
