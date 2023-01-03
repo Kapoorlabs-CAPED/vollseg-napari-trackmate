@@ -681,7 +681,6 @@ def plugin_wrapper_track():
         get_spot_dataset(spot_dataset, spot_dataset_index)
         get_edges_dataset(edges_dataset, edges_dataset_index)
 
-        print(AllKeys, AllEdgesKeys, AllTrackKeys)
         Attr = {}
 
         for k in range(len(AllKeys)):
@@ -700,17 +699,16 @@ def plugin_wrapper_track():
 
         starttime = int(min(AllValues[frameid_key]))
         endtime = int(max(AllValues[frameid_key]))
-
-        for k in range(len(AllTrackKeys)):
-            if AllTrackKeys[k] == "SPOT_SOURCE_ID":
+        for k in range(len(AllEdgesKeys)):
+            if AllEdgesKeys[k] == "SPOT_SOURCE_ID":
                 sourceid_key = k
-            if AllTrackKeys[k] == "DIRECTIONAL_CHANGE_RATE":
+            if AllEdgesKeys[k] == "DIRECTIONAL_CHANGE_RATE":
                 dcr_key = k
-            if AllTrackKeys[k] == "SPEED":
+            if AllEdgesKeys[k] == "SPEED":
                 speed_key = k
-            if AllTrackKeys[k] == "DISPLACEMENT":
+            if AllEdgesKeys[k] == "DISPLACEMENT":
                 disp_key = k
-
+        print(sourceid_key)
         for sourceid, dcrid, speedid, dispid, zposid, yposid, xposid in zip(
             AllTrackValues[sourceid_key],
             AllTrackValues[dcr_key],
