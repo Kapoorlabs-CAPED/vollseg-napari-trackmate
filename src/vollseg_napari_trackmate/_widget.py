@@ -674,127 +674,111 @@ def plugin_wrapper_track():
     def _refreshStatPlotData(xml_path, spot_csv, track_csv, edges_csv):
 
         get_xml_data(xml_path)
-
         spot_dataset, spot_dataset_index = get_csv_data(spot_csv)
-
         track_dataset, track_dataset_index = get_csv_data(track_csv)
-
         edges_dataset, edges_dataset_index = get_csv_data(edges_csv)
-
         get_track_dataset(track_dataset, track_dataset_index)
         get_spot_dataset(spot_dataset, spot_dataset_index)
         get_edges_dataset(edges_dataset, edges_dataset_index)
 
         print(AllKeys, AllEdgesKeys, AllTrackKeys)
         Attr = {}
-        if (
-            len(AllKeys) > 0
-            and len(AllEdgesKeys) > 0
-            and len(AllTrackKeys) > 0
+
+        for k in range(len(AllKeys)):
+            if AllKeys[k] == "TRACK_ID":
+                trackid_key = k
+            if AllKeys[k] == "ID":
+                spotid_key = k
+            if AllKeys[k] == "FRAME":
+                frameid_key = k
+            if AllKeys[k] == "POSITION_Z":
+                zposid_key = k
+            if AllKeys[k] == "POSITION_Y":
+                yposid_key = k
+            if AllKeys[k] == "POSITION_X":
+                xposid_key = k
+
+        starttime = int(min(AllValues[frameid_key]))
+        endtime = int(max(AllValues[frameid_key]))
+
+        for k in range(len(AllTrackKeys)):
+            if AllTrackKeys[k] == "SPOT_SOURCE_ID":
+                sourceid_key = k
+            if AllTrackKeys[k] == "DIRECTIONAL_CHANGE_RATE":
+                dcr_key = k
+            if AllTrackKeys[k] == "SPEED":
+                speed_key = k
+            if AllTrackKeys[k] == "DISPLACEMENT":
+                disp_key = k
+
+        for sourceid, dcrid, speedid, dispid, zposid, yposid, xposid in zip(
+            AllTrackValues[sourceid_key],
+            AllTrackValues[dcr_key],
+            AllTrackValues[speed_key],
+            AllTrackValues[disp_key],
+            AllValues[zposid_key],
+            AllValues[yposid_key],
+            AllValues[xposid_key],
         ):
-            print(AllKeys, len(AllKeys))
-            for k in range(len(AllKeys)):
-                if AllKeys[k] == "TRACK_ID":
-                    trackid_key = k
-                if AllKeys[k] == "ID":
-                    spotid_key = k
-                if AllKeys[k] == "FRAME":
-                    frameid_key = k
-                if AllKeys[k] == "POSITION_Z":
-                    zposid_key = k
-                if AllKeys[k] == "POSITION_Y":
-                    yposid_key = k
-                if AllKeys[k] == "POSITION_X":
-                    xposid_key = k
 
-            starttime = int(min(AllValues[frameid_key]))
-            endtime = int(max(AllValues[frameid_key]))
-            for k in range(len(AllEdgesKeys)):
-                if AllEdgesKeys[k] == "SPOT_SOURCE_ID":
-                    sourceid_key = k
-                if AllEdgesKeys[k] == "DIRECTIONAL_CHANGE_RATE":
-                    dcr_key = k
-                if AllEdgesKeys[k] == "SPEED":
-                    speed_key = k
-                if AllEdgesKeys[k] == "DISPLACEMENT":
-                    disp_key = k
-
-            for (
-                sourceid,
+            Attr[int(sourceid)] = [
                 dcrid,
                 speedid,
                 dispid,
                 zposid,
                 yposid,
                 xposid,
-            ) in zip(
-                AllTrackValues[sourceid_key],
-                AllTrackValues[dcr_key],
-                AllTrackValues[speed_key],
-                AllTrackValues[disp_key],
-                AllValues[zposid_key],
-                AllValues[yposid_key],
-                AllValues[xposid_key],
+            ]
+
+        Timedcr = []
+        Timespeed = []
+        Timedisppos = []
+        Timedispneg = []
+
+        Timedispposy = []
+        Timedispnegy = []
+
+        Timedispposx = []
+        Timedispnegx = []
+
+        Alldcrmean = []
+        Allspeedmean = []
+        Alldispmeanpos = []
+        Alldispmeanneg = []
+
+        Alldispmeanposx = []
+        Alldispmeanposy = []
+
+        Alldispmeannegx = []
+        Alldispmeannegy = []
+
+        Alldcrvar = []
+        Allspeedvar = []
+        Alldispvarpos = []
+        Alldispvarneg = []
+
+        Alldispvarposy = []
+        Alldispvarnegy = []
+
+        Alldispvarposx = []
+        Alldispvarnegx = []
+
+        for i in tqdm(range(starttime, endtime), total=endtime - starttime):
+
+            Curdcr = []
+            Curspeed = []
+            Curdisp = []
+            Curdispz = []
+            Curdispy = []
+            Curdispx = []
+            for spotid, trackid, frameid in zip(
+                AllValues[spotid_key],
+                AllValues[trackid_key],
+                AllValues[frameid_key],
             ):
 
-                Attr[int(sourceid)] = [
-                    dcrid,
-                    speedid,
-                    dispid,
-                    zposid,
-                    yposid,
-                    xposid,
-                ]
-
-            Timedcr = []
-            Timespeed = []
-            Timedisppos = []
-            Timedispneg = []
-            Timedispposy = []
-            Timedispnegy = []
-
-            Timedispposx = []
-            Timedispnegx = []
-
-            Alldcrmean = []
-            Allspeedmean = []
-            Alldispmeanpos = []
-            Alldispmeanneg = []
-
-            Alldispmeanposx = []
-            Alldispmeanposy = []
-
-            Alldispmeannegx = []
-            Alldispmeannegy = []
-
-            Alldcrvar = []
-            Allspeedvar = []
-            Alldispvarpos = []
-            Alldispvarneg = []
-
-            Alldispvarposy = []
-            Alldispvarnegy = []
-
-            Alldispvarposx = []
-            Alldispvarnegx = []
-
-            for i in tqdm(
-                range(starttime, endtime), total=endtime - starttime
-            ):
-
-                Curdcr = []
-                Curspeed = []
-                Curdisp = []
-                Curdispz = []
-                Curdispy = []
-                Curdispx = []
-                for spotid, trackid, frameid in zip(
-                    AllValues[spotid_key],
-                    AllValues[trackid_key],
-                    AllValues[frameid_key],
-                ):
-
-                    if i == int(frameid):
+                if i == int(frameid):
+                    if int(spotid) in Attr:
                         dcr, speed, disp, zpos, ypos, xpos = Attr[int(spotid)]
                         if dcr is not None:
                             Curdcr.append(dcr)
@@ -811,148 +795,146 @@ def plugin_wrapper_track():
                         if xpos is not None:
                             Curdispx.append(xpos)
 
-                dispZ = np.diff(Curdispz)
-                dispY = np.diff(Curdispy)
-                dispX = np.diff(Curdispx)
+            dispZ = np.diff(Curdispz)
+            dispY = np.diff(Curdispy)
+            dispX = np.diff(Curdispx)
 
-                meanCurdcr = np.mean(Curdcr)
-                varCurdcr = np.var(Curdcr)
-                if meanCurdcr is not None:
-                    Alldcrmean.append(meanCurdcr)
-                    Alldcrvar.append(varCurdcr)
-                    Timedcr.append(i * tcalibration)
+            meanCurdcr = np.mean(Curdcr)
+            varCurdcr = np.var(Curdcr)
+            if meanCurdcr is not None:
+                Alldcrmean.append(meanCurdcr)
+                Alldcrvar.append(varCurdcr)
+                Timedcr.append(i * tcalibration)
 
-                meanCurspeed = np.mean(Curspeed)
-                varCurspeed = np.var(Curspeed)
-                if meanCurspeed is not None:
+            meanCurspeed = np.mean(Curspeed)
+            varCurspeed = np.var(Curspeed)
+            if meanCurspeed is not None:
 
-                    Allspeedmean.append(meanCurspeed)
-                    Allspeedvar.append(varCurspeed)
-                    Timespeed.append(i * tcalibration)
+                Allspeedmean.append(meanCurspeed)
+                Allspeedvar.append(varCurspeed)
+                Timespeed.append(i * tcalibration)
 
-                meanCurdisp = np.mean(dispZ)
-                varCurdisp = np.var(dispZ)
+            meanCurdisp = np.mean(dispZ)
+            varCurdisp = np.var(dispZ)
 
-                meanCurdispy = np.mean(dispY)
-                varCurdispy = np.var(dispY)
+            meanCurdispy = np.mean(dispY)
+            varCurdispy = np.var(dispY)
 
-                meanCurdispx = np.mean(dispX)
-                varCurdispx = np.var(dispX)
+            meanCurdispx = np.mean(dispX)
+            varCurdispx = np.var(dispX)
 
-                if meanCurdisp is not None:
-                    if meanCurdisp >= 0:
-                        Alldispmeanpos.append(meanCurdisp)
-                        Alldispvarpos.append(varCurdisp)
-                        Timedisppos.append(i * tcalibration)
-                    else:
-                        Alldispmeanneg.append(meanCurdisp)
-                        Alldispvarneg.append(varCurdisp)
-                        Timedispneg.append(i * tcalibration)
+            if meanCurdisp is not None:
+                if meanCurdisp >= 0:
+                    Alldispmeanpos.append(meanCurdisp)
+                    Alldispvarpos.append(varCurdisp)
+                    Timedisppos.append(i * tcalibration)
+                else:
+                    Alldispmeanneg.append(meanCurdisp)
+                    Alldispvarneg.append(varCurdisp)
+                    Timedispneg.append(i * tcalibration)
 
-                if meanCurdispy is not None:
-                    if meanCurdispy >= 0:
-                        Alldispmeanposy.append(meanCurdispy)
-                        Alldispvarposy.append(varCurdispy)
-                        Timedispposy.append(i * tcalibration)
-                    else:
-                        Alldispmeannegy.append(meanCurdispy)
-                        Alldispvarnegy.append(varCurdispy)
-                        Timedispnegy.append(i * tcalibration)
+            if meanCurdispy is not None:
+                if meanCurdispy >= 0:
+                    Alldispmeanposy.append(meanCurdispy)
+                    Alldispvarposy.append(varCurdispy)
+                    Timedispposy.append(i * tcalibration)
+                else:
+                    Alldispmeannegy.append(meanCurdispy)
+                    Alldispvarnegy.append(varCurdispy)
+                    Timedispnegy.append(i * tcalibration)
 
-                if meanCurdispx is not None:
-                    if meanCurdispx >= 0:
-                        Alldispmeanposx.append(meanCurdispx)
-                        Alldispvarposx.append(varCurdispx)
-                        Timedispposx.append(i * tcalibration)
-                    else:
-                        Alldispmeannegx.append(meanCurdispx)
-                        Alldispvarnegx.append(varCurdispx)
-                        Timedispnegx.append(i * tcalibration)
+            if meanCurdispx is not None:
+                if meanCurdispx >= 0:
+                    Alldispmeanposx.append(meanCurdispx)
+                    Alldispvarposx.append(varCurdispx)
+                    Timedispposx.append(i * tcalibration)
+                else:
+                    Alldispmeannegx.append(meanCurdispx)
+                    Alldispvarnegx.append(varCurdispx)
+                    Timedispnegx.append(i * tcalibration)
+        for i in range(stat_ax.shape[0]):
+            for j in range(stat_ax.shape[1]):
+                stat_ax[i, j].cla()
+        stat_ax[0, 0].errorbar(
+            Timespeed,
+            Allspeedmean,
+            Allspeedvar,
+            linestyle="None",
+            marker=".",
+            mfc="green",
+            ecolor="green",
+        )
+        stat_ax[0, 0].set_title("Speed")
+        stat_ax[0, 0].set_xlabel("Time (min)")
+        stat_ax[0, 0].set_ylabel("um/min")
 
-            for i in range(stat_ax.shape[0]):
-                for j in range(stat_ax.shape[1]):
-                    stat_ax[i, j].cla()
-            stat_ax[0, 0].errorbar(
-                Timespeed,
-                Allspeedmean,
-                Allspeedvar,
-                linestyle="None",
-                marker=".",
-                mfc="green",
-                ecolor="green",
-            )
-            print(Timespeed, Allspeedmean, Allspeedvar, tcalibration)
-            stat_ax[0, 0].set_title("Speed")
-            stat_ax[0, 0].set_xlabel("Time (min)")
-            stat_ax[0, 0].set_ylabel("um/min")
+        stat_ax[0, 1].errorbar(
+            Timedisppos,
+            Alldispmeanpos,
+            Alldispvarpos,
+            linestyle="None",
+            marker=".",
+            mfc="green",
+            ecolor="green",
+        )
+        stat_ax[0, 1].errorbar(
+            Timedispneg,
+            Alldispmeanneg,
+            Alldispvarneg,
+            linestyle="None",
+            marker=".",
+            mfc="red",
+            ecolor="red",
+        )
+        stat_ax[0, 1].set_title("Displacement in Z")
+        stat_ax[0, 1].set_xlabel("Time (min)")
+        stat_ax[0, 1].set_ylabel("um")
 
-            stat_ax[0, 1].errorbar(
-                Timedisppos,
-                Alldispmeanpos,
-                Alldispvarpos,
-                linestyle="None",
-                marker=".",
-                mfc="green",
-                ecolor="green",
-            )
-            stat_ax[0, 1].errorbar(
-                Timedispneg,
-                Alldispmeanneg,
-                Alldispvarneg,
-                linestyle="None",
-                marker=".",
-                mfc="red",
-                ecolor="red",
-            )
-            stat_ax[0, 1].set_title("Displacement in Z")
-            stat_ax[0, 1].set_xlabel("Time (min)")
-            stat_ax[0, 1].set_ylabel("um")
+        stat_ax[1, 0].errorbar(
+            Timedispposy,
+            Alldispmeanposy,
+            Alldispvarposy,
+            linestyle="None",
+            marker=".",
+            mfc="green",
+            ecolor="green",
+        )
+        stat_ax[1, 0].errorbar(
+            Timedispnegy,
+            Alldispmeannegy,
+            Alldispvarnegy,
+            linestyle="None",
+            marker=".",
+            mfc="red",
+            ecolor="red",
+        )
+        stat_ax[1, 0].set_title("Displacement in Y")
+        stat_ax[1, 0].set_xlabel("Time (min)")
+        stat_ax[1, 0].set_ylabel("um")
 
-            stat_ax[1, 0].errorbar(
-                Timedispposy,
-                Alldispmeanposy,
-                Alldispvarposy,
-                linestyle="None",
-                marker=".",
-                mfc="green",
-                ecolor="green",
-            )
-            stat_ax[1, 0].errorbar(
-                Timedispnegy,
-                Alldispmeannegy,
-                Alldispvarnegy,
-                linestyle="None",
-                marker=".",
-                mfc="red",
-                ecolor="red",
-            )
-            stat_ax[1, 0].set_title("Displacement in Y")
-            stat_ax[1, 0].set_xlabel("Time (min)")
-            stat_ax[1, 0].set_ylabel("um")
+        stat_ax[1, 1].errorbar(
+            Timedispposx,
+            Alldispmeanposx,
+            Alldispvarposx,
+            linestyle="None",
+            marker=".",
+            mfc="green",
+            ecolor="green",
+        )
+        stat_ax[1, 1].errorbar(
+            Timedispnegx,
+            Alldispmeannegx,
+            Alldispvarnegx,
+            linestyle="None",
+            marker=".",
+            mfc="red",
+            ecolor="red",
+        )
+        stat_ax[1, 1].set_title("Displacement in X")
+        stat_ax[1, 1].set_xlabel("Time (min)")
+        stat_ax[1, 1].set_ylabel("um")
 
-            stat_ax[1, 1].errorbar(
-                Timedispposx,
-                Alldispmeanposx,
-                Alldispvarposx,
-                linestyle="None",
-                marker=".",
-                mfc="green",
-                ecolor="green",
-            )
-            stat_ax[1, 1].errorbar(
-                Timedispnegx,
-                Alldispmeannegx,
-                Alldispvarnegx,
-                linestyle="None",
-                marker=".",
-                mfc="red",
-                ecolor="red",
-            )
-            stat_ax[1, 1].set_title("Displacement in X")
-            stat_ax[1, 1].set_xlabel("Time (min)")
-            stat_ax[1, 1].set_ylabel("um")
-
-            stat_canvas.draw()
+        stat_canvas.draw()
 
     def _refreshTableData(df: pd.DataFrame):
         """Refresh all data in table by setting its data model from provided dataframe.
