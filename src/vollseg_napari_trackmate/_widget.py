@@ -122,9 +122,7 @@ def plugin_wrapper_track():
 
     def get_csv_data(csv):
 
-        dataset = pd.read_csv(
-            csv, delimiter=",", encoding="unicode_escape", low_memory=False
-        )[3:]
+        dataset = pd.read_csv(csv, delimiter=",")[3:]
         dataset_index = dataset.index
 
         return dataset, dataset_index
