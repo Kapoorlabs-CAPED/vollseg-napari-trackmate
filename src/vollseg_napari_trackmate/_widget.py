@@ -103,13 +103,11 @@ def plugin_wrapper_track():
             .find("FilteredTracks")
             .findall("TrackID")
         ]
-        print(filtered_track_ids)
 
         # Extract the tracks from xml
         tracks = root.find("Model").find("AllTracks")
         settings = root.find("Settings").find("ImageData")
 
-        print(tracks, settings)
         xcalibration = float(settings.get("pixelwidth"))
         ycalibration = float(settings.get("pixelheight"))
         zcalibration = float(settings.get("voxeldepth"))
@@ -683,6 +681,10 @@ def plugin_wrapper_track():
 
         edges_dataset, edges_dataset_index = get_csv_data(edges_csv)
 
+        get_track_dataset(track_dataset, track_dataset_index)
+        get_spot_dataset(spot_dataset, spot_dataset_index)
+        get_edges_dataset(edges_dataset, edges_dataset_index)
+
         print(AllKeys, AllEdgesKeys, AllTrackKeys)
         Attr = {}
         if (
@@ -707,7 +709,6 @@ def plugin_wrapper_track():
 
             starttime = int(min(AllValues[frameid_key]))
             endtime = int(max(AllValues[frameid_key]))
-            print("st", starttime)
             for k in range(len(AllEdgesKeys)):
                 if AllEdgesKeys[k] == "SPOT_SOURCE_ID":
                     sourceid_key = k
@@ -718,7 +719,6 @@ def plugin_wrapper_track():
                 if AllEdgesKeys[k] == "DISPLACEMENT":
                     disp_key = k
 
-            print(AllKeys, AllEdgesKeys)
             for (
                 sourceid,
                 dcrid,
@@ -872,7 +872,6 @@ def plugin_wrapper_track():
             for i in range(stat_ax.shape[0]):
                 for j in range(stat_ax.shape[1]):
                     stat_ax[i, j].cla()
-            print(Timespeed, Allspeedmean, Timedisppos)
             stat_ax[0, 0].errorbar(
                 Timespeed,
                 Allspeedmean,
@@ -952,7 +951,6 @@ def plugin_wrapper_track():
             stat_ax[1, 1].set_xlabel("Time (min)")
             stat_ax[1, 1].set_ylabel("um")
 
-            print("drawing")
             stat_canvas.draw()
 
     def _refreshTableData(df: pd.DataFrame):
