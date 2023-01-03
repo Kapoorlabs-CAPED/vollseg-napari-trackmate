@@ -800,14 +800,14 @@ def plugin_wrapper_track():
 
             meanCurdcr = np.mean(Curdcr)
             varCurdcr = np.var(Curdcr)
-            if meanCurdcr is not None:
+            if meanCurdcr is not None and np.isfinite(varCurdcr):
                 Alldcrmean.append(meanCurdcr)
                 Alldcrvar.append(varCurdcr)
                 Timedcr.append(i * tcalibration)
 
             meanCurspeed = np.mean(Curspeed)
             varCurspeed = np.var(Curspeed)
-            if meanCurspeed is not None:
+            if meanCurspeed is not None and np.isfinite(varCurspeed):
 
                 Allspeedmean.append(meanCurspeed)
                 Allspeedvar.append(varCurspeed)
@@ -823,31 +823,31 @@ def plugin_wrapper_track():
             varCurdispx = np.var(dispX)
 
             if meanCurdisp is not None:
-                if meanCurdisp >= 0:
+                if meanCurdisp >= 0 and np.isfinite(varCurdisp):
                     Alldispmeanpos.append(meanCurdisp)
                     Alldispvarpos.append(varCurdisp)
                     Timedisppos.append(i * tcalibration)
-                else:
+                elif meanCurdisp < 0 and np.isfinite(varCurdisp):
                     Alldispmeanneg.append(meanCurdisp)
                     Alldispvarneg.append(varCurdisp)
                     Timedispneg.append(i * tcalibration)
 
             if meanCurdispy is not None:
-                if meanCurdispy >= 0:
+                if meanCurdispy >= 0 and np.isfinite(varCurdispy):
                     Alldispmeanposy.append(meanCurdispy)
                     Alldispvarposy.append(varCurdispy)
                     Timedispposy.append(i * tcalibration)
-                else:
+                elif meanCurdispy < 0 and np.isfinite(varCurdispy):
                     Alldispmeannegy.append(meanCurdispy)
                     Alldispvarnegy.append(varCurdispy)
                     Timedispnegy.append(i * tcalibration)
 
             if meanCurdispx is not None:
-                if meanCurdispx >= 0:
+                if meanCurdispx >= 0 and np.isfinite(varCurdispx):
                     Alldispmeanposx.append(meanCurdispx)
                     Alldispvarposx.append(varCurdispx)
                     Timedispposx.append(i * tcalibration)
-                else:
+                elif meanCurdispx < 0 and np.isfinite(varCurdispx):
                     Alldispmeannegx.append(meanCurdispx)
                     Alldispvarnegx.append(varCurdispx)
                     Timedispnegx.append(i * tcalibration)
