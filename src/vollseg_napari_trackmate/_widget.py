@@ -42,6 +42,57 @@ def plugin_wrapper_track():
     AttributeBoxname = "AttributeIDBox"
     TrackAttributeBoxname = "TrackAttributeIDBox"
 
+    track_analysis_spot_keys = dict(
+        spot_id="ID",
+        track_id="TRACK_ID",
+        quality="QUALITY",
+        posix="POSITION_X",
+        posiy="POSITION_Y",
+        posiz="POSITION_Z",
+        posit="POSITION_T",
+        frame="FRAME",
+        radius="RADIUS",
+        mean_intensity_ch1="MEAN_INTENSITY_CH1",
+        total_intensity_ch1="TOTAL_INTENSITY_CH1",
+        mean_intensity_ch2="MEAN_INTENSITY_CH2",
+        total_intensity_ch2="TOTAL_INTENSITY_CH2",
+    )
+    track_analysis_edges_keys = dict(
+        spot_source_id="SPOT_SOURCE_ID",
+        spot_target_id="SPOT_TARGET_ID",
+        directional_change_rate="DIRECTIONAL_CHANGE_RATE",
+        speed="SPEED",
+        displacement="DISPLACEMENT",
+        edge_time="EDGE_TIME",
+        edge_x_location="EDGE_X_LOCATION",
+        edge_y_location="EDGE_Y_LOCATION",
+        edge_z_location="EDGE_Z_LOCATION",
+    )
+    track_analysis_track_keys = dict(
+        number_spots="NUMBER_SPOTS",
+        number_gaps="NUMBER_GAPS",
+        number_splits="NUMBER_SPLITS",
+        number_merges="NUMBER_MERGES",
+        track_duration="TRACK_DURATION",
+        track_start="TRACK_START",
+        track_stop="TRACK_STOP",
+        track_displacement="TRACK_DISPLACEMENT",
+        track_x_location="TRACK_X_LOCATION",
+        track_y_location="TRACK_Y_LOCATION",
+        track_z_location="TRACK_Z_LOCATION",
+        track_mean_speed="TRACK_MEAN_SPEED",
+        track_max_speed="TRACK_MAX_SPEED",
+        track_min_speed="TRACK_MIN_SPEED",
+        track_median_speed="TRACK_MEDIAN_SPEED",
+        track_std_speed="TRACK_STD_SPEED",
+        track_mean_quality="TRACK_MEAN_QUALITY",
+        total_track_distance="TOTAL_DISTANCE_TRAVELED",
+        max_track_distance="MAX_DISTANCE_TRAVELED",
+        mean_straight_line_speed="MEAN_STRAIGHT_LINE_SPEED",
+        linearity_forward_progression="LINEARITY_OF_FORWARD_PROGRESSION",
+        mean_directional_change_rate="MEAN_DIRECTIONAL_CHANGE_RATE",
+    )
+
     def _raise(e):
         if isinstance(e, BaseException):
             raise e
@@ -126,126 +177,105 @@ def plugin_wrapper_track():
             csv, delimiter=",", encoding="unicode_escape", low_memory=False
         )[3:]
         dataset_index = dataset.index
-
+        print(dataset.head())
         return dataset, dataset_index
 
     def get_track_dataset(track_dataset, track_dataset_index):
 
-        nonlocal AllTrackValues, AllTrackKeys
-        AllTrackValues = []
-        AllTrackKeys = []
+        nonlocal AllTrackValues
+        AllTrackValues = {}
+        track_id = track_analysis_spot_keys["track_id"]
+        Tid = track_dataset[track_id].astype("float")
+        indices = np.where(Tid == 0)
+        maxtrack_id = max(Tid)
+        condition_indices = track_dataset_index[indices]
+        Tid[condition_indices] = maxtrack_id + 1
+        AllTrackValues[track_id] = Tid
+        for k in track_analysis_track_keys.values():
 
-        for k in track_dataset.keys():
-            if k == "TRACK_ID":
-                Track_id = track_dataset[k].astype("float")
-                indices = np.where(Track_id == 0)
-                maxtrack_id = max(Track_id)
-                condition_indices = track_dataset_index[indices]
-                Track_id[condition_indices] = maxtrack_id + 1
-                AllTrackValues.append(Track_id)
-                AllTrackKeys.append(k)
-            else:
-                try:
-                    x = track_dataset[k].astype("float")
-                    minval = min(x)
-                    maxval = max(x)
+            if k != track_id:
+                x = track_dataset[k].astype("float")
+                minval = min(x)
+                maxval = max(x)
 
-                    if minval > 0 and maxval <= 1:
+                if minval > 0 and maxval <= 1:
 
-                        x = normalizeZeroOne(x, scale=scale)
+                    x = normalizeZeroOne(x, scale=scale)
 
-                    AllTrackKeys.append(k)
-                    AllTrackValues.append(x)
-                except ValueError:
-                    pass
+                AllTrackValues[k] = x
 
         TrackAttributeids = []
         TrackAttributeids.append(TrackAttributeBoxname)
-        for attributename in AllTrackKeys:
+        for attributename in track_analysis_track_keys.keys():
             TrackAttributeids.append(attributename)
 
         plugin_color_parameters.track_attributes.choices = TrackAttributeids
 
     def get_edges_dataset(edges_dataset, edges_dataset_index):
 
-        nonlocal AllEdgesKeys, AllEdgesValues
-        AllEdgesKeys = []
-        AllEdgesValues = []
+        nonlocal AllEdgesValues
+        AllEdgesValues = {}
+        track_id = track_analysis_spot_keys["track_id"]
+        Tid = edges_dataset[track_id].astype("float")
+        indices = np.where(Tid == 0)
+        maxtrack_id = max(Tid)
+        condition_indices = edges_dataset_index[indices]
+        Tid[condition_indices] = maxtrack_id + 1
+        AllEdgesValues[track_id] = Tid
 
-        for k in edges_dataset.keys():
+        for k in track_analysis_edges_keys.values():
 
-            if k == "TRACK_ID":
-                Track_id = edges_dataset[k].astype("float")
-                indices = np.where(Track_id == 0)
-                maxtrack_id = max(Track_id)
-                condition_indices = edges_dataset_index[indices]
-                Track_id[condition_indices] = maxtrack_id + 1
-                AllEdgesValues.append(Track_id)
-                AllEdgesKeys.append(k)
-            else:
-                try:
-                    x = edges_dataset[k].astype("float")
-                    AllEdgesKeys.append(k)
-                    AllEdgesValues.append(x)
-                except ValueError:
-                    pass
+            if k != track_id:
+                x = edges_dataset[k].astype("float")
+
+                AllEdgesValues[k] = x
 
     def get_spot_dataset(spot_dataset, spot_dataset_index):
 
-        nonlocal AllKeys
-        AllKeys = []
+        nonlocal AllValues
+        AllValues = {}
+        track_id = track_analysis_spot_keys["track_id"]
+        posix = track_analysis_spot_keys["posix"]
+        posiy = track_analysis_spot_keys["posiy"]
+        posiz = track_analysis_spot_keys["posiz"]
+        frame = track_analysis_spot_keys["frame"]
+        Tid = spot_dataset[track_id].astype("float")
+        indices = np.where(Tid == 0)
+        maxtrack_id = max(Tid)
+        condition_indices = spot_dataset_index[indices]
+        Tid[condition_indices] = maxtrack_id + 1
 
-        for k in spot_dataset.keys():
-            try:
-                if k == "TRACK_ID":
-                    Track_id = spot_dataset[k].astype("float")
-                    indices = np.where(Track_id == 0)
-                    maxtrack_id = max(Track_id)
-                    condition_indices = spot_dataset_index[indices]
-                    Track_id[condition_indices] = maxtrack_id + 1
-                    AllValues.append(Track_id)
-                    AllKeys.append(k)
+        AllValues[track_id] = Tid
+        LocationX = (
+            spot_dataset[posix].astype("float") / xcalibration
+        ).astype("int")
+        LocationY = (
+            spot_dataset[posiy].astype("float") / ycalibration
+        ).astype("int")
+        LocationZ = (
+            spot_dataset[posiz].astype("float") / zcalibration
+        ).astype("int")
+        LocationT = (spot_dataset[frame].astype("float")).astype("int")
+        AllValues[posix] = LocationX
+        AllValues[posiy] = LocationY
+        AllValues[posiz] = LocationZ
+        AllValues[frame] = LocationT
 
-                if k == "POSITION_X":
-                    LocationX = (
-                        spot_dataset["POSITION_X"].astype("float")
-                        / xcalibration
-                    ).astype("int")
-                    AllValues.append(LocationX)
+        for k in track_analysis_spot_keys.values():
 
-                if k == "POSITION_Y":
-                    LocationY = (
-                        spot_dataset["POSITION_Y"].astype("float")
-                        / ycalibration
-                    ).astype("int")
-                    AllValues.append(LocationY)
-                if k == "POSITION_Z":
-                    LocationZ = (
-                        spot_dataset["POSITION_Z"].astype("float")
-                        / zcalibration
-                    ).astype("int")
-                    AllValues.append(LocationZ)
-                if k == "FRAME":
-                    LocationT = (spot_dataset["FRAME"].astype("float")).astype(
-                        "int"
-                    )
-                    AllValues.append(LocationT)
-                elif (
-                    k != "TRACK_ID"
-                    and k != "POSITION_X"
-                    and k != "POSITION_Y"
-                    and k != "POSITION_Z"
-                    and k != "FRAME"
-                ):
+            if (
+                k != track_id
+                and k != posix
+                and k != posiy
+                and k != posiz
+                and k != frame
+            ):
 
-                    AllValues.append(spot_dataset[k].astype("float"))
-                AllKeys.append(k)
-            except ValueError:
-                pass
+                AllValues[k] = spot_dataset[k].astype("float")
 
         Attributeids = []
         Attributeids.append(AttributeBoxname)
-        for attributename in AllKeys:
+        for attributename in track_analysis_track_keys.keys():
             Attributeids.append(attributename)
         plugin_color_parameters.spot_attributes.choices = Attributeids
 
@@ -277,14 +307,11 @@ def plugin_wrapper_track():
 
     worker = None
 
-    AllTrackValues = []
+    AllTrackValues = {}
     # AllTrackID = []
-    AllTrackKeys = []
     # AllTrackAttr = []
-    AllValues = []
-    AllKeys = []
-    AllEdgesKeys = []
-    AllEdgesValues = []
+    AllValues = {}
+    AllEdgesValues = {}
     filtered_track_ids = []
     xcalibration = 1
     ycalibration = 1
@@ -383,33 +410,27 @@ def plugin_wrapper_track():
     def _Color_tracks(spot_attribute, track_attribute):
 
         yield 0
-
-        if spot_attribute is not None and AllKeys is not None:
+        posix = track_analysis_spot_keys["posix"]
+        posiy = track_analysis_spot_keys["posiy"]
+        posiz = track_analysis_spot_keys["posiz"]
+        frame = track_analysis_spot_keys["frame"]
+        track_id = track_analysis_spot_keys["track_id"]
+        if spot_attribute is not None:
 
             attribute = spot_attribute
-            for k in range(len(AllKeys)):
 
-                if AllKeys[k] == "POSITION_X":
-                    keyX = k - 1
-                if AllKeys[k] == "POSITION_Y":
-                    keyY = k - 1
-                if AllKeys[k] == "POSITION_Z":
-                    keyZ = k - 1
-                if AllKeys[k] == "FRAME":
-                    keyT = k - 1
-
-            for count, k in enumerate(range(len(AllKeys))):
+            for count, k in enumerate(track_analysis_spot_keys.keys()):
                 yield count
                 locations = []
-                if AllKeys[k] == spot_attribute:
+                if track_analysis_spot_keys[k] == spot_attribute:
 
                     for attr, time, z, y, x in tqdm(
                         zip(
                             AllValues[k],
-                            AllValues[keyT],
-                            AllValues[keyZ],
-                            AllValues[keyY],
-                            AllValues[keyX],
+                            AllValues[frame],
+                            AllValues[posiz],
+                            AllValues[posiy],
+                            AllValues[posix],
                         ),
                         total=len(AllValues[k]),
                     ):
@@ -420,25 +441,17 @@ def plugin_wrapper_track():
 
                         locations.append([attr, centroid])
 
-        if (
-            track_attribute is not None
-            and AllTrackKeys is not None
-            and AllKeys is not None
-        ):
+        if track_attribute is not None:
 
             attribute = track_attribute
             idattr = {}
-            for k in range(len(AllTrackKeys)):
 
-                if AllTrackKeys[k] == "TRACK_ID":
-                    p = k
+            for k in track_analysis_track_keys.keys():
 
-            for k in range(len(AllTrackKeys)):
-
-                if AllTrackKeys[k] == track_attribute:
+                if track_analysis_track_keys[k] == track_attribute:
 
                     for attr, trackid in tqdm(
-                        zip(AllTrackValues[k], AllTrackValues[p]),
+                        zip(AllTrackValues[k], AllTrackValues[track_id]),
                         total=len(AllTrackValues[k]),
                     ):
 
@@ -447,29 +460,25 @@ def plugin_wrapper_track():
                         else:
                             idattr[trackid] = attr
 
-            for count, k in enumerate(range(len(AllKeys))):
-                yield count
-                locations = []
-                if AllKeys[k] == "TRACK_ID":
+            locations = []
+            for trackid, time, z, y, x in tqdm(
+                zip(
+                    AllValues[track_id],
+                    AllValues[frame],
+                    AllValues[posiz],
+                    AllValues[posiy],
+                    AllValues[posix],
+                ),
+                total=len(AllValues[track_id]),
+            ):
 
-                    for trackid, time, z, y, x in tqdm(
-                        zip(
-                            AllValues[k],
-                            AllValues[keyT],
-                            AllValues[keyZ],
-                            AllValues[keyY],
-                            AllValues[keyX],
-                        ),
-                        total=len(AllValues[k]),
-                    ):
+                if len(plugin.seg_image.value.shape) == 4:
+                    centroid = (time, z, y, x)
+                else:
+                    centroid = (time, y, x)
 
-                        if len(plugin.seg_image.value.shape) == 4:
-                            centroid = (time, z, y, x)
-                        else:
-                            centroid = (time, y, x)
-
-                        attr = idattr[trackid]
-                        locations.append([attr, centroid])
+                attr = idattr[trackid]
+                locations.append([attr, centroid])
 
         new_seg_image = Relabel(plugin.seg_image.value.copy(), locations)
 
@@ -694,32 +703,21 @@ def plugin_wrapper_track():
 
         Attr = {}
 
-        for k in range(len(AllKeys)):
-            if AllKeys[k] == "TRACK_ID":
-                trackid_key = k
-                print("trackid", trackid_key)
-            if AllKeys[k] == "ID":
-                spotid_key = k
-            if AllKeys[k] == "FRAME":
-                frameid_key = k - 1
-            if AllKeys[k] == "POSITION_Z":
-                zposid_key = k - 1
-            if AllKeys[k] == "POSITION_Y":
-                yposid_key = k - 1
-            if AllKeys[k] == "POSITION_X":
-                xposid_key = k - 1
+        frameid_key = track_analysis_spot_keys["frame"]
+        zposid_key = track_analysis_spot_keys["posiz"]
+        yposid_key = track_analysis_spot_keys["posiy"]
+        xposid_key = track_analysis_spot_keys["posix"]
+        spotid_key = track_analysis_spot_keys["spot_id"]
+        trackid_key = track_analysis_spot_keys["track_id"]
+        sourceid_key = track_analysis_edges_keys["spot_source_id"]
+        dcr_key = track_analysis_edges_keys["directional_change_rate"]
+        speed_key = track_analysis_edges_keys["speed"]
+        disp_key = track_analysis_edges_keys["displacement"]
 
         starttime = int(min(AllValues[frameid_key]))
         endtime = int(max(AllValues[frameid_key]))
-        for k in range(len(AllEdgesKeys)):
-            if AllEdgesKeys[k] == "SPOT_SOURCE_ID":
-                sourceid_key = k
-            if AllEdgesKeys[k] == "DIRECTIONAL_CHANGE_RATE":
-                dcr_key = k
-            if AllEdgesKeys[k] == "SPEED":
-                speed_key = k
-            if AllEdgesKeys[k] == "DISPLACEMENT":
-                disp_key = k
+        print(starttime, endtime, "ss")
+
         for sourceid, dcrid, speedid, dispid, zposid, yposid, xposid in zip(
             AllEdgesValues[sourceid_key],
             AllEdgesValues[dcr_key],
