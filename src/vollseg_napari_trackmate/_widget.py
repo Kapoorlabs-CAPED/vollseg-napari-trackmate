@@ -144,17 +144,20 @@ def plugin_wrapper_track():
                 Track_id[condition_indices] = maxtrack_id + 1
                 AllTrackValues.append(Track_id)
                 AllTrackKeys.append(k)
-            elif k != "LABEL" and k != "TRACK_INDEX":
-                x = track_dataset[k].astype("float")
-                minval = min(x)
-                maxval = max(x)
+            else:
+                try:
+                    x = track_dataset[k].astype("float")
+                    minval = min(x)
+                    maxval = max(x)
 
-                if minval > 0 and maxval <= 1:
+                    if minval > 0 and maxval <= 1:
 
-                    x = normalizeZeroOne(x, scale=scale)
+                        x = normalizeZeroOne(x, scale=scale)
 
-                AllTrackKeys.append(k)
-                AllTrackValues.append(x)
+                    AllTrackKeys.append(k)
+                    AllTrackValues.append(x)
+                except ValueError:
+                    pass
 
         TrackAttributeids = []
         TrackAttributeids.append(TrackAttributeBoxname)
@@ -179,10 +182,13 @@ def plugin_wrapper_track():
                 Track_id[condition_indices] = maxtrack_id + 1
                 AllEdgesValues.append(Track_id)
                 AllEdgesKeys.append(k)
-            elif k != "LABEL":
-                x = edges_dataset[k].astype("float")
-                AllEdgesKeys.append(k)
-                AllEdgesValues.append(x)
+            else:
+                try:
+                    x = edges_dataset[k].astype("float")
+                    AllEdgesKeys.append(k)
+                    AllEdgesValues.append(x)
+                except ValueError:
+                    pass
 
     def get_spot_dataset(spot_dataset, spot_dataset_index):
 
@@ -190,47 +196,52 @@ def plugin_wrapper_track():
         AllKeys = []
 
         for k in spot_dataset.keys():
+            try:
+                if k == "TRACK_ID":
+                    Track_id = spot_dataset[k].astype("float")
+                    indices = np.where(Track_id == 0)
+                    maxtrack_id = max(Track_id)
+                    condition_indices = spot_dataset_index[indices]
+                    Track_id[condition_indices] = maxtrack_id + 1
+                    AllValues.append(Track_id)
+                    AllKeys.append(k)
 
-            if k == "TRACK_ID":
-                Track_id = spot_dataset[k].astype("float")
-                indices = np.where(Track_id == 0)
-                maxtrack_id = max(Track_id)
-                condition_indices = spot_dataset_index[indices]
-                Track_id[condition_indices] = maxtrack_id + 1
-                AllValues.append(Track_id)
+                if k == "POSITION_X":
+                    LocationX = (
+                        spot_dataset["POSITION_X"].astype("float")
+                        / xcalibration
+                    ).astype("int")
+                    AllValues.append(LocationX)
 
-            if k == "POSITION_X":
-                LocationX = (
-                    spot_dataset["POSITION_X"].astype("float") / xcalibration
-                ).astype("int")
-                AllValues.append(LocationX)
+                if k == "POSITION_Y":
+                    LocationY = (
+                        spot_dataset["POSITION_Y"].astype("float")
+                        / ycalibration
+                    ).astype("int")
+                    AllValues.append(LocationY)
+                if k == "POSITION_Z":
+                    LocationZ = (
+                        spot_dataset["POSITION_Z"].astype("float")
+                        / zcalibration
+                    ).astype("int")
+                    AllValues.append(LocationZ)
+                if k == "FRAME":
+                    LocationT = (spot_dataset["FRAME"].astype("float")).astype(
+                        "int"
+                    )
+                    AllValues.append(LocationT)
+                elif (
+                    k != "TRACK_ID"
+                    and k != "POSITION_X"
+                    and k != "POSITION_Y"
+                    and k != "POSITION_Z"
+                    and k != "FRAME"
+                ):
 
-            if k == "POSITION_Y":
-                LocationY = (
-                    spot_dataset["POSITION_Y"].astype("float") / ycalibration
-                ).astype("int")
-                AllValues.append(LocationY)
-            if k == "POSITION_Z":
-                LocationZ = (
-                    spot_dataset["POSITION_Z"].astype("float") / zcalibration
-                ).astype("int")
-                AllValues.append(LocationZ)
-            if k == "FRAME":
-                LocationT = (spot_dataset["FRAME"].astype("float")).astype(
-                    "int"
-                )
-                AllValues.append(LocationT)
-            elif (
-                k != "TRACK_ID"
-                and k != "LABEL"
-                and k != "POSITION_X"
-                and k != "POSITION_Y"
-                and k != "POSITION_Z"
-                and k != "FRAME"
-            ):
-                AllValues.append(spot_dataset[k].astype("float"))
-
-            AllKeys.append(k)
+                    AllValues.append(spot_dataset[k].astype("float"))
+                AllKeys.append(k)
+            except ValueError:
+                pass
 
         Attributeids = []
         Attributeids.append(AttributeBoxname)
@@ -379,13 +390,13 @@ def plugin_wrapper_track():
             for k in range(len(AllKeys)):
 
                 if AllKeys[k] == "POSITION_X":
-                    keyX = k
+                    keyX = k - 1
                 if AllKeys[k] == "POSITION_Y":
-                    keyY = k
+                    keyY = k - 1
                 if AllKeys[k] == "POSITION_Z":
-                    keyZ = k
+                    keyZ = k - 1
                 if AllKeys[k] == "FRAME":
-                    keyT = k
+                    keyT = k - 1
 
             for count, k in enumerate(range(len(AllKeys))):
                 yield count
@@ -686,20 +697,20 @@ def plugin_wrapper_track():
         for k in range(len(AllKeys)):
             if AllKeys[k] == "TRACK_ID":
                 trackid_key = k
+                print("trackid", trackid_key)
             if AllKeys[k] == "ID":
                 spotid_key = k
             if AllKeys[k] == "FRAME":
-                frameid_key = k
+                frameid_key = k - 1
             if AllKeys[k] == "POSITION_Z":
-                zposid_key = k
+                zposid_key = k - 1
             if AllKeys[k] == "POSITION_Y":
-                yposid_key = k
+                yposid_key = k - 1
             if AllKeys[k] == "POSITION_X":
-                xposid_key = k
+                xposid_key = k - 1
 
-        starttime = int(min(AllEdgesValues[frameid_key]))
-        endtime = int(max(AllEdgesValues[frameid_key]))
-
+        starttime = int(min(AllValues[frameid_key]))
+        endtime = int(max(AllValues[frameid_key]))
         for k in range(len(AllEdgesKeys)):
             if AllEdgesKeys[k] == "SPOT_SOURCE_ID":
                 sourceid_key = k
@@ -709,12 +720,11 @@ def plugin_wrapper_track():
                 speed_key = k
             if AllEdgesKeys[k] == "DISPLACEMENT":
                 disp_key = k
-        print(sourceid_key)
         for sourceid, dcrid, speedid, dispid, zposid, yposid, xposid in zip(
-            AllTrackValues[sourceid_key],
-            AllTrackValues[dcr_key],
-            AllTrackValues[speed_key],
-            AllTrackValues[disp_key],
+            AllEdgesValues[sourceid_key],
+            AllEdgesValues[dcr_key],
+            AllEdgesValues[speed_key],
+            AllEdgesValues[disp_key],
             AllValues[zposid_key],
             AllValues[yposid_key],
             AllValues[xposid_key],
@@ -779,7 +789,6 @@ def plugin_wrapper_track():
                 if i == int(frameid):
                     if int(spotid) in Attr:
                         dcr, speed, disp, zpos, ypos, xpos = Attr[int(spotid)]
-                        print(dcr, speed, disp, zpos, ypos, xpos)
                         if dcr is not None:
                             Curdcr.append(dcr)
 
@@ -801,14 +810,14 @@ def plugin_wrapper_track():
 
             meanCurdcr = np.mean(Curdcr)
             varCurdcr = np.var(Curdcr)
-            if meanCurdcr is not None and np.isfinite(varCurdcr):
+            if meanCurdcr is not None:
                 Alldcrmean.append(meanCurdcr)
                 Alldcrvar.append(varCurdcr)
                 Timedcr.append(i * tcalibration)
 
             meanCurspeed = np.mean(Curspeed)
             varCurspeed = np.var(Curspeed)
-            if meanCurspeed is not None and np.isfinite(varCurspeed):
+            if meanCurspeed is not None:
 
                 Allspeedmean.append(meanCurspeed)
                 Allspeedvar.append(varCurspeed)
@@ -824,31 +833,31 @@ def plugin_wrapper_track():
             varCurdispx = np.var(dispX)
 
             if meanCurdisp is not None:
-                if meanCurdisp >= 0 and np.isfinite(varCurdisp):
+                if meanCurdisp >= 0:
                     Alldispmeanpos.append(meanCurdisp)
                     Alldispvarpos.append(varCurdisp)
                     Timedisppos.append(i * tcalibration)
-                elif meanCurdisp < 0 and np.isfinite(varCurdisp):
+                elif meanCurdisp < 0:
                     Alldispmeanneg.append(meanCurdisp)
                     Alldispvarneg.append(varCurdisp)
                     Timedispneg.append(i * tcalibration)
 
             if meanCurdispy is not None:
-                if meanCurdispy >= 0 and np.isfinite(varCurdispy):
+                if meanCurdispy >= 0:
                     Alldispmeanposy.append(meanCurdispy)
                     Alldispvarposy.append(varCurdispy)
                     Timedispposy.append(i * tcalibration)
-                elif meanCurdispy < 0 and np.isfinite(varCurdispy):
+                elif meanCurdispy < 0:
                     Alldispmeannegy.append(meanCurdispy)
                     Alldispvarnegy.append(varCurdispy)
                     Timedispnegy.append(i * tcalibration)
 
             if meanCurdispx is not None:
-                if meanCurdispx >= 0 and np.isfinite(varCurdispx):
+                if meanCurdispx >= 0:
                     Alldispmeanposx.append(meanCurdispx)
                     Alldispvarposx.append(varCurdispx)
                     Timedispposx.append(i * tcalibration)
-                elif meanCurdispx < 0 and np.isfinite(varCurdispx):
+                elif meanCurdispx < 0:
                     Alldispmeannegx.append(meanCurdispx)
                     Alldispvarnegx.append(varCurdispx)
                     Timedispnegx.append(i * tcalibration)
@@ -856,7 +865,6 @@ def plugin_wrapper_track():
             for j in range(stat_ax.shape[1]):
                 stat_ax[i, j].cla()
 
-        print(Timespeed, Allspeedmean, Allspeedvar)
         stat_ax[0, 0].errorbar(
             Timespeed,
             Allspeedmean,
