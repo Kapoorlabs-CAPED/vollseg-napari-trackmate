@@ -779,6 +779,7 @@ def plugin_wrapper_track():
                 if i == int(frameid):
                     if int(spotid) in Attr:
                         dcr, speed, disp, zpos, ypos, xpos = Attr[int(spotid)]
+                        print(dcr, speed, disp, zpos, ypos, xpos)
                         if dcr is not None:
                             Curdcr.append(dcr)
 
