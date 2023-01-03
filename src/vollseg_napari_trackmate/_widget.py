@@ -275,7 +275,7 @@ def plugin_wrapper_track():
 
         Attributeids = []
         Attributeids.append(AttributeBoxname)
-        for attributename in track_analysis_track_keys.keys():
+        for attributename in track_analysis_spot_keys.keys():
             Attributeids.append(attributename)
         plugin_color_parameters.spot_attributes.choices = Attributeids
 
@@ -997,23 +997,19 @@ def plugin_wrapper_track():
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
+        init=False,
+    )
+    def _spot_attribute_color(value):
+
+        plugin_color_parameters.spot_attributes.value = value
+
+    @change_handler(
         plugin_color_parameters.track_attributes,
         init=False,
     )
-    def _spot_track_attribute_color():
+    def _track_attribute_color(value):
 
-        if (
-            plugin_color_parameters.spot_attributes.value
-            is not AttributeBoxname
-        ):
-            plugin_color_parameters.track_attributes.value = (
-                TrackAttributeBoxname
-            )
-        if (
-            plugin_color_parameters.track_attributes.value
-            is not TrackAttributeBoxname
-        ):
-            plugin_color_parameters.spot_attributes.value = AttributeBoxname
+        plugin_color_parameters.track_attributes.value = value
 
     @change_handler(plugin.track_model_type, init=False)
     def _track_model_type_change():
