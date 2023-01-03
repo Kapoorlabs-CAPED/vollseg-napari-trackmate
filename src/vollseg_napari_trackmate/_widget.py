@@ -1063,7 +1063,7 @@ def plugin_wrapper_track():
         if ndim == 2:
             axes = "YX"
         else:
-            raise NotImplementedError()
+            axes = "TZYX"
         if axes == plugin.axes.value:
             # make sure to trigger a changed event, even if value didn't actually change
             plugin.axes.changed(axes)
