@@ -30,7 +30,7 @@ def plugin_wrapper_track():
 
     from csbdeep.utils import axes_check_and_normalize, axes_dict
     from napari.qt.threading import thread_worker
-    from napatrackmater.bTrackmate import load_tracks, normalizeZeroOne
+    from napatrackmater.bTrackmate import normalizeZeroOne
     from skimage.util import map_array
 
     from ._data_model import pandasModel
@@ -95,7 +95,7 @@ def plugin_wrapper_track():
 
         root = et.fromstring(codecs.open(xml_path, "r", "utf8").read())
 
-        nonlocal xcalibration, ycalibration, zcalibration, tcalibration
+        nonlocal xcalibration, ycalibration, zcalibration, tcalibration, filtered_track_ids, tracks, settings
 
         filtered_track_ids = [
             int(track.get("TRACK_ID"))
@@ -103,38 +103,17 @@ def plugin_wrapper_track():
             .find("FilteredTracks")
             .findall("TrackID")
         ]
+        print(filtered_track_ids)
 
         # Extract the tracks from xml
         tracks = root.find("Model").find("AllTracks")
         settings = root.find("Settings").find("ImageData")
 
+        print(tracks, settings)
         xcalibration = float(settings.get("pixelwidth"))
         ycalibration = float(settings.get("pixelheight"))
         zcalibration = float(settings.get("voxeldepth"))
         tcalibration = int(float(settings.get("timeinterval")))
-
-        x_ls = tracks.findall("Track")
-        print("total tracks", len(x_ls))
-
-        for track in x_ls:
-
-            track_id = int(track.get("TRACK_ID"))
-
-            if track_id in filtered_track_ids:
-                (
-                    tracklets,
-                    DividingTrajectory,
-                    split_points_times,
-                ) = load_tracks(track, track_id, filtered_track_ids)
-
-        return (
-            root,
-            filtered_track_ids,
-            tracks,
-            tracklets,
-            DividingTrajectory,
-            split_points_times,
-        )
 
     def get_label_data(image, debug=DEBUG):
 
@@ -185,6 +164,33 @@ def plugin_wrapper_track():
             TrackAttributeids.append(attributename)
 
         plugin_color_parameters.track_attributes.choices = TrackAttributeids
+        if (
+            len(AllKeys) > 0
+            and len(AllTrackKeys) > 0
+            and len(AllEdgesKeys) > 0
+        ):
+            _refreshStatPlotData()
+
+    def get_edges_dataset(edges_dataset, edges_dataset_index):
+
+        nonlocal AllEdgesKeys, AllEdgesValues
+        AllEdgesKeys = []
+        AllEdgesValues = []
+
+        for k in edges_dataset.keys():
+
+            if k == "TRACK_ID":
+                Track_id = edges_dataset[k].astype("float")
+                indices = np.where(Track_id == 0)
+                maxtrack_id = max(Track_id)
+                condition_indices = edges_dataset_index[indices]
+                Track_id[condition_indices] = maxtrack_id + 1
+                AllEdgesValues.append(Track_id)
+                AllEdgesKeys.append(k)
+            elif k != "LABEL":
+                x = edges_dataset[k].astype("float")
+                AllEdgesKeys.append(k)
+                AllEdgesValues.append(x)
 
     def get_spot_dataset(spot_dataset, spot_dataset_index):
 
@@ -240,6 +246,13 @@ def plugin_wrapper_track():
             Attributeids.append(attributename)
         plugin_color_parameters.spot_attributes.choices = Attributeids
 
+        if (
+            len(AllTrackKeys) > 0
+            and len(AllKeys) > 0
+            and len(AllEdgesKeys) > 0
+        ):
+            _refreshStatPlotData()
+
     def abspath(root, relpath):
         root = Path(root)
         if root.is_dir():
@@ -274,10 +287,15 @@ def plugin_wrapper_track():
     # AllTrackAttr = []
     AllValues = []
     AllKeys = []
+    AllEdgesKeys = []
+    AllEdgesValues = []
+    filtered_track_ids = []
     xcalibration = 1
     ycalibration = 1
     zcalibration = 1
     tcalibration = 1
+    tracks = None
+    settings = None
     track_model_type_choices = [
         ("Dividing", "Dividing"),
         ("Non-Dividing", "Non-Dividing"),
@@ -524,20 +542,19 @@ def plugin_wrapper_track():
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
-        x = get_data(image)
-        print(x.shape)
-        x_seg = get_label_data(seg_image)
-        x_mask = get_label_data(mask_image)
-        print(x_seg.path, x_mask.path)
+        axes = ()
+        if image is not None:
+            x = get_data(image)
+            axes = axes_check_and_normalize(axes, length=x.ndim)
+            print(x.shape)
+        if seg_image is not None:
+            x_seg = get_label_data(seg_image)
+            print(x_seg.shape)
+        if mask_image is not None:
+            x_mask = get_label_data(mask_image)
+            print(x_mask.shape)
 
-        (
-            root,
-            filtered_track_ids,
-            tracks,
-            tracklets,
-            DividingTrajectory,
-            split_points_times,
-        ) = get_xml_data(xml_path)
+        get_xml_data(xml_path)
 
         spot_dataset, spot_dataset_index = get_csv_data(spot_csv)
 
@@ -545,33 +562,12 @@ def plugin_wrapper_track():
 
         edges_dataset, edges_dataset_index = get_csv_data(edges_csv)
 
-        axes = axes_check_and_normalize(axes, length=x.ndim)
         nonlocal worker
-        progress_bar.label = "Starting TrackMate analysis"
 
         track_model = get_model_track(model_selected_track)
         print(track_model)
-        if "T" in axes:
-            t = axes_dict(axes)["T"]
-            n_frames = x.shape[t]
-
-            def progress_thread(current_time):
-
-                progress_bar.label = "Fitting Functions (files)"
-                progress_bar.range = (0, n_frames - 1)
-                progress_bar.value = current_time
-                progress_bar.show()
-
-        if "T" in axes:
-            # determine scale for output axes
-            worker.returned.connect()
-            worker.yielded.connect()
-
-        else:
-            worker = ()
-            worker.returned.connect()
-
-        progress_bar.hide()
+        worker = _refreshStatPlotData()
+        worker.start()
 
     plugin.label_head.value = '<br>Citation <tt><a href="https://doi.org/10.25080/majora-1b6fd038-014" style="color:gray;">NapaTrackMater Scipy</a></tt>'
     plugin.label_head.native.setSizePolicy(
@@ -601,6 +597,16 @@ def plugin_wrapper_track():
     plot_tab.setLayout(_plot_tab_layout)
     _plot_tab_layout.addWidget(plot_tab)
     tabs.addTab(plot_tab, "Plots")
+
+    stat_canvas = FigureCanvas()
+    stat_canvas.figure.set_tight_layout(True)
+    stat_ax = stat_canvas.figure.subplots(2, 2)
+
+    stat_plot_tab = stat_canvas
+    _stat_plot_tab_layout = QVBoxLayout()
+    stat_plot_tab.setLayout(_stat_plot_tab_layout)
+    _stat_plot_tab_layout.addWidget(stat_plot_tab)
+    tabs.addTab(stat_plot_tab, "Temporal Statistics")
 
     table_tab = TrackTable()
     _table_tab_layout = QVBoxLayout()
@@ -634,7 +640,7 @@ def plugin_wrapper_track():
 
         elif action == "add":
             # addedRowList = selection
-            # myTableData = self.getLayerDataFrame(rowList=addedRowList)
+            # myTableData = getLayerDataFrame(rowList=addedRowList)
             myTableData = df
             table_tab.myModel.myAppendRow(myTableData)
             _selectInTable(selection)
@@ -643,19 +649,19 @@ def plugin_wrapper_track():
             # was this
             deleteRowSet = selection
             # logger.info(f'myEventType:{myEventType} deleteRowSet:{deleteRowSet}')
-            # deletedDataFrame = self.myTable2.myModel.myGetData().iloc[list(deleteRowSet)]
+            # deletedDataFrame = myTable2.myModel.myGetData().iloc[list(deleteRowSet)]
 
             _deleteRows(deleteRowSet)
 
-            # self._blockDeleteFromTable = True
-            # self.myTable2.myModel.myDeleteRows(deleteRowList)
-            # self._blockDeleteFromTable = False
+            # _blockDeleteFromTable = True
+            # myTable2.myModel.myDeleteRows(deleteRowList)
+            # _blockDeleteFromTable = False
 
             table_tab.signalDataChanged.emit(action, selection, df)
         elif action == "change":
             moveRowList = list(selection)  # rowList is actually indexes
             myTableData = df
-            # myTableData = self.getLayerDataFrame(rowList=moveRowList)
+            # myTableData = getLayerDataFrame(rowList=moveRowList)
             table_tab.myModel.mySetRow(moveRowList, myTableData)
 
             table_tab.signalDataChanged.emit(action, selection, df)
@@ -688,6 +694,264 @@ def plugin_wrapper_track():
         ax[0, 0].set_xlabel("Plot Name")
 
         canvas.draw()
+
+    @thread_worker()
+    def _refreshStatPlotData():
+
+        Attr = {}
+        for k in range(len(AllKeys)):
+            if AllKeys[k] == "TRACK_ID":
+                trackid_key = k
+            if AllKeys[k] == "ID":
+                spotid_key = k
+            if AllKeys[k] == "FRAME":
+                frameid_key = k
+            if AllKeys[k] == "POSITION_Z":
+                zposid_key = k
+            if AllKeys[k] == "POSITION_Y":
+                yposid_key = k
+            if AllKeys[k] == "POSITION_X":
+                xposid_key = k
+
+        starttime = int(min(AllValues[frameid_key]))
+        endtime = int(max(AllValues[frameid_key]))
+        print("st", starttime)
+        for k in range(len(AllEdgesKeys)):
+            if AllEdgesKeys[k] == "SPOT_SOURCE_ID":
+                sourceid_key = k
+            if AllEdgesKeys[k] == "DIRECTIONAL_CHANGE_RATE":
+                dcr_key = k
+            if AllEdgesKeys[k] == "SPEED":
+                speed_key = k
+            if AllEdgesKeys[k] == "DISPLACEMENT":
+                disp_key = k
+
+        print(AllKeys, AllEdgesKeys)
+        for sourceid, dcrid, speedid, dispid, zposid, yposid, xposid in zip(
+            AllTrackValues[sourceid_key],
+            AllTrackValues[dcr_key],
+            AllTrackValues[speed_key],
+            AllTrackValues[disp_key],
+            AllValues[zposid_key],
+            AllValues[yposid_key],
+            AllValues[xposid_key],
+        ):
+
+            Attr[int(sourceid)] = [
+                dcrid,
+                speedid,
+                dispid,
+                zposid,
+                yposid,
+                xposid,
+            ]
+
+        Timedcr = []
+        Timespeed = []
+        Timedisppos = []
+        Timedispneg = []
+        Timedispposy = []
+        Timedispnegy = []
+
+        Timedispposx = []
+        Timedispnegx = []
+
+        Alldcrmean = []
+        Allspeedmean = []
+        Alldispmeanpos = []
+        Alldispmeanneg = []
+
+        Alldispmeanposx = []
+        Alldispmeanposy = []
+
+        Alldispmeannegx = []
+        Alldispmeannegy = []
+
+        Alldcrvar = []
+        Allspeedvar = []
+        Alldispvarpos = []
+        Alldispvarneg = []
+
+        Alldispvarposy = []
+        Alldispvarnegy = []
+
+        Alldispvarposx = []
+        Alldispvarnegx = []
+
+        for i in tqdm(range(starttime, endtime), total=endtime - starttime):
+
+            Curdcr = []
+            Curspeed = []
+            Curdisp = []
+            Curdispz = []
+            Curdispy = []
+            Curdispx = []
+            for spotid, trackid, frameid in zip(
+                AllValues[spotid_key],
+                AllValues[trackid_key],
+                AllValues[frameid_key],
+            ):
+
+                if i == int(frameid):
+                    dcr, speed, disp, zpos, ypos, xpos = Attr[int(spotid)]
+                    if dcr is not None:
+                        Curdcr.append(dcr)
+
+                    if speed is not None:
+                        Curspeed.append(speed)
+                    if disp is not None:
+                        Curdisp.append(disp)
+                    if zpos is not None:
+                        Curdispz.append(zpos)
+                    if ypos is not None:
+                        Curdispy.append(ypos)
+
+                    if xpos is not None:
+                        Curdispx.append(xpos)
+
+            dispZ = np.diff(Curdispz)
+            dispY = np.diff(Curdispy)
+            dispX = np.diff(Curdispx)
+
+            meanCurdcr = np.mean(Curdcr)
+            varCurdcr = np.var(Curdcr)
+            if meanCurdcr is not None:
+                Alldcrmean.append(meanCurdcr)
+                Alldcrvar.append(varCurdcr)
+                Timedcr.append(i * tcalibration)
+
+            meanCurspeed = np.mean(Curspeed)
+            varCurspeed = np.var(Curspeed)
+            if meanCurspeed is not None:
+
+                Allspeedmean.append(meanCurspeed)
+                Allspeedvar.append(varCurspeed)
+                Timespeed.append(i * tcalibration)
+
+            meanCurdisp = np.mean(dispZ)
+            varCurdisp = np.var(dispZ)
+
+            meanCurdispy = np.mean(dispY)
+            varCurdispy = np.var(dispY)
+
+            meanCurdispx = np.mean(dispX)
+            varCurdispx = np.var(dispX)
+
+            if meanCurdisp is not None:
+                if meanCurdisp >= 0:
+                    Alldispmeanpos.append(meanCurdisp)
+                    Alldispvarpos.append(varCurdisp)
+                    Timedisppos.append(i * tcalibration)
+                else:
+                    Alldispmeanneg.append(meanCurdisp)
+                    Alldispvarneg.append(varCurdisp)
+                    Timedispneg.append(i * tcalibration)
+
+            if meanCurdispy is not None:
+                if meanCurdispy >= 0:
+                    Alldispmeanposy.append(meanCurdispy)
+                    Alldispvarposy.append(varCurdispy)
+                    Timedispposy.append(i * tcalibration)
+                else:
+                    Alldispmeannegy.append(meanCurdispy)
+                    Alldispvarnegy.append(varCurdispy)
+                    Timedispnegy.append(i * tcalibration)
+
+            if meanCurdispx is not None:
+                if meanCurdispx >= 0:
+                    Alldispmeanposx.append(meanCurdispx)
+                    Alldispvarposx.append(varCurdispx)
+                    Timedispposx.append(i * tcalibration)
+                else:
+                    Alldispmeannegx.append(meanCurdispx)
+                    Alldispvarnegx.append(varCurdispx)
+                    Timedispnegx.append(i * tcalibration)
+
+        for i in range(stat_ax.shape[0]):
+            for j in range(stat_ax.shape[1]):
+                stat_ax[i, j].cla()
+        print(Timespeed, Allspeedmean, Timedisppos)
+        stat_ax[0, 0].errorbar(
+            Timespeed,
+            Allspeedmean,
+            Allspeedvar,
+            linestyle="None",
+            marker=".",
+            mfc="green",
+            ecolor="green",
+        )
+        stat_ax[0, 0].set_title("Speed")
+        stat_ax[0, 0].set_xlabel("Time (min)")
+        stat_ax[0, 0].set_ylabel("um/min")
+
+        stat_ax[0, 1].errorbar(
+            Timedisppos,
+            Alldispmeanpos,
+            Alldispvarpos,
+            linestyle="None",
+            marker=".",
+            mfc="green",
+            ecolor="green",
+        )
+        stat_ax[0, 1].errorbar(
+            Timedispneg,
+            Alldispmeanneg,
+            Alldispvarneg,
+            linestyle="None",
+            marker=".",
+            mfc="red",
+            ecolor="red",
+        )
+        stat_ax[0, 1].set_title("Displacement in Z")
+        stat_ax[0, 1].set_xlabel("Time (min)")
+        stat_ax[0, 1].set_ylabel("um")
+
+        stat_ax[1, 0].errorbar(
+            Timedispposy,
+            Alldispmeanposy,
+            Alldispvarposy,
+            linestyle="None",
+            marker=".",
+            mfc="green",
+            ecolor="green",
+        )
+        stat_ax[1, 0].errorbar(
+            Timedispnegy,
+            Alldispmeannegy,
+            Alldispvarnegy,
+            linestyle="None",
+            marker=".",
+            mfc="red",
+            ecolor="red",
+        )
+        stat_ax[1, 0].set_title("Displacement in Y")
+        stat_ax[1, 0].set_xlabel("Time (min)")
+        stat_ax[1, 0].set_ylabel("um")
+
+        stat_ax[1, 1].errorbar(
+            Timedispposx,
+            Alldispmeanposx,
+            Alldispvarposx,
+            linestyle="None",
+            marker=".",
+            mfc="green",
+            ecolor="green",
+        )
+        stat_ax[1, 1].errorbar(
+            Timedispnegx,
+            Alldispmeannegx,
+            Alldispvarnegx,
+            linestyle="None",
+            marker=".",
+            mfc="red",
+            ecolor="red",
+        )
+        stat_ax[1, 1].set_title("Displacement in X")
+        stat_ax[1, 1].set_xlabel("Time (min)")
+        stat_ax[1, 1].set_ylabel("um")
+
+        print("drawing")
+        stat_canvas.draw()
 
     def _refreshTableData(df: pd.DataFrame):
         """Refresh all data in table by setting its data model from provided dataframe.
@@ -733,6 +997,12 @@ def plugin_wrapper_track():
 
         spot_dataset, spot_dataset_index = get_csv_data(path)
         get_spot_dataset(spot_dataset, spot_dataset_index)
+
+    @change_handler(plugin.edges_csv, init=True)
+    def _load_edges_csv(path: str):
+
+        edges_dataset, edges_dataset_index = get_csv_data(path)
+        get_edges_dataset(edges_dataset, edges_dataset_index)
 
     @change_handler(
         plugin_color_parameters.spot_attributes,

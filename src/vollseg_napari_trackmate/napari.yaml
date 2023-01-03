@@ -17,10 +17,6 @@ contributions:
     - id: vollseg-napari-trackmate.widget
       python_name: vollseg_napari_trackmate._widget:plugin_wrapper_track
       title: NapaTrackMater
-  readers:
-    - command: vollseg-napari-trackmate.get_reader
-      accepts_directories: false
-      filename_patterns: ['*.xml']
   writers:
     - command: vollseg-napari-trackmate.write_multiple
       layer_types: ['image*','labels*']
