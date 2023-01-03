@@ -683,6 +683,7 @@ def plugin_wrapper_track():
 
         edges_dataset, edges_dataset_index = get_csv_data(edges_csv)
 
+        print(AllKeys, AllEdgesKeys, AllTrackKeys)
         Attr = {}
         if (
             len(AllKeys) > 0
