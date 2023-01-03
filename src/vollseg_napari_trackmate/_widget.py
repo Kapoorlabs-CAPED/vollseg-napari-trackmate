@@ -410,6 +410,7 @@ def plugin_wrapper_track():
     def _Color_tracks(spot_attribute, track_attribute):
 
         yield 0
+        x_seg = get_label_data(plugin.seg_image)
         posix = track_analysis_spot_keys["posix"]
         posiy = track_analysis_spot_keys["posiy"]
         posiz = track_analysis_spot_keys["posiz"]
@@ -472,7 +473,7 @@ def plugin_wrapper_track():
                 total=len(AllValues[track_id]),
             ):
 
-                if len(plugin.seg_image.value.shape) == 4:
+                if len(x_seg.shape) == 4:
                     centroid = (time, z, y, x)
                 else:
                     centroid = (time, y, x)
@@ -480,7 +481,7 @@ def plugin_wrapper_track():
                 attr = idattr[trackid]
                 locations.append([attr, centroid])
 
-        new_seg_image = Relabel(plugin.seg_image.value.copy(), locations)
+        new_seg_image = Relabel(plugin.x_seg.copy(), locations)
 
         return new_seg_image, attribute
 
