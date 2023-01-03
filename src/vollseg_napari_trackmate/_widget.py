@@ -28,7 +28,7 @@ def plugin_wrapper_track():
     import codecs
     import xml.etree.ElementTree as et
 
-    from csbdeep.utils import axes_check_and_normalize, axes_dict
+    from csbdeep.utils import axes_dict
     from napari.qt.threading import thread_worker
     from napatrackmater.bTrackmate import normalizeZeroOne
     from skimage.util import map_array
@@ -542,10 +542,8 @@ def plugin_wrapper_track():
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
-        axes = ()
         if image is not None:
             x = get_data(image)
-            axes = axes_check_and_normalize(axes, length=x.ndim)
             print(x.shape)
         if seg_image is not None:
             x_seg = get_label_data(seg_image)
@@ -1057,11 +1055,15 @@ def plugin_wrapper_track():
 
         # dimensionality of selected model: 2, 3, or None (unknown)
 
-        axes = None
-
-        axes = "TYX"
-        plugin.recompute_current_button.show()
-
+        ndim = get_data(image).ndim
+        if ndim == 4:
+            axes = "TZYX"
+        if ndim == 3:
+            axes = "TYX"
+        if ndim == 2:
+            axes = "YX"
+        else:
+            raise NotImplementedError()
         if axes == plugin.axes.value:
             # make sure to trigger a changed event, even if value didn't actually change
             plugin.axes.changed(axes)
