@@ -539,19 +539,11 @@ def plugin_wrapper_track():
             x_mask = get_label_data(mask_image)
             print(x_mask.shape)
 
-        get_xml_data(xml_path)
-
-        spot_dataset, spot_dataset_index = get_csv_data(spot_csv)
-
-        track_dataset, track_dataset_index = get_csv_data(track_csv)
-
-        edges_dataset, edges_dataset_index = get_csv_data(edges_csv)
-
         nonlocal worker
 
         track_model = get_model_track(model_selected_track)
         print(track_model)
-        worker = _refreshStatPlotData()
+        worker = _refreshStatPlotData(xml_path, spot_csv, track_csv, edges_csv)
         worker.start()
 
     plugin.label_head.value = '<br>Citation <tt><a href="https://doi.org/10.25080/majora-1b6fd038-014" style="color:gray;">NapaTrackMater Scipy</a></tt>'
@@ -681,7 +673,15 @@ def plugin_wrapper_track():
         canvas.draw()
 
     @thread_worker()
-    def _refreshStatPlotData():
+    def _refreshStatPlotData(xml_path, spot_csv, track_csv, edges_csv):
+
+        get_xml_data(xml_path)
+
+        spot_dataset, spot_dataset_index = get_csv_data(spot_csv)
+
+        track_dataset, track_dataset_index = get_csv_data(track_csv)
+
+        edges_dataset, edges_dataset_index = get_csv_data(edges_csv)
 
         Attr = {}
         if (
