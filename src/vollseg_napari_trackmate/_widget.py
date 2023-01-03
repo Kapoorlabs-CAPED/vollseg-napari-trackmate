@@ -122,7 +122,9 @@ def plugin_wrapper_track():
 
     def get_csv_data(csv):
 
-        dataset = pd.read_csv(csv, delimiter=",")[3:]
+        dataset = pd.read_csv(
+            csv, delimiter=",", encoding="unicode_escape", low_memory=False
+        )[3:]
         dataset_index = dataset.index
 
         return dataset, dataset_index
@@ -142,7 +144,7 @@ def plugin_wrapper_track():
                 Track_id[condition_indices] = maxtrack_id + 1
                 AllTrackValues.append(Track_id)
                 AllTrackKeys.append(k)
-            elif k != "LABEL":
+            elif k != "LABEL" and k != "TRACK_INDEX":
                 x = track_dataset[k].astype("float")
                 minval = min(x)
                 maxval = max(x)
@@ -695,8 +697,9 @@ def plugin_wrapper_track():
             if AllKeys[k] == "POSITION_X":
                 xposid_key = k
 
-        starttime = int(min(AllValues[frameid_key]))
-        endtime = int(max(AllValues[frameid_key]))
+        starttime = int(min(AllEdgesValues[frameid_key]))
+        endtime = int(max(AllEdgesValues[frameid_key]))
+
         for k in range(len(AllEdgesKeys)):
             if AllEdgesKeys[k] == "SPOT_SOURCE_ID":
                 sourceid_key = k
