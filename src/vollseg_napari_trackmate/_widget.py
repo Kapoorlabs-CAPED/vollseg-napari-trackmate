@@ -881,6 +881,7 @@ def plugin_wrapper_track():
                 mfc="green",
                 ecolor="green",
             )
+            print(Timespeed, Allspeedmean, Allspeedvar, tcalibration)
             stat_ax[0, 0].set_title("Speed")
             stat_ax[0, 0].set_xlabel("Time (min)")
             stat_ax[0, 0].set_ylabel("um/min")
