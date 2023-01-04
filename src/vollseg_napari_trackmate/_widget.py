@@ -410,7 +410,7 @@ def plugin_wrapper_track():
     def _Color_tracks(spot_attribute, track_attribute):
 
         yield 0
-        x_seg = get_label_data(plugin.seg_image)
+        x_seg = get_label_data(plugin.seg_image.value)
         posix = track_analysis_spot_keys["posix"]
         posiy = track_analysis_spot_keys["posiy"]
         posiz = track_analysis_spot_keys["posiz"]
@@ -596,7 +596,7 @@ def plugin_wrapper_track():
 
     stat_canvas = FigureCanvas()
     stat_canvas.figure.set_tight_layout(True)
-    stat_ax = stat_canvas.figure.subplots(2, 2)
+    stat_ax = stat_canvas.figure.subplots(2, 4)
 
     stat_plot_tab = stat_canvas
     _stat_plot_tab_layout = QVBoxLayout()
@@ -710,6 +710,10 @@ def plugin_wrapper_track():
         xposid_key = track_analysis_spot_keys["posix"]
         spotid_key = track_analysis_spot_keys["spot_id"]
         trackid_key = track_analysis_spot_keys["track_id"]
+        radius_key = track_analysis_spot_keys["radius"]
+        mean_intensity_ch1 = track_analysis_spot_keys["mean_intensity_ch1"]
+        mean_intensity_ch2 = track_analysis_spot_keys["mean_intensity_ch2"]
+
         sourceid_key = track_analysis_edges_keys["spot_source_id"]
         dcr_key = track_analysis_edges_keys["directional_change_rate"]
         speed_key = track_analysis_edges_keys["speed"]
@@ -719,7 +723,18 @@ def plugin_wrapper_track():
         endtime = int(max(AllValues[frameid_key]))
         print(starttime, endtime, "ss")
 
-        for sourceid, dcrid, speedid, dispid, zposid, yposid, xposid in zip(
+        for (
+            sourceid,
+            dcrid,
+            speedid,
+            dispid,
+            zposid,
+            yposid,
+            xposid,
+            radiusid,
+            meanintensitych1id,
+            meanintensitych2id,
+        ) in zip(
             AllEdgesValues[sourceid_key],
             AllEdgesValues[dcr_key],
             AllEdgesValues[speed_key],
@@ -727,6 +742,9 @@ def plugin_wrapper_track():
             AllValues[zposid_key],
             AllValues[yposid_key],
             AllValues[xposid_key],
+            AllValues[radius_key],
+            AllValues[mean_intensity_ch1],
+            AllValues[mean_intensity_ch2],
         ):
 
             Attr[int(sourceid)] = [
@@ -736,10 +754,16 @@ def plugin_wrapper_track():
                 zposid,
                 yposid,
                 xposid,
+                radiusid,
+                meanintensitych1id,
+                meanintensitych2id,
             ]
 
         Timedcr = []
         Timespeed = []
+        Timeradius = []
+        TimeCurmeaninch2 = []
+        TimeCurmeaninch1 = []
         Timedisppos = []
         Timedispneg = []
 
@@ -751,6 +775,9 @@ def plugin_wrapper_track():
 
         Alldcrmean = []
         Allspeedmean = []
+        Allradiusmean = []
+        AllCurmeaninch1mean = []
+        AllCurmeaninch2mean = []
         Alldispmeanpos = []
         Alldispmeanneg = []
 
@@ -762,6 +789,9 @@ def plugin_wrapper_track():
 
         Alldcrvar = []
         Allspeedvar = []
+        Allradiusvar = []
+        AllCurmeaninch1var = []
+        AllCurmeaninch2var = []
         Alldispvarpos = []
         Alldispvarneg = []
 
@@ -779,6 +809,9 @@ def plugin_wrapper_track():
             Curdispz = []
             Curdispy = []
             Curdispx = []
+            Currpos = []
+            Curmeaninch1 = []
+            Curmeaninch2 = []
             for spotid, trackid, frameid in zip(
                 AllValues[spotid_key],
                 AllValues[trackid_key],
@@ -787,7 +820,17 @@ def plugin_wrapper_track():
 
                 if i == int(frameid):
                     if int(spotid) in Attr:
-                        dcr, speed, disp, zpos, ypos, xpos = Attr[int(spotid)]
+                        (
+                            dcr,
+                            speed,
+                            disp,
+                            zpos,
+                            ypos,
+                            xpos,
+                            rpos,
+                            meaninch1pos,
+                            meaninch2pos,
+                        ) = Attr[int(spotid)]
                         if dcr is not None:
                             Curdcr.append(dcr)
 
@@ -802,6 +845,13 @@ def plugin_wrapper_track():
 
                         if xpos is not None:
                             Curdispx.append(xpos)
+                        if rpos is not None:
+                            Currpos.append(rpos)
+                        if meaninch1pos is not None:
+                            Curmeaninch1.append(meaninch1pos)
+
+                        if meaninch2pos is not None:
+                            Curmeaninch2.append(meaninch2pos)
 
             dispZ = np.diff(Curdispz)
             dispY = np.diff(Curdispy)
@@ -821,6 +871,30 @@ def plugin_wrapper_track():
                 Allspeedmean.append(meanCurspeed)
                 Allspeedvar.append(varCurspeed)
                 Timespeed.append(i * tcalibration)
+
+            meanCurrpos = np.mean(Currpos)
+            varCurrpos = np.var(Currpos)
+            if meanCurrpos is not None:
+
+                Allradiusmean.append(meanCurrpos)
+                Allradiusvar.append(varCurrpos)
+                Timeradius.append(i * tcalibration)
+
+            meanCurmeaninch1 = np.mean(Curmeaninch1)
+            varCurmeaninch1 = np.var(Curmeaninch1)
+            if meanCurmeaninch1 is not None:
+
+                AllCurmeaninch1mean.append(meanCurmeaninch1)
+                AllCurmeaninch1var.append(varCurmeaninch1)
+                TimeCurmeaninch1.append(i * tcalibration)
+
+            meanCurmeaninch2 = np.mean(Curmeaninch2)
+            varCurmeaninch2 = np.var(Curmeaninch2)
+            if meanCurmeaninch2 is not None:
+
+                AllCurmeaninch2mean.append(meanCurmeaninch2)
+                AllCurmeaninch2var.append(varCurmeaninch2)
+                TimeCurmeaninch2.append(i * tcalibration)
 
             meanCurdisp = np.mean(dispZ)
             varCurdisp = np.var(dispZ)
@@ -878,6 +952,19 @@ def plugin_wrapper_track():
         stat_ax[0, 0].set_ylabel("um/min")
 
         stat_ax[0, 1].errorbar(
+            Timeradius,
+            Allradiusmean,
+            Allradiusvar,
+            linestyle="None",
+            marker=".",
+            mfc="green",
+            ecolor="green",
+        )
+        stat_ax[0, 1].set_title("Radius")
+        stat_ax[0, 1].set_xlabel("Time (min)")
+        stat_ax[0, 1].set_ylabel("um")
+
+        stat_ax[1, 0].errorbar(
             Timedisppos,
             Alldispmeanpos,
             Alldispvarpos,
@@ -886,7 +973,7 @@ def plugin_wrapper_track():
             mfc="green",
             ecolor="green",
         )
-        stat_ax[0, 1].errorbar(
+        stat_ax[1, 0].errorbar(
             Timedispneg,
             Alldispmeanneg,
             Alldispvarneg,
@@ -895,11 +982,11 @@ def plugin_wrapper_track():
             mfc="red",
             ecolor="red",
         )
-        stat_ax[0, 1].set_title("Displacement in Z")
-        stat_ax[0, 1].set_xlabel("Time (min)")
-        stat_ax[0, 1].set_ylabel("um")
+        stat_ax[1, 0].set_title("Displacement in Z")
+        stat_ax[1, 0].set_xlabel("Time (min)")
+        stat_ax[1, 0].set_ylabel("um")
 
-        stat_ax[1, 0].errorbar(
+        stat_ax[1, 1].errorbar(
             Timedispposy,
             Alldispmeanposy,
             Alldispvarposy,
@@ -908,7 +995,7 @@ def plugin_wrapper_track():
             mfc="green",
             ecolor="green",
         )
-        stat_ax[1, 0].errorbar(
+        stat_ax[1, 1].errorbar(
             Timedispnegy,
             Alldispmeannegy,
             Alldispvarnegy,
@@ -917,11 +1004,11 @@ def plugin_wrapper_track():
             mfc="red",
             ecolor="red",
         )
-        stat_ax[1, 0].set_title("Displacement in Y")
-        stat_ax[1, 0].set_xlabel("Time (min)")
-        stat_ax[1, 0].set_ylabel("um")
+        stat_ax[1, 1].set_title("Displacement in Y")
+        stat_ax[1, 1].set_xlabel("Time (min)")
+        stat_ax[1, 1].set_ylabel("um")
 
-        stat_ax[1, 1].errorbar(
+        stat_ax[2, 0].errorbar(
             Timedispposx,
             Alldispmeanposx,
             Alldispvarposx,
@@ -930,7 +1017,7 @@ def plugin_wrapper_track():
             mfc="green",
             ecolor="green",
         )
-        stat_ax[1, 1].errorbar(
+        stat_ax[2, 0].errorbar(
             Timedispnegx,
             Alldispmeannegx,
             Alldispvarnegx,
@@ -939,9 +1026,35 @@ def plugin_wrapper_track():
             mfc="red",
             ecolor="red",
         )
-        stat_ax[1, 1].set_title("Displacement in X")
-        stat_ax[1, 1].set_xlabel("Time (min)")
-        stat_ax[1, 1].set_ylabel("um")
+        stat_ax[2, 0].set_title("Displacement in X")
+        stat_ax[2, 0].set_xlabel("Time (min)")
+        stat_ax[2, 0].set_ylabel("um")
+
+        stat_ax[2, 1].errorbar(
+            TimeCurmeaninch1,
+            AllCurmeaninch1mean,
+            AllCurmeaninch1var,
+            linestyle="None",
+            marker=".",
+            mfc="green",
+            ecolor="green",
+        )
+        stat_ax[2, 1].set_title("Intensity ch1")
+        stat_ax[2, 1].set_xlabel("Time (min)")
+        stat_ax[2, 1].set_ylabel("")
+
+        stat_ax[0, 2].errorbar(
+            TimeCurmeaninch2,
+            AllCurmeaninch2mean,
+            AllCurmeaninch2var,
+            linestyle="None",
+            marker=".",
+            mfc="green",
+            ecolor="green",
+        )
+        stat_ax[0, 2].set_title("Intensity ch2")
+        stat_ax[0, 2].set_xlabel("Time (min)")
+        stat_ax[0, 2].set_ylabel("")
 
         stat_canvas.draw()
 
