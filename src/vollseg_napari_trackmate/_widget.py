@@ -15,9 +15,6 @@ import pandas as pd
 import seaborn as sns
 from magicgui import magicgui
 from magicgui import widgets as mw
-from matplotlib.backends.backend_qt5agg import (
-    FigureCanvasQTAgg as FigureCanvas,
-)
 from psygnal import Signal
 from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 from tqdm import tqdm
@@ -583,19 +580,12 @@ def plugin_wrapper_track():
     _color_tracks_tab_layout.addWidget(plugin_color_parameters.native)
     tabs.addTab(color_tracks_tab, "Color Tracks")
 
-    canvas = FigureCanvas()
-    canvas.figure.set_tight_layout(True)
-    ax = canvas.figure.subplots(2, 2)
-
-    plot_tab = canvas
-    _plot_tab_layout = QVBoxLayout()
-    plot_tab.setLayout(_plot_tab_layout)
-    _plot_tab_layout.addWidget(plot_tab)
-    tabs.addTab(plot_tab, "Plots")
+    hist_plot_class = TemporalStatistics(tabs)
+    hist_plot_tab = hist_plot_class.stat_plot_tab
+    tabs.addTab(hist_plot_tab, "Histogram Statistics")
 
     stat_plot_class = TemporalStatistics(tabs)
     stat_plot_tab = stat_plot_class.stat_plot_tab
-
     tabs.addTab(stat_plot_tab, "Temporal Statistics")
 
     table_tab = TrackTable()
@@ -669,18 +659,6 @@ def plugin_wrapper_track():
 
     def _deleteRows(rows: Set[int]):
         table_tab.myModel.myDeleteRows(rows)
-
-    def _refreshPlotData(df):
-
-        for i in range(ax.shape[0]):
-            for j in range(ax.shape[1]):
-                ax[i, j].cla()
-
-        sns.violinplot(x="Plot_Name", data=df, ax=ax[0, 0])
-
-        ax[0, 0].set_xlabel("Plot Name")
-
-        canvas.draw()
 
     def _refreshStatPlotData(xml_path, spot_csv, track_csv, edges_csv):
 
@@ -924,6 +902,24 @@ def plugin_wrapper_track():
                     Alldispvarnegx.append(varCurdispx)
                     Timedispnegx.append(i * tcalibration)
 
+        hist_plot_class._repeat_after_plot()
+        hist_ax = hist_plot_class.stat_ax
+        hist_ax.cla()
+        for k in AllTrackValues.keys():
+            if k is not trackid_key:
+                TrackAttr = []
+                for attr, trackid in tqdm(
+                    zip(AllTrackValues[k], AllTrackValues[trackid_key]),
+                    total=len(AllTrackValues[k]),
+                ):
+
+                    TrackAttr.append(float(attr))
+
+                sns.histplot(TrackAttr, kde=True, ax=hist_ax)
+                hist_ax.set_title(str(k))
+                hist_plot_class._repeat_after_plot()
+                hist_ax = hist_plot_class.stat_ax
+
         stat_plot_class._repeat_after_plot()
         stat_ax = stat_plot_class.stat_ax
         stat_ax.cla()
@@ -1049,7 +1045,6 @@ def plugin_wrapper_track():
             return
         TrackModel = pandasModel(df)
         table_tab.mySetModel(TrackModel)
-        _refreshPlotData(df)
 
     def select_model_track(key):
         nonlocal model_selected_track
