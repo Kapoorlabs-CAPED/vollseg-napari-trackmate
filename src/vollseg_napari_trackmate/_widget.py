@@ -596,7 +596,7 @@ def plugin_wrapper_track():
 
     stat_canvas = FigureCanvas()
     stat_canvas.figure.set_tight_layout(True)
-    stat_ax = stat_canvas.figure.subplots(2, 4)
+    stat_ax = stat_canvas.figure.subplots(3, 3)
 
     stat_plot_tab = stat_canvas
     _stat_plot_tab_layout = QVBoxLayout()
@@ -1008,7 +1008,7 @@ def plugin_wrapper_track():
         stat_ax[1, 1].set_xlabel("Time (min)")
         stat_ax[1, 1].set_ylabel("um")
 
-        stat_ax[2, 0].errorbar(
+        stat_ax[1, 2].errorbar(
             Timedispposx,
             Alldispmeanposx,
             Alldispvarposx,
@@ -1017,7 +1017,7 @@ def plugin_wrapper_track():
             mfc="green",
             ecolor="green",
         )
-        stat_ax[2, 0].errorbar(
+        stat_ax[1, 2].errorbar(
             Timedispnegx,
             Alldispmeannegx,
             Alldispvarnegx,
@@ -1026,9 +1026,9 @@ def plugin_wrapper_track():
             mfc="red",
             ecolor="red",
         )
-        stat_ax[2, 0].set_title("Displacement in X")
-        stat_ax[2, 0].set_xlabel("Time (min)")
-        stat_ax[2, 0].set_ylabel("um")
+        stat_ax[1, 2].set_title("Displacement in X")
+        stat_ax[1, 2].set_xlabel("Time (min)")
+        stat_ax[1, 2].set_ylabel("um")
 
         stat_ax[2, 1].errorbar(
             TimeCurmeaninch1,
