@@ -18,8 +18,20 @@ from magicgui import widgets as mw
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
 )
+from matplotlib.backends.backend_qt5agg import (
+    NavigationToolbar2QT as NavigationToolbar,
+)
+from matplotlib.figure import Figure
 from psygnal import Signal
-from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
+from qtpy import QtCore
+from qtpy.QtWidgets import (
+    QHBoxLayout,
+    QScrollArea,
+    QSizePolicy,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 from tqdm import tqdm
 
 
@@ -177,7 +189,6 @@ def plugin_wrapper_track():
             csv, delimiter=",", encoding="unicode_escape", low_memory=False
         )[3:]
         dataset_index = dataset.index
-        print(dataset.head())
         return dataset, dataset_index
 
     def get_track_dataset(track_dataset, track_dataset_index):
@@ -562,8 +573,7 @@ def plugin_wrapper_track():
 
         track_model = get_model_track(model_selected_track)
         print(track_model)
-        worker = _refreshStatPlotData(xml_path, spot_csv, track_csv, edges_csv)
-        worker.start()
+        _refreshStatPlotData(xml_path, spot_csv, track_csv, edges_csv)
 
     plugin.label_head.value = '<br>Citation <tt><a href="https://doi.org/10.25080/majora-1b6fd038-014" style="color:gray;">NapaTrackMater Scipy</a></tt>'
     plugin.label_head.native.setSizePolicy(
@@ -594,14 +604,16 @@ def plugin_wrapper_track():
     _plot_tab_layout.addWidget(plot_tab)
     tabs.addTab(plot_tab, "Plots")
 
-    stat_canvas = FigureCanvas()
-    stat_canvas.figure.set_tight_layout(True)
-    stat_ax = stat_canvas.figure.subplots(3, 3)
+    stat_plot_tab = QWidget()
+    scroll_area = QScrollArea()
+    scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+    scroll_container = QWidget()
+    scroll_area.setWidgetResizable(True)
+    scroll_area.setWidget(scroll_container)
+    scroll_layout = QHBoxLayout(scroll_container)
+    lay = QVBoxLayout(stat_plot_tab)
+    lay.addWidget(scroll_area)
 
-    stat_plot_tab = stat_canvas
-    _stat_plot_tab_layout = QVBoxLayout()
-    stat_plot_tab.setLayout(_stat_plot_tab_layout)
-    _stat_plot_tab_layout.addWidget(stat_plot_tab)
     tabs.addTab(stat_plot_tab, "Temporal Statistics")
 
     table_tab = TrackTable()
@@ -691,7 +703,6 @@ def plugin_wrapper_track():
 
         canvas.draw()
 
-    @thread_worker()
     def _refreshStatPlotData(xml_path, spot_csv, track_csv, edges_csv):
 
         get_xml_data(xml_path)
@@ -934,11 +945,11 @@ def plugin_wrapper_track():
                     Alldispmeannegx.append(meanCurdispx)
                     Alldispvarnegx.append(varCurdispx)
                     Timedispnegx.append(i * tcalibration)
-        for i in range(stat_ax.shape[0]):
-            for j in range(stat_ax.shape[1]):
-                stat_ax[i, j].cla()
 
-        stat_ax[0, 0].errorbar(
+        stat_ax = _repeat_after_plot()
+        stat_ax.cla()
+
+        stat_ax.errorbar(
             Timespeed,
             Allspeedmean,
             Allspeedvar,
@@ -947,11 +958,13 @@ def plugin_wrapper_track():
             mfc="green",
             ecolor="green",
         )
-        stat_ax[0, 0].set_title("Speed")
-        stat_ax[0, 0].set_xlabel("Time (min)")
-        stat_ax[0, 0].set_ylabel("um/min")
+        stat_ax.set_title("Speed")
+        stat_ax.set_xlabel("Time (min)")
+        stat_ax.set_ylabel("um/min")
 
-        stat_ax[0, 1].errorbar(
+        stat_ax = _repeat_after_plot()
+
+        stat_ax.errorbar(
             Timeradius,
             Allradiusmean,
             Allradiusvar,
@@ -960,11 +973,13 @@ def plugin_wrapper_track():
             mfc="green",
             ecolor="green",
         )
-        stat_ax[0, 1].set_title("Radius")
-        stat_ax[0, 1].set_xlabel("Time (min)")
-        stat_ax[0, 1].set_ylabel("um")
+        stat_ax.set_title("Radius")
+        stat_ax.set_xlabel("Time (min)")
+        stat_ax.set_ylabel("um")
 
-        stat_ax[1, 0].errorbar(
+        stat_ax = _repeat_after_plot()
+
+        stat_ax.errorbar(
             Timedisppos,
             Alldispmeanpos,
             Alldispvarpos,
@@ -973,7 +988,7 @@ def plugin_wrapper_track():
             mfc="green",
             ecolor="green",
         )
-        stat_ax[1, 0].errorbar(
+        stat_ax.errorbar(
             Timedispneg,
             Alldispmeanneg,
             Alldispvarneg,
@@ -982,11 +997,13 @@ def plugin_wrapper_track():
             mfc="red",
             ecolor="red",
         )
-        stat_ax[1, 0].set_title("Displacement in Z")
-        stat_ax[1, 0].set_xlabel("Time (min)")
-        stat_ax[1, 0].set_ylabel("um")
+        stat_ax.set_title("Displacement in Z")
+        stat_ax.set_xlabel("Time (min)")
+        stat_ax.set_ylabel("um")
 
-        stat_ax[1, 1].errorbar(
+        stat_ax = _repeat_after_plot()
+
+        stat_ax.errorbar(
             Timedispposy,
             Alldispmeanposy,
             Alldispvarposy,
@@ -995,7 +1012,7 @@ def plugin_wrapper_track():
             mfc="green",
             ecolor="green",
         )
-        stat_ax[1, 1].errorbar(
+        stat_ax.errorbar(
             Timedispnegy,
             Alldispmeannegy,
             Alldispvarnegy,
@@ -1004,11 +1021,13 @@ def plugin_wrapper_track():
             mfc="red",
             ecolor="red",
         )
-        stat_ax[1, 1].set_title("Displacement in Y")
-        stat_ax[1, 1].set_xlabel("Time (min)")
-        stat_ax[1, 1].set_ylabel("um")
+        stat_ax.set_title("Displacement in Y")
+        stat_ax.set_xlabel("Time (min)")
+        stat_ax.set_ylabel("um")
 
-        stat_ax[1, 2].errorbar(
+        stat_ax = _repeat_after_plot()
+
+        stat_ax.errorbar(
             Timedispposx,
             Alldispmeanposx,
             Alldispvarposx,
@@ -1017,7 +1036,7 @@ def plugin_wrapper_track():
             mfc="green",
             ecolor="green",
         )
-        stat_ax[1, 2].errorbar(
+        stat_ax.errorbar(
             Timedispnegx,
             Alldispmeannegx,
             Alldispvarnegx,
@@ -1026,37 +1045,26 @@ def plugin_wrapper_track():
             mfc="red",
             ecolor="red",
         )
-        stat_ax[1, 2].set_title("Displacement in X")
-        stat_ax[1, 2].set_xlabel("Time (min)")
-        stat_ax[1, 2].set_ylabel("um")
+        stat_ax.set_title("Displacement in X")
+        stat_ax.set_xlabel("Time (min)")
+        stat_ax.set_ylabel("um")
 
-        stat_ax[2, 1].errorbar(
-            TimeCurmeaninch1,
-            AllCurmeaninch1mean,
-            AllCurmeaninch1var,
-            linestyle="None",
-            marker=".",
-            mfc="green",
-            ecolor="green",
-        )
-        stat_ax[2, 1].set_title("Intensity ch1")
-        stat_ax[2, 1].set_xlabel("Time (min)")
-        stat_ax[2, 1].set_ylabel("")
+        stat_ax = _repeat_after_plot()
 
-        stat_ax[0, 2].errorbar(
-            TimeCurmeaninch2,
-            AllCurmeaninch2mean,
-            AllCurmeaninch2var,
-            linestyle="None",
-            marker=".",
-            mfc="green",
-            ecolor="green",
-        )
-        stat_ax[0, 2].set_title("Intensity ch2")
-        stat_ax[0, 2].set_xlabel("Time (min)")
-        stat_ax[0, 2].set_ylabel("")
+    def _repeat_after_plot():
 
+        stat_canvas = FigureCanvas(Figure())
+        stat_ax = stat_canvas.figure.add_subplot(111)
+        toolbar = NavigationToolbar(stat_canvas, tabs)
+        container = QWidget()
+        lay = QVBoxLayout(container)
+        lay.addWidget(stat_canvas)
+        lay.addWidget(toolbar)
+        scroll_layout.addWidget(container)
+        container.setMinimumWidth(500)
+        container.setMinimumHeight(500)
         stat_canvas.draw()
+        return stat_ax
 
     def _refreshTableData(df: pd.DataFrame):
         """Refresh all data in table by setting its data model from provided dataframe.
