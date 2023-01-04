@@ -18,20 +18,8 @@ from magicgui import widgets as mw
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
 )
-from matplotlib.backends.backend_qt5agg import (
-    NavigationToolbar2QT as NavigationToolbar,
-)
-from matplotlib.figure import Figure
 from psygnal import Signal
-from qtpy import QtCore
-from qtpy.QtWidgets import (
-    QHBoxLayout,
-    QScrollArea,
-    QSizePolicy,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
-)
+from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 from tqdm import tqdm
 
 
@@ -47,6 +35,7 @@ def plugin_wrapper_track():
 
     from ._data_model import pandasModel
     from ._table_widget import TrackTable
+    from ._temporal_plots import TemporalStatistics
 
     DEBUG = False
     scale = 255 * 255
@@ -604,22 +593,12 @@ def plugin_wrapper_track():
     _plot_tab_layout.addWidget(plot_tab)
     tabs.addTab(plot_tab, "Plots")
 
-    stat_plot_tab = QWidget()
-    scroll_area = QScrollArea()
-    scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-    scroll_container = QWidget()
-    scroll_area.setWidgetResizable(True)
-    scroll_area.setWidget(scroll_container)
-    scroll_layout = QHBoxLayout(scroll_container)
-    lay = QVBoxLayout(stat_plot_tab)
-    lay.addWidget(scroll_area)
+    stat_plot_class = TemporalStatistics(tabs)
+    stat_plot_tab = stat_plot_class.stat_plot_tab
 
     tabs.addTab(stat_plot_tab, "Temporal Statistics")
 
     table_tab = TrackTable()
-    _table_tab_layout = QVBoxLayout()
-    table_tab.setLayout(_table_tab_layout)
-    _table_tab_layout.addWidget(table_tab)
     tabs.addTab(table_tab, "Table")
 
     plugin.native.layout().addWidget(tabs)
@@ -732,7 +711,6 @@ def plugin_wrapper_track():
 
         starttime = int(min(AllValues[frameid_key]))
         endtime = int(max(AllValues[frameid_key]))
-        print(starttime, endtime, "ss")
 
         for (
             sourceid,
@@ -946,7 +924,8 @@ def plugin_wrapper_track():
                     Alldispvarnegx.append(varCurdispx)
                     Timedispnegx.append(i * tcalibration)
 
-        stat_ax = _repeat_after_plot()
+        stat_plot_class._repeat_after_plot()
+        stat_ax = stat_plot_class.stat_ax
         stat_ax.cla()
 
         stat_ax.errorbar(
@@ -962,7 +941,8 @@ def plugin_wrapper_track():
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um/min")
 
-        stat_ax = _repeat_after_plot()
+        stat_plot_class._repeat_after_plot()
+        stat_ax = stat_plot_class.stat_ax
 
         stat_ax.errorbar(
             Timeradius,
@@ -977,7 +957,8 @@ def plugin_wrapper_track():
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um")
 
-        stat_ax = _repeat_after_plot()
+        stat_plot_class._repeat_after_plot()
+        stat_ax = stat_plot_class.stat_ax
 
         stat_ax.errorbar(
             Timedisppos,
@@ -1001,7 +982,8 @@ def plugin_wrapper_track():
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um")
 
-        stat_ax = _repeat_after_plot()
+        stat_plot_class._repeat_after_plot()
+        stat_ax = stat_plot_class.stat_ax
 
         stat_ax.errorbar(
             Timedispposy,
@@ -1025,7 +1007,8 @@ def plugin_wrapper_track():
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um")
 
-        stat_ax = _repeat_after_plot()
+        stat_plot_class._repeat_after_plot()
+        stat_ax = stat_plot_class.stat_ax
 
         stat_ax.errorbar(
             Timedispposx,
@@ -1049,22 +1032,8 @@ def plugin_wrapper_track():
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um")
 
-        stat_ax = _repeat_after_plot()
-
-    def _repeat_after_plot():
-
-        stat_canvas = FigureCanvas(Figure())
-        stat_ax = stat_canvas.figure.add_subplot(111)
-        toolbar = NavigationToolbar(stat_canvas, tabs)
-        container = QWidget()
-        lay = QVBoxLayout(container)
-        lay.addWidget(stat_canvas)
-        lay.addWidget(toolbar)
-        scroll_layout.addWidget(container)
-        container.setMinimumWidth(500)
-        container.setMinimumHeight(500)
-        stat_canvas.draw()
-        return stat_ax
+        stat_plot_class._repeat_after_plot()
+        stat_ax = stat_plot_class.stat_ax
 
     def _refreshTableData(df: pd.DataFrame):
         """Refresh all data in table by setting its data model from provided dataframe.
