@@ -663,6 +663,8 @@ def plugin_wrapper_track():
 
     def _refreshStatPlotData(xml_path, spot_csv, track_csv, edges_csv):
 
+        hist_plot_class._reset_container(hist_plot_class.scroll_layout)
+        stat_plot_class._reset_container(stat_plot_class.scroll_layout)
         get_xml_data(xml_path)
         spot_dataset, spot_dataset_index = get_csv_data(spot_csv)
         track_dataset, track_dataset_index = get_csv_data(track_csv)

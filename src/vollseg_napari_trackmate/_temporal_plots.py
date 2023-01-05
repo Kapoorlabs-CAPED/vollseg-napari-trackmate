@@ -31,6 +31,7 @@ class TemporalStatistics(QWidget):
         self.scroll_layout = QHBoxLayout(self.scroll_container)
         self.lay = QVBoxLayout(self.stat_plot_tab)
         self.lay.addWidget(self.scroll_area)
+        self.container = None
 
     def _repeat_after_plot(self):
 
@@ -45,3 +46,13 @@ class TemporalStatistics(QWidget):
         self.container.setMinimumWidth(self.min_width)
         self.container.setMinimumHeight(self.min_height)
         self.stat_canvas.draw()
+
+    def _reset_container(self, layout):
+        if layout is not None:
+            while layout.count():
+                child = layout.takeAt(0)
+                if child.widget() is not None:
+                    child.widget().deleteLater()
+                elif child.layout() is not None:
+                    self._reset_container(child.layout())
+            self.container = layout
