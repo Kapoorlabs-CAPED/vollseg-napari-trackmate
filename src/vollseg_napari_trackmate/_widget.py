@@ -109,37 +109,32 @@ def plugin_wrapper_track():
 
         print("Relabelling image with chosen trackmate attribute")
         Newseg_image = np.copy(image)
-        for p in tqdm(range(0, Newseg_image.shape[0])):
+        originallabels = []
+        newlabels = []
+        for relabelval, centroid in locations:
 
-            sliceimage = Newseg_image[p, :]
-            originallabels = []
-            newlabels = []
-            for relabelval, centroid in locations:
-                if len(Newseg_image.shape) == 4:
-                    time, z, y, x = centroid
-                else:
-                    time, y, x = centroid
+            if len(Newseg_image.shape) == 4:
+                time, z, y, x = centroid
+            else:
+                time, y, x = centroid
 
-                if p == int(time):
+            if len(Newseg_image.shape) == 4:
+                originallabel = Newseg_image[time, z, y, x]
+            else:
+                originallabel = Newseg_image[time, y, x]
 
-                    if len(Newseg_image.shape) == 4:
-                        originallabel = sliceimage[z, y, x]
-                    else:
-                        originallabel = sliceimage[y, x]
+            if originallabel == 0:
+                relabelval = 0
+            if math.isnan(relabelval):
+                relabelval = -1
+            originallabels.append(int(originallabel))
+            newlabels.append(int(relabelval))
 
-                    if originallabel == 0:
-                        relabelval = 0
-                    if math.isnan(relabelval):
-                        relabelval = -1
-                    originallabels.append(int(originallabel))
-                    newlabels.append(int(relabelval))
+        relabeled = map_array(
+            Newseg_image, np.asarray(originallabels), np.asarray(newlabels)
+        )
 
-            relabeled = map_array(
-                sliceimage, np.asarray(originallabels), np.asarray(newlabels)
-            )
-            Newseg_image[p, :] = relabeled
-
-        return Newseg_image
+        return relabeled
 
     def get_xml_data(xml_path):
 
@@ -447,7 +442,6 @@ def plugin_wrapper_track():
         if track_attribute != TrackAttributeBoxname:
 
             attribute = track_attribute
-            print("TP", spot_attribute, track_attribute)
             idattr = {}
 
             for k in track_analysis_track_keys.keys():
@@ -458,7 +452,6 @@ def plugin_wrapper_track():
                         zip(AllTrackValues[k], AllTrackValues[track_id]),
                         total=len(AllTrackValues[k]),
                     ):
-                        print(attr, trackid)
                         if math.isnan(trackid):
                             continue
                         else:
