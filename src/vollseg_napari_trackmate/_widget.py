@@ -425,7 +425,7 @@ def plugin_wrapper_track():
             for count, k in enumerate(track_analysis_spot_keys.keys()):
                 yield count
                 locations = []
-                if track_analysis_spot_keys[k] == spot_attribute:
+                if k == spot_attribute:
 
                     for attr, time, z, y, x in tqdm(
                         zip(
@@ -452,7 +452,7 @@ def plugin_wrapper_track():
 
             for k in track_analysis_track_keys.keys():
 
-                if track_analysis_track_keys[k] == track_attribute:
+                if k == track_attribute:
 
                     for attr, trackid in tqdm(
                         zip(AllTrackValues[k], AllTrackValues[track_id]),
