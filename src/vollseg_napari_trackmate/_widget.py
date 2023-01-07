@@ -387,9 +387,9 @@ def plugin_wrapper_track():
         if "T" in plugin.axes.value:
             t = axes_dict(plugin.axes.value)["T"]
             if plugin.image.value is not None:
-                n_frames = plugin.image.value.shape[t]
+                n_frames = get_data(plugin.image.value).shape[t]
             else:
-                n_frames = plugin.seg_image.value.shape[t]
+                n_frames = get_label_data(plugin.seg_image.value).shape[t]
 
             def progress_thread(current_time):
 
@@ -436,7 +436,7 @@ def plugin_wrapper_track():
                         ),
                         total=len(AllValues[k]),
                     ):
-                        if len(plugin.seg_image.value.shape) == 4:
+                        if len(x_seg.shape) == 4:
                             centroid = (time, z, y, x)
                         else:
                             centroid = (time, y, x)
