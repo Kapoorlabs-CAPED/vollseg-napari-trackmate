@@ -31,9 +31,9 @@ def plugin_wrapper_track():
     from napatrackmater.Trackmate import temporal_plots_trackmate
     from skimage.util import map_array
 
-    from ._data_model import pandasModel
-    from ._table_widget import TrackTable
-    from ._temporal_plots import TemporalStatistics
+    from vollseg_napari_trackmate._data_model import pandasModel
+    from vollseg_napari_trackmate._table_widget import TrackTable
+    from vollseg_napari_trackmate._temporal_plots import TemporalStatistics
 
     DEBUG = False
     scale = 255 * 255
