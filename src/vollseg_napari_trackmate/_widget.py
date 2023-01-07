@@ -480,8 +480,8 @@ def plugin_wrapper_track():
                 else:
                     centroid = (time, y, x)
 
-                print(attr, centroid)
                 attr = idattr[trackid]
+                print(attr, centroid)
                 locations.append([attr, centroid])
 
         new_seg_image = Relabel(x_seg.copy(), locations)
