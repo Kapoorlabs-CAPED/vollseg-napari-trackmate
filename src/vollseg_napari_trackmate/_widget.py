@@ -420,7 +420,6 @@ def plugin_wrapper_track():
         if spot_attribute != AttributeBoxname:
 
             attribute = spot_attribute
-            print("SP", spot_attribute, track_attribute)
             for count, k in enumerate(track_analysis_spot_keys.keys()):
                 yield count
                 locations = []
@@ -479,7 +478,6 @@ def plugin_wrapper_track():
                     centroid = (time, y, x)
 
                 attr = idattr[trackid]
-                print(attr, centroid)
                 locations.append([attr, centroid])
 
         new_seg_image = Relabel(x_seg.copy(), locations)
