@@ -7,7 +7,7 @@ Made by Kapoorlabs, 2022
 import functools
 import math
 from pathlib import Path
-from typing import List, Set
+from typing import List, Set, Union
 
 import napari
 import numpy as np
@@ -386,7 +386,10 @@ def plugin_wrapper_track():
         worker.returned.connect(return_color_tracks)
         if "T" in plugin.axes.value:
             t = axes_dict(plugin.axes.value)["T"]
-            n_frames = plugin.image.value.shape[t]
+            if plugin.image.value is not None:
+                n_frames = plugin.image.value.shape[t]
+            else:
+                n_frames = plugin.seg_image.value.shape[t]
 
             def progress_thread(current_time):
 
@@ -533,9 +536,9 @@ def plugin_wrapper_track():
     def plugin(
         viewer: napari.Viewer,
         label_head,
-        image: napari.layers.Image,
-        seg_image: napari.layers.Labels,
-        mask_image: napari.layers.Labels,
+        image: Union[napari.layers.Image, None],
+        seg_image: Union[napari.layers.Labels, None],
+        mask_image: Union[napari.layers.Labels, None],
         xml_path,
         track_csv,
         spot_csv,
