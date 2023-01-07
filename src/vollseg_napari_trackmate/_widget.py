@@ -402,9 +402,8 @@ def plugin_wrapper_track():
 
         if not isinstance(pred, int):
             new_seg_image, attribute = pred
-            name_remove = attribute
             for layer in list(plugin.viewer.value.layers):
-                if any(name in layer.name for name in name_remove):
+                if attribute in layer.name:
                     plugin.viewer.value.layers.remove(layer)
             plugin.viewer.value.add_labels(new_seg_image, name=attribute)
 
