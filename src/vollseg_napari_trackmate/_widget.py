@@ -400,8 +400,13 @@ def plugin_wrapper_track():
 
     def return_color_tracks(pred):
 
-        new_seg_image, attribute = pred
-        plugin.viewer.value.add_labels(new_seg_image, name=attribute)
+        if not isinstance(pred, int):
+            new_seg_image, attribute = pred
+            name_remove = attribute
+            for layer in list(plugin.viewer.value.layers):
+                if any(name in layer.name for name in name_remove):
+                    plugin.viewer.value.layers.remove(layer)
+            plugin.viewer.value.add_labels(new_seg_image, name=attribute)
 
     @thread_worker(connect={"returned": return_color_tracks})
     def _Color_tracks(spot_attribute, track_attribute):
