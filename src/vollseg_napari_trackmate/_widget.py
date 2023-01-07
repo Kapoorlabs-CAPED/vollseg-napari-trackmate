@@ -189,10 +189,10 @@ def plugin_wrapper_track():
         condition_indices = track_dataset_index[indices]
         Tid[condition_indices] = maxtrack_id + 1
         AllTrackValues[track_id] = Tid
-        for k in track_analysis_track_keys.keys():
+        for (k, v) in track_analysis_track_keys.items():
 
             if k != track_id:
-                x = track_dataset[k].astype("float")
+                x = track_dataset[v].astype("float")
                 minval = min(x)
                 maxval = max(x)
 
