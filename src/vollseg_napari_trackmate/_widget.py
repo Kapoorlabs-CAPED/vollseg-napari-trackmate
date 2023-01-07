@@ -421,7 +421,7 @@ def plugin_wrapper_track():
         if spot_attribute is not None:
 
             attribute = spot_attribute
-
+            print("SP", spot_attribute, track_attribute)
             for count, k in enumerate(track_analysis_spot_keys.keys()):
                 yield count
                 locations = []
@@ -447,6 +447,7 @@ def plugin_wrapper_track():
         if track_attribute is not None:
 
             attribute = track_attribute
+            print("TP", spot_attribute, track_attribute)
             idattr = {}
 
             for k in track_analysis_track_keys.keys():
