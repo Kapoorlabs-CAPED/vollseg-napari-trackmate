@@ -418,7 +418,7 @@ def plugin_wrapper_track():
         posiz = track_analysis_spot_keys["posiz"]
         frame = track_analysis_spot_keys["frame"]
         track_id = track_analysis_spot_keys["track_id"]
-        if spot_attribute is not None:
+        if spot_attribute is not AttributeBoxname:
 
             attribute = spot_attribute
             print("SP", spot_attribute, track_attribute)
@@ -444,7 +444,7 @@ def plugin_wrapper_track():
 
                         locations.append([attr, centroid])
 
-        if track_attribute is not None:
+        if track_attribute is not TrackAttributeBoxname:
 
             attribute = track_attribute
             print("TP", spot_attribute, track_attribute)
@@ -458,7 +458,7 @@ def plugin_wrapper_track():
                         zip(AllTrackValues[k], AllTrackValues[track_id]),
                         total=len(AllTrackValues[k]),
                     ):
-
+                        print(attr, trackid)
                         if math.isnan(trackid):
                             continue
                         else:
