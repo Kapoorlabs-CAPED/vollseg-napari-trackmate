@@ -403,8 +403,9 @@ def plugin_wrapper_track():
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
-    def return_color_tracks(new_seg_image, attribute):
+    def return_color_tracks(pred):
 
+        new_seg_image, attribute = pred
         plugin.viewer.value.add_labels(new_seg_image, name=attribute)
 
     @thread_worker(connect={"returned": return_color_tracks})
@@ -484,7 +485,9 @@ def plugin_wrapper_track():
 
         new_seg_image = Relabel(plugin.x_seg.copy(), locations)
 
-        return new_seg_image, attribute
+        pred = new_seg_image, attribute
+
+        return pred
 
     @magicgui(
         label_head=dict(
