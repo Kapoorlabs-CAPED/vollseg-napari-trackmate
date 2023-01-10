@@ -22,13 +22,11 @@ from tqdm import tqdm
 
 def plugin_wrapper_track():
 
-    import codecs
-    import xml.etree.ElementTree as et
+    pass
 
     from csbdeep.utils import axes_dict
     from napari.qt.threading import thread_worker
-    from napatrackmater.bTrackmate import normalizeZeroOne
-    from napatrackmater.Trackmate import temporal_plots_trackmate
+    from napatrackmater.Trackmate import TrackMate
     from skimage.util import map_array
 
     from vollseg_napari_trackmate._data_model import pandasModel
@@ -36,61 +34,9 @@ def plugin_wrapper_track():
     from vollseg_napari_trackmate._temporal_plots import TemporalStatistics
 
     DEBUG = False
-    scale = 255 * 255
     # Boxname = "TrackBox"
     AttributeBoxname = "AttributeIDBox"
     TrackAttributeBoxname = "TrackAttributeIDBox"
-
-    track_analysis_spot_keys = dict(
-        spot_id="ID",
-        track_id="TRACK_ID",
-        quality="QUALITY",
-        posix="POSITION_X",
-        posiy="POSITION_Y",
-        posiz="POSITION_Z",
-        posit="POSITION_T",
-        frame="FRAME",
-        radius="RADIUS",
-        mean_intensity_ch1="MEAN_INTENSITY_CH1",
-        total_intensity_ch1="TOTAL_INTENSITY_CH1",
-        mean_intensity_ch2="MEAN_INTENSITY_CH2",
-        total_intensity_ch2="TOTAL_INTENSITY_CH2",
-    )
-    track_analysis_edges_keys = dict(
-        spot_source_id="SPOT_SOURCE_ID",
-        spot_target_id="SPOT_TARGET_ID",
-        directional_change_rate="DIRECTIONAL_CHANGE_RATE",
-        speed="SPEED",
-        displacement="DISPLACEMENT",
-        edge_time="EDGE_TIME",
-        edge_x_location="EDGE_X_LOCATION",
-        edge_y_location="EDGE_Y_LOCATION",
-        edge_z_location="EDGE_Z_LOCATION",
-    )
-    track_analysis_track_keys = dict(
-        number_spots="NUMBER_SPOTS",
-        number_gaps="NUMBER_GAPS",
-        number_splits="NUMBER_SPLITS",
-        number_merges="NUMBER_MERGES",
-        track_duration="TRACK_DURATION",
-        track_start="TRACK_START",
-        track_stop="TRACK_STOP",
-        track_displacement="TRACK_DISPLACEMENT",
-        track_x_location="TRACK_X_LOCATION",
-        track_y_location="TRACK_Y_LOCATION",
-        track_z_location="TRACK_Z_LOCATION",
-        track_mean_speed="TRACK_MEAN_SPEED",
-        track_max_speed="TRACK_MAX_SPEED",
-        track_min_speed="TRACK_MIN_SPEED",
-        track_median_speed="TRACK_MEDIAN_SPEED",
-        track_std_speed="TRACK_STD_SPEED",
-        track_mean_quality="TRACK_MEAN_QUALITY",
-        total_track_distance="TOTAL_DISTANCE_TRAVELED",
-        max_track_distance="MAX_DISTANCE_TRAVELED",
-        mean_straight_line_speed="MEAN_STRAIGHT_LINE_SPEED",
-        linearity_forward_progression="LINEARITY_OF_FORWARD_PROGRESSION",
-        mean_directional_change_rate="MEAN_DIRECTIONAL_CHANGE_RATE",
-    )
 
     def _raise(e):
         if isinstance(e, BaseException):
@@ -136,141 +82,12 @@ def plugin_wrapper_track():
 
         return relabeled
 
-    def get_xml_data(xml_path):
-
-        root = et.fromstring(codecs.open(xml_path, "r", "utf8").read())
-
-        nonlocal xcalibration, ycalibration, zcalibration, tcalibration, filtered_track_ids, tracks, settings
-
-        filtered_track_ids = [
-            int(track.get("TRACK_ID"))
-            for track in root.find("Model")
-            .find("FilteredTracks")
-            .findall("TrackID")
-        ]
-
-        # Extract the tracks from xml
-        tracks = root.find("Model").find("AllTracks")
-        settings = root.find("Settings").find("ImageData")
-
-        xcalibration = float(settings.get("pixelwidth"))
-        ycalibration = float(settings.get("pixelheight"))
-        zcalibration = float(settings.get("voxeldepth"))
-        tcalibration = int(float(settings.get("timeinterval")))
-
     def get_label_data(image, debug=DEBUG):
 
         image = image.data[0] if image.multiscale else image.data
         if debug:
             print("Label image loaded")
         return np.asarray(image).astype(np.uint16)
-
-    def get_csv_data(csv):
-
-        dataset = pd.read_csv(
-            csv, delimiter=",", encoding="unicode_escape", low_memory=False
-        )[3:]
-        dataset_index = dataset.index
-        return dataset, dataset_index
-
-    def get_track_dataset(track_dataset, track_dataset_index):
-
-        nonlocal AllTrackValues
-        AllTrackValues = {}
-        track_id = track_analysis_spot_keys["track_id"]
-        Tid = track_dataset[track_id].astype("float")
-        indices = np.where(Tid == 0)
-        maxtrack_id = max(Tid)
-        condition_indices = track_dataset_index[indices]
-        Tid[condition_indices] = maxtrack_id + 1
-        AllTrackValues[track_id] = Tid
-        for (k, v) in track_analysis_track_keys.items():
-
-            if k != track_id:
-                x = track_dataset[v].astype("float")
-                minval = min(x)
-                maxval = max(x)
-
-                if minval > 0 and maxval <= 1:
-
-                    x = normalizeZeroOne(x, scale=scale)
-
-                AllTrackValues[k] = x
-
-        TrackAttributeids = []
-        TrackAttributeids.append(TrackAttributeBoxname)
-        for attributename in track_analysis_track_keys.keys():
-            TrackAttributeids.append(attributename)
-
-        plugin_color_parameters.track_attributes.choices = TrackAttributeids
-
-    def get_edges_dataset(edges_dataset, edges_dataset_index):
-
-        nonlocal AllEdgesValues
-        AllEdgesValues = {}
-        track_id = track_analysis_spot_keys["track_id"]
-        Tid = edges_dataset[track_id].astype("float")
-        indices = np.where(Tid == 0)
-        maxtrack_id = max(Tid)
-        condition_indices = edges_dataset_index[indices]
-        Tid[condition_indices] = maxtrack_id + 1
-        AllEdgesValues[track_id] = Tid
-
-        for k in track_analysis_edges_keys.values():
-
-            if k != track_id:
-                x = edges_dataset[k].astype("float")
-
-                AllEdgesValues[k] = x
-
-    def get_spot_dataset(spot_dataset, spot_dataset_index):
-
-        nonlocal AllValues
-        AllValues = {}
-        track_id = track_analysis_spot_keys["track_id"]
-        posix = track_analysis_spot_keys["posix"]
-        posiy = track_analysis_spot_keys["posiy"]
-        posiz = track_analysis_spot_keys["posiz"]
-        frame = track_analysis_spot_keys["frame"]
-        Tid = spot_dataset[track_id].astype("float")
-        indices = np.where(Tid == 0)
-        maxtrack_id = max(Tid)
-        condition_indices = spot_dataset_index[indices]
-        Tid[condition_indices] = maxtrack_id + 1
-
-        AllValues[track_id] = Tid
-        LocationX = (
-            spot_dataset[posix].astype("float") / xcalibration
-        ).astype("int")
-        LocationY = (
-            spot_dataset[posiy].astype("float") / ycalibration
-        ).astype("int")
-        LocationZ = (
-            spot_dataset[posiz].astype("float") / zcalibration
-        ).astype("int")
-        LocationT = (spot_dataset[frame].astype("float")).astype("int")
-        AllValues[posix] = LocationX
-        AllValues[posiy] = LocationY
-        AllValues[posiz] = LocationZ
-        AllValues[frame] = LocationT
-
-        for k in track_analysis_spot_keys.values():
-
-            if (
-                k != track_id
-                and k != posix
-                and k != posiy
-                and k != posiz
-                and k != frame
-            ):
-
-                AllValues[k] = spot_dataset[k].astype("float")
-
-        Attributeids = []
-        Attributeids.append(AttributeBoxname)
-        for attributename in track_analysis_spot_keys.keys():
-            Attributeids.append(attributename)
-        plugin_color_parameters.spot_attributes.choices = Attributeids
 
     def abspath(root, relpath):
         root = Path(root)
@@ -299,19 +116,7 @@ def plugin_wrapper_track():
         return decorator_change_handler
 
     worker = None
-
-    AllTrackValues = {}
-    # AllTrackID = []
-    # AllTrackAttr = []
-    AllValues = {}
-    AllEdgesValues = {}
-    filtered_track_ids = []
-    xcalibration = 1
-    ycalibration = 1
-    zcalibration = 1
-    tcalibration = 1
-    tracks = None
-    settings = None
+    _trackmate_objects = None
     track_model_type_choices = [
         ("Dividing", "Dividing"),
         ("Non-Dividing", "Non-Dividing"),
@@ -369,14 +174,6 @@ def plugin_wrapper_track():
 
         nonlocal worker
 
-        if plugin.track_csv.value is not None:
-
-            _load_track_csv(plugin.track_csv.value)
-
-        if plugin.spot_csv.value is not None:
-
-            _load_spot_csv(plugin.spot_csv.value)
-
         worker = _Color_tracks(spot_attributes, track_attributes)
         worker.returned.connect(return_color_tracks)
         if "T" in plugin.axes.value:
@@ -412,28 +209,30 @@ def plugin_wrapper_track():
 
         yield 0
         x_seg = get_label_data(plugin.seg_image.value)
-        posix = track_analysis_spot_keys["posix"]
-        posiy = track_analysis_spot_keys["posiy"]
-        posiz = track_analysis_spot_keys["posiz"]
-        frame = track_analysis_spot_keys["frame"]
-        track_id = track_analysis_spot_keys["track_id"]
+        posix = _trackmate_objects.track_analysis_spot_keys["posix"]
+        posiy = _trackmate_objects.track_analysis_spot_keys["posiy"]
+        posiz = _trackmate_objects.track_analysis_spot_keys["posiz"]
+        frame = _trackmate_objects.track_analysis_spot_keys["frame"]
+        track_id = _trackmate_objects.track_analysis_spot_keys["track_id"]
         if spot_attribute != AttributeBoxname:
 
             attribute = spot_attribute
-            for count, k in enumerate(track_analysis_spot_keys.keys()):
+            for count, k in enumerate(
+                _trackmate_objects.track_analysis_spot_keys.keys()
+            ):
                 yield count
                 locations = []
                 if k == spot_attribute:
 
                     for attr, time, z, y, x in tqdm(
                         zip(
-                            AllValues[k],
-                            AllValues[frame],
-                            AllValues[posiz],
-                            AllValues[posiy],
-                            AllValues[posix],
+                            _trackmate_objects.AllValues[k],
+                            _trackmate_objects.AllValues[frame],
+                            _trackmate_objects.AllValues[posiz],
+                            _trackmate_objects.AllValues[posiy],
+                            _trackmate_objects.AllValues[posix],
                         ),
-                        total=len(AllValues[k]),
+                        total=len(_trackmate_objects.AllValues[k]),
                     ):
                         if len(x_seg.shape) == 4:
                             centroid = (time, z, y, x)
@@ -447,13 +246,16 @@ def plugin_wrapper_track():
             attribute = track_attribute
             idattr = {}
 
-            for k in track_analysis_track_keys.keys():
+            for k in _trackmate_objects.track_analysis_track_keys.keys():
 
                 if k == track_attribute:
 
                     for attr, trackid in tqdm(
-                        zip(AllTrackValues[k], AllTrackValues[track_id]),
-                        total=len(AllTrackValues[k]),
+                        zip(
+                            _trackmate_objects.AllTrackValues[k],
+                            _trackmate_objects.AllTrackValues[track_id],
+                        ),
+                        total=len(_trackmate_objects.AllTrackValues[k]),
                     ):
                         if math.isnan(trackid):
                             continue
@@ -463,13 +265,13 @@ def plugin_wrapper_track():
             locations = []
             for trackid, time, z, y, x in tqdm(
                 zip(
-                    AllValues[track_id],
-                    AllValues[frame],
-                    AllValues[posiz],
-                    AllValues[posiy],
-                    AllValues[posix],
+                    _trackmate_objects.AllValues[track_id],
+                    _trackmate_objects.AllValues[frame],
+                    _trackmate_objects.AllValues[posiz],
+                    _trackmate_objects.AllValues[posiy],
+                    _trackmate_objects.AllValues[posix],
                 ),
-                total=len(AllValues[track_id]),
+                total=len(_trackmate_objects.AllValues[track_id]),
             ):
 
                 if len(x_seg.shape) == 4:
@@ -501,13 +303,13 @@ def plugin_wrapper_track():
             label="TrackMate xml",
             mode="r",
         ),
-        track_csv=dict(
+        track_csv_path=dict(
             widget_type="FileEdit", visible=True, label="Track csv", mode="r"
         ),
-        spot_csv=dict(
+        spot_csv_path=dict(
             widget_type="FileEdit", visible=True, label="Spot csv", mode="r"
         ),
-        edges_csv=dict(
+        edges_csv_path=dict(
             widget_type="FileEdit",
             visible=True,
             label="Edges/Links csv",
@@ -540,18 +342,22 @@ def plugin_wrapper_track():
         seg_image: Union[napari.layers.Labels, None],
         mask_image: Union[napari.layers.Labels, None],
         xml_path,
-        track_csv,
-        spot_csv,
-        edges_csv,
+        track_csv_path,
+        spot_csv_path,
+        edges_csv_path,
         axes,
         track_model_type,
         defaults_model_button,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
+        x = None
+        x_seg = None
+        x_mask = None
         if image is not None:
             x = get_data(image)
             print(x.shape)
+
         if seg_image is not None:
             x_seg = get_label_data(seg_image)
             print(x_seg.shape)
@@ -559,11 +365,28 @@ def plugin_wrapper_track():
             x_mask = get_label_data(mask_image)
             print(x_mask.shape)
 
-        nonlocal worker
+        nonlocal worker, _trackmate_objects
 
         track_model = get_model_track(model_selected_track)
         print(track_model)
-        _refreshStatPlotData(xml_path, spot_csv, track_csv, edges_csv)
+
+        _trackmate_objects = TrackMate(
+            xml_path,
+            spot_csv_path,
+            track_csv_path,
+            edges_csv_path,
+            AttributeBoxname,
+            TrackAttributeBoxname,
+            x,
+            x_mask,
+        )
+        _refreshStatPlotData(_trackmate_objects)
+        plugin_color_parameters.track_attributes.choices = (
+            _trackmate_objects.TrackAttributeids
+        )
+        plugin_color_parameters.spot_attributes.choices = (
+            _trackmate_objects.Attributeids
+        )
 
     plugin.label_head.value = '<br>Citation <tt><a href="https://doi.org/10.25080/majora-1b6fd038-014" style="color:gray;">NapaTrackMater Scipy</a></tt>'
     plugin.label_head.native.setSizePolicy(
@@ -664,52 +487,21 @@ def plugin_wrapper_track():
     def _deleteRows(rows: Set[int]):
         table_tab.myModel.myDeleteRows(rows)
 
-    def _refreshStatPlotData(xml_path, spot_csv, track_csv, edges_csv):
+    def _refreshStatPlotData(_trackmate_objects):
 
         hist_plot_class._reset_container(hist_plot_class.scroll_layout)
         stat_plot_class._reset_container(stat_plot_class.scroll_layout)
-        get_xml_data(xml_path)
-        spot_dataset, spot_dataset_index = get_csv_data(spot_csv)
-        track_dataset, track_dataset_index = get_csv_data(track_csv)
-        edges_dataset, edges_dataset_index = get_csv_data(edges_csv)
-        get_track_dataset(track_dataset, track_dataset_index)
-        get_spot_dataset(spot_dataset, spot_dataset_index)
-        get_edges_dataset(edges_dataset, edges_dataset_index)
 
-        (
-            Timespeed,
-            Allspeedmean,
-            Allspeedvar,
-            Timeradius,
-            Allradiusmean,
-            Allradiusvar,
-            Timedisppos,
-            Alldispmeanpos,
-            Alldispvarpos,
-            Timedispneg,
-            Alldispmeanneg,
-            Alldispvarneg,
-            Timedispposy,
-            Alldispmeanposy,
-            Alldispvarposy,
-            Timedispnegy,
-            Alldispmeannegy,
-            Alldispvarnegy,
-            Timedispposx,
-            Alldispmeanposx,
-            Alldispvarposx,
-            Timedispnegx,
-            Alldispmeannegx,
-            Alldispvarnegx,
-        ) = temporal_plots_trackmate(AllValues, AllEdgesValues, tcalibration)
-
-        trackid_key = track_analysis_spot_keys["track_id"]
-        for k in AllTrackValues.keys():
+        trackid_key = _trackmate_objects.track_analysis_spot_keys["track_id"]
+        for k in _trackmate_objects.AllTrackValues.keys():
             if k is not trackid_key:
                 TrackAttr = []
                 for attr, trackid in tqdm(
-                    zip(AllTrackValues[k], AllTrackValues[trackid_key]),
-                    total=len(AllTrackValues[k]),
+                    zip(
+                        _trackmate_objects.AllTrackValues[k],
+                        _trackmate_objects.AllTrackValues[trackid_key],
+                    ),
+                    total=len(_trackmate_objects.AllTrackValues[k]),
                 ):
 
                     TrackAttr.append(float(attr))
@@ -724,9 +516,9 @@ def plugin_wrapper_track():
         stat_ax.cla()
 
         stat_ax.errorbar(
-            Timespeed,
-            Allspeedmean,
-            Allspeedvar,
+            _trackmate_objects.Time,
+            _trackmate_objects.Allspeedmean,
+            _trackmate_objects.Allspeedvar,
             linestyle="None",
             marker=".",
             mfc="green",
@@ -740,9 +532,9 @@ def plugin_wrapper_track():
         stat_ax = stat_plot_class.stat_ax
 
         stat_ax.errorbar(
-            Timeradius,
-            Allradiusmean,
-            Allradiusvar,
+            _trackmate_objects.Time,
+            _trackmate_objects.Allradiusmean,
+            _trackmate_objects.Allradiusvar,
             linestyle="None",
             marker=".",
             mfc="green",
@@ -756,23 +548,15 @@ def plugin_wrapper_track():
         stat_ax = stat_plot_class.stat_ax
 
         stat_ax.errorbar(
-            Timedisppos,
-            Alldispmeanpos,
-            Alldispvarpos,
+            _trackmate_objects.Time,
+            _trackmate_objects.Alldispmeanpos,
+            _trackmate_objects.Alldispvarpos,
             linestyle="None",
             marker=".",
             mfc="green",
             ecolor="green",
         )
-        stat_ax.errorbar(
-            Timedispneg,
-            Alldispmeanneg,
-            Alldispvarneg,
-            linestyle="None",
-            marker=".",
-            mfc="red",
-            ecolor="red",
-        )
+
         stat_ax.set_title("Displacement in Z")
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um")
@@ -781,23 +565,15 @@ def plugin_wrapper_track():
         stat_ax = stat_plot_class.stat_ax
 
         stat_ax.errorbar(
-            Timedispposy,
-            Alldispmeanposy,
-            Alldispvarposy,
+            _trackmate_objects.Time,
+            _trackmate_objects.Alldispmeanposy,
+            _trackmate_objects.Alldispvarposy,
             linestyle="None",
             marker=".",
             mfc="green",
             ecolor="green",
         )
-        stat_ax.errorbar(
-            Timedispnegy,
-            Alldispmeannegy,
-            Alldispvarnegy,
-            linestyle="None",
-            marker=".",
-            mfc="red",
-            ecolor="red",
-        )
+
         stat_ax.set_title("Displacement in Y")
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um")
@@ -806,23 +582,15 @@ def plugin_wrapper_track():
         stat_ax = stat_plot_class.stat_ax
 
         stat_ax.errorbar(
-            Timedispposx,
-            Alldispmeanposx,
-            Alldispvarposx,
+            _trackmate_objects.Time,
+            _trackmate_objects.Alldispmeanposx,
+            _trackmate_objects.Alldispvarposx,
             linestyle="None",
             marker=".",
             mfc="green",
             ecolor="green",
         )
-        stat_ax.errorbar(
-            Timedispnegx,
-            Alldispmeannegx,
-            Alldispvarnegx,
-            linestyle="None",
-            marker=".",
-            mfc="red",
-            ecolor="red",
-        )
+
         stat_ax.set_title("Displacement in X")
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um")
@@ -858,24 +626,6 @@ def plugin_wrapper_track():
 
     table_tab.signalDataChanged.connect(_slot_data_change)
     table_tab.signalSelectionChanged.connect(_slot_selection_changed)
-
-    @change_handler(plugin.track_csv, init=False)
-    def _load_track_csv(path: str):
-
-        track_dataset, track_dataset_index = get_csv_data(path)
-        get_track_dataset(track_dataset, track_dataset_index)
-
-    @change_handler(plugin.spot_csv, init=False)
-    def _load_spot_csv(path: str):
-
-        spot_dataset, spot_dataset_index = get_csv_data(path)
-        get_spot_dataset(spot_dataset, spot_dataset_index)
-
-    @change_handler(plugin.edges_csv, init=False)
-    def _load_edges_csv(path: str):
-
-        edges_dataset, edges_dataset_index = get_csv_data(path)
-        get_edges_dataset(edges_dataset, edges_dataset_index)
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
