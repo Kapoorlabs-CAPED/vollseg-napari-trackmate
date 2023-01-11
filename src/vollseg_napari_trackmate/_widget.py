@@ -26,7 +26,7 @@ def plugin_wrapper_track():
 
     from csbdeep.utils import axes_dict
     from napari.qt.threading import thread_worker
-    from napatrackmater.Trackmate import TrackMate
+    from napatrackmater.Trackmate import TrackMate, all_tracks
     from skimage.util import map_array
 
     from vollseg_napari_trackmate._data_model import pandasModel
@@ -117,6 +117,7 @@ def plugin_wrapper_track():
         return decorator_change_handler
 
     worker = None
+    _track_ids_analyze = None
     _trackmate_objects = None
     track_model_type_choices = [
         ("Dividing", "Dividing"),
@@ -125,12 +126,7 @@ def plugin_wrapper_track():
     ]
 
     DEFAULTS_MODEL = dict(axes="TZYX", track_model_type="Both")
-    model_selected_track = DEFAULTS_MODEL["track_model_type"]
     DEFAULTS_FUNC_PARAMETERS = dict()
-
-    def get_model_track(track_model_type):
-
-        return track_model_type
 
     @magicgui(
         defaults_params_button=dict(
@@ -196,6 +192,53 @@ def plugin_wrapper_track():
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
+    def track_main(TrackLayerTracklets):
+        _refreshTrackData(TrackLayerTracklets)
+
+    def _refreshTrackData(TrackLayerTracklets):
+
+        for (trackid, tracklets) in TrackLayerTracklets.items():
+
+            tracklets = tracklets[1]
+            print(tracklets)
+            properties = {
+                "time": np.asarray(tracklets)[:, 0],
+            }
+            if len(tracklets) > 0:
+                for layer in list(plugin.viewer.value.layers):
+                    if str(trackid) == layer.name:
+                        plugin.viewer.value.layers.remove(layer)
+                plugin.viewer.value.add_tracks(
+                    np.asarray(tracklets),
+                    name=str(trackid),
+                    properties=properties,
+                )
+
+    @thread_worker(connect={"returned": track_main})
+    def _Draw_tracks(track_id):
+        nonlocal _trackmate_objects, _track_ids_analyze
+        TrackLayerTracklets = {}
+        if track_id not in TrackidBox:
+            _track_ids_analyze = [int(track_id)]
+        for i in range(0, len(_trackmate_objects.all_track_properties)):
+            (
+                trackid,
+                alltracklets,
+                DividingTrajectory,
+            ) = _trackmate_objects.all_track_properties[i]
+            if trackid in _track_ids_analyze:
+                TrackLayerTracklets = all_tracks(
+                    TrackLayerTracklets,
+                    int(trackid),
+                    alltracklets,
+                    _trackmate_objects.xcalibration,
+                    _trackmate_objects.ycalibration,
+                    _trackmate_objects.zcalibration,
+                    _trackmate_objects.tcalibration,
+                )
+
+        return TrackLayerTracklets
+
     def return_color_tracks(pred):
 
         if not isinstance(pred, int):
@@ -207,7 +250,7 @@ def plugin_wrapper_track():
 
     @thread_worker(connect={"returned": return_color_tracks})
     def _Color_tracks(spot_attribute, track_attribute):
-
+        nonlocal _trackmate_objects
         yield 0
         x_seg = get_label_data(plugin.seg_image.value)
         posix = _trackmate_objects.track_analysis_spot_keys["posix"]
@@ -376,8 +419,12 @@ def plugin_wrapper_track():
 
         nonlocal worker, _trackmate_objects
 
-        track_model = get_model_track(model_selected_track)
-        print(track_model)
+        def progress_thread(current_time):
+
+            progress_bar.label = "Analyzing Tracks"
+            # progress_bar.range = (0, n_frames - 1)
+            progress_bar.value = current_time
+            progress_bar.show()
 
         _trackmate_objects = TrackMate(
             xml_path,
@@ -390,9 +437,10 @@ def plugin_wrapper_track():
             x,
             x_mask,
         )
-        _refreshStatPlotData(_trackmate_objects)
+        worker = _refreshStatPlotData()
+        worker.returned.connect(plot_main)
 
-        select_track_nature(track_model)
+        select_track_nature()
 
         plugin_color_parameters.track_attributes.choices = (
             _trackmate_objects.TrackAttributeids
@@ -500,10 +548,10 @@ def plugin_wrapper_track():
     def _deleteRows(rows: Set[int]):
         table_tab.myModel.myDeleteRows(rows)
 
-    def _refreshStatPlotData(_trackmate_objects):
+    def plot_main():
+        _refreshPlotData()
 
-        hist_plot_class._reset_container(hist_plot_class.scroll_layout)
-        stat_plot_class._reset_container(stat_plot_class.scroll_layout)
+    def _refreshPlotData():
 
         trackid_key = _trackmate_objects.track_analysis_spot_keys["track_id"]
         for k in _trackmate_objects.AllTrackValues.keys():
@@ -523,7 +571,6 @@ def plugin_wrapper_track():
                 hist_ax = hist_plot_class.stat_ax
                 sns.histplot(TrackAttr, kde=True, ax=hist_ax)
                 hist_ax.set_title(str(k))
-
         stat_plot_class._repeat_after_plot()
         stat_ax = stat_plot_class.stat_ax
         stat_ax.cla()
@@ -608,6 +655,12 @@ def plugin_wrapper_track():
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um")
 
+    @thread_worker(connect={"returned": [plot_main]})
+    def _refreshStatPlotData():
+        nonlocal _trackmate_objects
+        hist_plot_class._reset_container(hist_plot_class.scroll_layout)
+        stat_plot_class._reset_container(stat_plot_class.scroll_layout)
+
     def _refreshTableData(df: pd.DataFrame):
         """Refresh all data in table by setting its data model from provided dataframe.
         Args:
@@ -623,24 +676,32 @@ def plugin_wrapper_track():
         TrackModel = pandasModel(df)
         table_tab.mySetModel(TrackModel)
 
-    def select_model_track(key):
-        nonlocal model_selected_track
-        model_selected_track = key
-        select_track_nature(key)
-
-    def select_track_nature(key):
+    def select_track_nature():
+        key = plugin.track_model_type.value
+        nonlocal _track_ids_analyze
         if _trackmate_objects is not None:
             if key == "Dividing":
                 plugin.track_id_box.choices = TrackidBox
                 plugin.track_id_box.choices = (
                     _trackmate_objects.DividingTrackIds
                 )
+                _track_ids_analyze = _trackmate_objects.DividingTrackIds
+                if TrackidBox in _track_ids_analyze:
+                    _track_ids_analyze.remove(TrackidBox)
             if key == "Non-Dividing":
                 plugin.track_id_box.choices = TrackidBox
                 plugin.track_id_box.choices = _trackmate_objects.NormalTrackIds
+                _track_ids_analyze = _trackmate_objects.NormalTrackIds
+                if TrackidBox in _track_ids_analyze:
+                    _track_ids_analyze.remove(TrackidBox)
             if key == "Both":
                 plugin.track_id_box.choices = TrackidBox
                 plugin.track_id_box.choices = _trackmate_objects.AllTrackIds
+                _track_ids_analyze = _trackmate_objects.AllTrackIds
+                if TrackidBox in _track_ids_analyze:
+                    _track_ids_analyze.remove(TrackidBox)
+
+            _track_ids_analyze = list(map(int, _track_ids_analyze))
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
@@ -654,6 +715,20 @@ def plugin_wrapper_track():
 
     table_tab.signalDataChanged.connect(_slot_data_change)
     table_tab.signalSelectionChanged.connect(_slot_selection_changed)
+
+    @change_handler(
+        plugin.track_id_box,
+        init=False,
+    )
+    def _analyze_id():
+
+        nonlocal _trackmate_objects, _track_ids_analyze, worker
+        if _trackmate_objects is not None and _track_ids_analyze is not None:
+
+            track_id = plugin.track_id_box.value
+
+            worker = _Draw_tracks(track_id)
+            worker.returned.connect(track_main)
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
@@ -670,12 +745,6 @@ def plugin_wrapper_track():
     def _track_attribute_color(value):
 
         plugin_color_parameters.track_attributes.value = value
-
-    @change_handler(plugin.track_model_type, init=False)
-    def _track_model_type_change():
-
-        key = plugin.track_model_type.value
-        select_model_track(key)
 
     @change_handler(
         plugin_function_parameters.defaults_params_button, init=False
