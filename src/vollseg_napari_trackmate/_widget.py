@@ -192,52 +192,24 @@ def plugin_wrapper_track():
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
-    def track_main(TrackLayerTracklets):
-        _refreshTrackData(TrackLayerTracklets)
-
     def _refreshTrackData(TrackLayerTracklets):
 
         for (trackid, tracklets) in TrackLayerTracklets.items():
 
             tracklets = tracklets[1]
-            print(tracklets)
             properties = {
-                "time": np.asarray(tracklets)[:, 0],
+                "time": np.asarray(tracklets)[:, 1],
             }
+
             if len(tracklets) > 0:
                 for layer in list(plugin.viewer.value.layers):
-                    if str(trackid) == layer.name:
+                    if "Track" + str(trackid) == layer.name:
                         plugin.viewer.value.layers.remove(layer)
                 plugin.viewer.value.add_tracks(
-                    np.asarray(tracklets),
-                    name=str(trackid),
+                    tracklets,
+                    name="Track" + str(trackid),
                     properties=properties,
                 )
-
-    @thread_worker(connect={"returned": track_main})
-    def _Draw_tracks(track_id):
-        nonlocal _trackmate_objects, _track_ids_analyze
-        TrackLayerTracklets = {}
-        if track_id not in TrackidBox:
-            _track_ids_analyze = [int(track_id)]
-        for i in range(0, len(_trackmate_objects.all_track_properties)):
-            (
-                trackid,
-                alltracklets,
-                DividingTrajectory,
-            ) = _trackmate_objects.all_track_properties[i]
-            if trackid in _track_ids_analyze:
-                TrackLayerTracklets = all_tracks(
-                    TrackLayerTracklets,
-                    int(trackid),
-                    alltracklets,
-                    _trackmate_objects.xcalibration,
-                    _trackmate_objects.ycalibration,
-                    _trackmate_objects.zcalibration,
-                    _trackmate_objects.tcalibration,
-                )
-
-        return TrackLayerTracklets
 
     def return_color_tracks(pred):
 
@@ -381,6 +353,9 @@ def plugin_wrapper_track():
         defaults_model_button=dict(
             widget_type="PushButton", text="Restore Model Defaults"
         ),
+        show_track_id_button=dict(
+            widget_type="PushButton", text="Display Selected Tracks"
+        ),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
         persist=True,
@@ -400,6 +375,7 @@ def plugin_wrapper_track():
         track_model_type,
         track_id_box,
         defaults_model_button,
+        show_track_id_button,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
@@ -454,6 +430,9 @@ def plugin_wrapper_track():
         QSizePolicy.MinimumExpanding, QSizePolicy.Fixed
     )
 
+    plugin.show_track_id_button.native.setStyleSheet(
+        "background-color: orange"
+    )
     tabs = QTabWidget()
 
     parameter_function_tab = QWidget()
@@ -678,28 +657,34 @@ def plugin_wrapper_track():
 
     def select_track_nature():
         key = plugin.track_model_type.value
-        nonlocal _track_ids_analyze
+        nonlocal _trackmate_objects, _track_ids_analyze
         if _trackmate_objects is not None:
             if key == "Dividing":
                 plugin.track_id_box.choices = TrackidBox
                 plugin.track_id_box.choices = (
                     _trackmate_objects.DividingTrackIds
                 )
-                _track_ids_analyze = _trackmate_objects.DividingTrackIds
+                _track_ids_analyze = _trackmate_objects.DividingTrackIds.copy()
+                if "" in _track_ids_analyze:
+                    _track_ids_analyze.remove("")
                 if TrackidBox in _track_ids_analyze:
                     _track_ids_analyze.remove(TrackidBox)
             if key == "Non-Dividing":
                 plugin.track_id_box.choices = TrackidBox
                 plugin.track_id_box.choices = _trackmate_objects.NormalTrackIds
-                _track_ids_analyze = _trackmate_objects.NormalTrackIds
+                _track_ids_analyze = _trackmate_objects.NormalTrackIds.copy()
+                if "" in _track_ids_analyze:
+                    _track_ids_analyze.remove("")
                 if TrackidBox in _track_ids_analyze:
                     _track_ids_analyze.remove(TrackidBox)
             if key == "Both":
                 plugin.track_id_box.choices = TrackidBox
                 plugin.track_id_box.choices = _trackmate_objects.AllTrackIds
-                _track_ids_analyze = _trackmate_objects.AllTrackIds
+                _track_ids_analyze = _trackmate_objects.AllTrackIds.copy()
                 if TrackidBox in _track_ids_analyze:
                     _track_ids_analyze.remove(TrackidBox)
+                if "" in _track_ids_analyze:
+                    _track_ids_analyze.remove("")
 
             _track_ids_analyze = list(map(int, _track_ids_analyze))
 
@@ -716,19 +701,53 @@ def plugin_wrapper_track():
     table_tab.signalDataChanged.connect(_slot_data_change)
     table_tab.signalSelectionChanged.connect(_slot_selection_changed)
 
+    @change_handler(plugin.track_id_box, init=False)
+    def _track_id_box_change(value):
+        plugin.track_id_box.value = value
+
     @change_handler(
-        plugin.track_id_box,
+        plugin.show_track_id_button,
         init=False,
     )
     def _analyze_id():
 
-        nonlocal _trackmate_objects, _track_ids_analyze, worker
+        nonlocal _track_ids_analyze, _trackmate_objects
         if _trackmate_objects is not None and _track_ids_analyze is not None:
 
             track_id = plugin.track_id_box.value
 
-            worker = _Draw_tracks(track_id)
-            worker.returned.connect(track_main)
+            TrackLayerTracklets = {}
+            if track_id not in TrackidBox and track_id not in "":
+                _to_analyze = [int(track_id)]
+            else:
+                _to_analyze = _track_ids_analyze.copy()
+            for i in range(0, len(_trackmate_objects.all_track_properties)):
+                (
+                    trackid,
+                    alltracklets,
+                    DividingTrajectory,
+                ) = _trackmate_objects.all_track_properties[i]
+                if trackid in _to_analyze:
+                    TrackLayerTracklets = all_tracks(
+                        TrackLayerTracklets,
+                        int(trackid),
+                        alltracklets,
+                        _trackmate_objects.xcalibration,
+                        _trackmate_objects.ycalibration,
+                        _trackmate_objects.zcalibration,
+                        _trackmate_objects.tcalibration,
+                    )
+            _refreshTrackData(TrackLayerTracklets)
+        selected = plugin.track_model_type
+        selected.changed(selected.value)
+        if track_id is not None:
+            plugin.track_id_box.value = track_id
+
+    @change_handler(plugin.track_model_type, init=False)
+    def _change_track_model_type(value):
+
+        plugin.track_model_type.value = value
+        select_track_nature()
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
