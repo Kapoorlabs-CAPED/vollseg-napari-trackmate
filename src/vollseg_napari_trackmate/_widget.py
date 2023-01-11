@@ -37,6 +37,7 @@ def plugin_wrapper_track():
     # Boxname = "TrackBox"
     AttributeBoxname = "AttributeIDBox"
     TrackAttributeBoxname = "TrackAttributeIDBox"
+    TrackidBox = "All"
 
     def _raise(e):
         if isinstance(e, BaseException):
@@ -327,6 +328,13 @@ def plugin_wrapper_track():
             choices=track_model_type_choices,
             value=DEFAULTS_MODEL["track_model_type"],
         ),
+        track_id_box=dict(
+            widget_type="ComboBox",
+            visible=True,
+            label="Select Track ID to analyze",
+            choices=[TrackidBox],
+            value=TrackidBox,
+        ),
         defaults_model_button=dict(
             widget_type="PushButton", text="Restore Model Defaults"
         ),
@@ -347,6 +355,7 @@ def plugin_wrapper_track():
         edges_csv_path,
         axes,
         track_model_type,
+        track_id_box,
         defaults_model_button,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
@@ -377,10 +386,14 @@ def plugin_wrapper_track():
             edges_csv_path,
             AttributeBoxname,
             TrackAttributeBoxname,
+            TrackidBox,
             x,
             x_mask,
         )
         _refreshStatPlotData(_trackmate_objects)
+
+        select_track_nature(track_model)
+
         plugin_color_parameters.track_attributes.choices = (
             _trackmate_objects.TrackAttributeids
         )
@@ -613,6 +626,21 @@ def plugin_wrapper_track():
     def select_model_track(key):
         nonlocal model_selected_track
         model_selected_track = key
+        select_track_nature(key)
+
+    def select_track_nature(key):
+        if _trackmate_objects is not None:
+            if key == "Dividing":
+                plugin.track_id_box.choices = TrackidBox
+                plugin.track_id_box.choices = (
+                    _trackmate_objects.DividingTrackIds
+                )
+            if key == "Non-Dividing":
+                plugin.track_id_box.choices = TrackidBox
+                plugin.track_id_box.choices = _trackmate_objects.NormalTrackIds
+            if key == "Both":
+                plugin.track_id_box.choices = TrackidBox
+                plugin.track_id_box.choices = _trackmate_objects.AllTrackIds
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
