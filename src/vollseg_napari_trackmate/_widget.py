@@ -26,7 +26,7 @@ def plugin_wrapper_track():
 
     from csbdeep.utils import axes_dict
     from napari.qt.threading import thread_worker
-    from napatrackmater.Trackmate import TrackMate, all_tracks
+    from napatrackmater.Trackmate import TrackMate
     from skimage.util import map_array
 
     from vollseg_napari_trackmate._data_model import pandasModel
@@ -192,24 +192,21 @@ def plugin_wrapper_track():
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
-    def _refreshTrackData(TrackLayerTracklets):
+    def _refreshTrackData(unique_tracks, graph):
 
-        for (trackid, tracklets) in TrackLayerTracklets.items():
+        features = {
+            "time": np.asarray(unique_tracks)[:, 1],
+        }
 
-            tracklets = tracklets[1]
-            properties = {
-                "time": np.asarray(tracklets)[:, 1],
-            }
-
-            if len(tracklets) > 0:
-                for layer in list(plugin.viewer.value.layers):
-                    if "Track" + str(trackid) == layer.name:
-                        plugin.viewer.value.layers.remove(layer)
-                plugin.viewer.value.add_tracks(
-                    tracklets,
-                    name="Track" + str(trackid),
-                    properties=properties,
-                )
+        for layer in list(plugin.viewer.value.layers):
+            if "Track" == layer.name:
+                plugin.viewer.value.layers.remove(layer)
+            plugin.viewer.value.add_tracks(
+                unique_tracks,
+                name="Track",
+                graph=graph,
+                features=features,
+            )
 
     def return_color_tracks(pred):
 
@@ -715,29 +712,18 @@ def plugin_wrapper_track():
         if _trackmate_objects is not None and _track_ids_analyze is not None:
 
             track_id = plugin.track_id_box.value
-
-            TrackLayerTracklets = {}
+            unique_tracks = []
             if track_id not in TrackidBox and track_id not in "":
                 _to_analyze = [int(track_id)]
             else:
                 _to_analyze = _track_ids_analyze.copy()
-            for i in range(0, len(_trackmate_objects.all_track_properties)):
-                (
-                    trackid,
-                    alltracklets,
-                    DividingTrajectory,
-                ) = _trackmate_objects.all_track_properties[i]
-                if trackid in _to_analyze:
-                    TrackLayerTracklets = all_tracks(
-                        TrackLayerTracklets,
-                        int(trackid),
-                        alltracklets,
-                        _trackmate_objects.xcalibration,
-                        _trackmate_objects.ycalibration,
-                        _trackmate_objects.zcalibration,
-                        _trackmate_objects.tcalibration,
-                    )
-            _refreshTrackData(TrackLayerTracklets)
+            for unique_track_id in _to_analyze:
+                unique_tracks.append(
+                    _trackmate_objects.unique_tracks[unique_track_id]
+                )
+
+            unique_tracks = np.concatenate(unique_tracks, axis=0)
+            _refreshTrackData(unique_tracks, _trackmate_objects.graph_split)
         selected = plugin.track_model_type
         selected.changed(selected.value)
         if track_id is not None:
