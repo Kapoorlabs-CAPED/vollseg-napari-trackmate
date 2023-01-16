@@ -194,17 +194,27 @@ def plugin_wrapper_track():
 
     def _refreshTrackData(unique_tracks, graph):
 
+        print("I am track graph", graph)
         features = {
             "time": np.asarray(unique_tracks)[:, 1],
         }
 
         for layer in list(plugin.viewer.value.layers):
-            if "Track" == layer.name:
+            if "Track" == layer.name or "Track_points" == layer.name:
                 plugin.viewer.value.layers.remove(layer)
+        vertices = unique_tracks[:, 1:]
+        plugin.viewer.value.add_points(vertices, size=2, name="Track_points")
+        if len(graph.items()) > 0:
             plugin.viewer.value.add_tracks(
                 unique_tracks,
                 name="Track",
                 graph=graph,
+                features=features,
+            )
+        else:
+            plugin.viewer.value.add_tracks(
+                unique_tracks,
+                name="Track",
                 features=features,
             )
 
@@ -713,17 +723,24 @@ def plugin_wrapper_track():
 
             track_id = plugin.track_id_box.value
             unique_tracks = []
+            complete_graph = _trackmate_objects.graph_tracks
+            current_graph = {}
+
             if track_id not in TrackidBox and track_id not in "":
                 _to_analyze = [int(track_id)]
             else:
                 _to_analyze = _track_ids_analyze.copy()
             for unique_track_id in _to_analyze:
-                unique_tracks.append(
-                    _trackmate_objects.unique_tracks[unique_track_id]
-                )
 
+                tracklets = _trackmate_objects.unique_tracks[unique_track_id]
+                for (k, v) in complete_graph.items():
+
+                    if k in tracklets[:, 0]:
+                        current_graph[k] = [v]
+                unique_tracks.append(tracklets)
             unique_tracks = np.concatenate(unique_tracks, axis=0)
-            _refreshTrackData(unique_tracks, _trackmate_objects.graph_split)
+
+            _refreshTrackData(unique_tracks, current_graph)
         selected = plugin.track_model_type
         selected.changed(selected.value)
         if track_id is not None:
