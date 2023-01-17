@@ -192,38 +192,32 @@ def plugin_wrapper_track():
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
-    def _refreshTrackData(unique_tracks, unique_tracks_properties, graph):
+    def _refreshTrackData(unique_tracks, unique_tracks_properties):
 
-        print("I am track graph", graph)
         features = {
-            "time": np.asarray(unique_tracks_properties)[:, 0],
-            "generation": np.asarray(unique_tracks_properties)[:, 1],
-            "speed": np.asarray(unique_tracks_properties)[:, 2],
-            "directional_change_rate": np.asarray(unique_tracks_properties)[
-                :, 3
-            ],
-            "mean-intensity_ch1": np.asarray(unique_tracks_properties)[:, 4],
-            "mean-intensity_ch2": np.asarray(unique_tracks_properties)[:, 5],
+            "time": map(int, np.asarray(unique_tracks_properties)[:, 0]),
+            "generation": map(int, np.asarray(unique_tracks_properties)[:, 1]),
+            "speed": map(float, np.asarray(unique_tracks_properties)[:, 2]),
+            "directional_change_rate": map(
+                float, np.asarray(unique_tracks_properties)[:, 3]
+            ),
+            "mean-intensity_ch1": map(
+                float, np.asarray(unique_tracks_properties)[:, 4]
+            ),
+            "mean-intensity_ch2": map(
+                float, np.asarray(unique_tracks_properties)[:, 5]
+            ),
         }
-
         for layer in list(plugin.viewer.value.layers):
             if "Track" == layer.name or "Track_points" == layer.name:
                 plugin.viewer.value.layers.remove(layer)
         vertices = unique_tracks[:, 1:]
         plugin.viewer.value.add_points(vertices, size=2, name="Track_points")
-        if len(graph.items()) > 0:
-            plugin.viewer.value.add_tracks(
-                unique_tracks,
-                name="Track",
-                graph=graph,
-                features=features,
-            )
-        else:
-            plugin.viewer.value.add_tracks(
-                unique_tracks,
-                name="Track",
-                features=features,
-            )
+        plugin.viewer.value.add_tracks(
+            unique_tracks,
+            name="Track",
+            features=features,
+        )
 
     def return_color_tracks(pred):
 
@@ -533,9 +527,7 @@ def plugin_wrapper_track():
 
         df = table_tab.myModel._data
         # selectedRowSet = set(selectedRowList)
-
         print(df)
-
         # table_tab.signalDataChanged.emit("select", selectedRowSet, df)
 
     def _deleteRows(rows: Set[int]):
@@ -731,33 +723,28 @@ def plugin_wrapper_track():
             track_id = plugin.track_id_box.value
             unique_tracks = []
             unique_tracks_properties = []
-            complete_graph = _trackmate_objects.graph_tracks
-            current_graph = {}
 
             if track_id not in TrackidBox and track_id not in "":
                 _to_analyze = [int(track_id)]
             else:
                 _to_analyze = _track_ids_analyze.copy()
-            analyze_keys = []
-            for unique_track_id in _to_analyze:
+
+            for unique_track_id in tqdm(_to_analyze):
 
                 tracklets = _trackmate_objects.unique_tracks[unique_track_id]
                 tracklets_properties = (
                     _trackmate_objects.unique_track_properties[unique_track_id]
                 )
-                analyze_keys.append(tracklets[:, 0])
                 unique_tracks.append(tracklets)
                 unique_tracks_properties.append(tracklets_properties)
+
             unique_tracks = np.concatenate(unique_tracks, axis=0)
+            print("concatenated tracks")
             unique_tracks_properties = np.concatenate(
                 unique_tracks_properties, axis=0
             )
-            for k in range(len(analyze_keys)):
-                current_graph[k] = [complete_graph[k]]
-
-            _refreshTrackData(
-                unique_tracks, unique_tracks_properties, current_graph
-            )
+            print("concatenated properties")
+            _refreshTrackData(unique_tracks, unique_tracks_properties)
         selected = plugin.track_model_type
         selected.changed(selected.value)
         if track_id is not None:
