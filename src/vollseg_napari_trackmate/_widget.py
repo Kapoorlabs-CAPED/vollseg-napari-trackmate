@@ -192,11 +192,18 @@ def plugin_wrapper_track():
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
-    def _refreshTrackData(unique_tracks, graph):
+    def _refreshTrackData(unique_tracks, unique_tracks_properties, graph):
 
         print("I am track graph", graph)
         features = {
-            "time": np.asarray(unique_tracks)[:, 1],
+            "time": np.asarray(unique_tracks_properties)[:, 0],
+            "generation": np.asarray(unique_tracks_properties)[:, 1],
+            "speed": np.asarray(unique_tracks_properties)[:, 2],
+            "directional_change_rate": np.asarray(unique_tracks_properties)[
+                :, 3
+            ],
+            "mean-intensity_ch1": np.asarray(unique_tracks_properties)[:, 4],
+            "mean-intensity_ch2": np.asarray(unique_tracks_properties)[:, 5],
         }
 
         for layer in list(plugin.viewer.value.layers):
@@ -723,6 +730,7 @@ def plugin_wrapper_track():
 
             track_id = plugin.track_id_box.value
             unique_tracks = []
+            unique_tracks_properties = []
             complete_graph = _trackmate_objects.graph_tracks
             current_graph = {}
 
@@ -730,17 +738,26 @@ def plugin_wrapper_track():
                 _to_analyze = [int(track_id)]
             else:
                 _to_analyze = _track_ids_analyze.copy()
+            analyze_keys = []
             for unique_track_id in _to_analyze:
 
                 tracklets = _trackmate_objects.unique_tracks[unique_track_id]
-                for (k, v) in complete_graph.items():
-
-                    if k in tracklets[:, 0]:
-                        current_graph[k] = [v]
+                tracklets_properties = (
+                    _trackmate_objects.unique_track_properties[unique_track_id]
+                )
+                analyze_keys.append(tracklets[:, 0])
                 unique_tracks.append(tracklets)
+                unique_tracks_properties.append(tracklets_properties)
             unique_tracks = np.concatenate(unique_tracks, axis=0)
+            unique_tracks_properties = np.concatenate(
+                unique_tracks_properties, axis=0
+            )
+            for k in range(len(analyze_keys)):
+                current_graph[k] = [complete_graph[k]]
 
-            _refreshTrackData(unique_tracks, current_graph)
+            _refreshTrackData(
+                unique_tracks, unique_tracks_properties, current_graph
+            )
         selected = plugin.track_model_type
         selected.changed(selected.value)
         if track_id is not None:
