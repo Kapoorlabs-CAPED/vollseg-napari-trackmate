@@ -7,12 +7,13 @@ Made by Kapoorlabs, 2022
 import functools
 import math
 from pathlib import Path
-from typing import List, Set, Union
+from typing import List, Union
 
 import napari
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from caped_ai_tabulour._tabulour import Tabulour
 from magicgui import magicgui
 from magicgui import widgets as mw
 from psygnal import Signal
@@ -29,8 +30,6 @@ def plugin_wrapper_track():
     from napatrackmater.Trackmate import TrackMate
     from skimage.util import map_array
 
-    from vollseg_napari_trackmate._data_model import pandasModel
-    from vollseg_napari_trackmate._table_widget import TrackTable
     from vollseg_napari_trackmate._temporal_plots import TemporalStatistics
 
     DEBUG = False
@@ -463,75 +462,10 @@ def plugin_wrapper_track():
     stat_plot_tab = stat_plot_class.stat_plot_tab
     tabs.addTab(stat_plot_tab, "Temporal Statistics")
 
-    table_tab = TrackTable()
+    table_tab = Tabulour()
     tabs.addTab(table_tab, "Table")
 
     plugin.native.layout().addWidget(tabs)
-
-    def _selectInTable(selected_data: Set[int]):
-        """Select in table in response to viewer (add, highlight).
-
-        Args:
-            selected_data (set[int]): Set of selected rows to select
-        """
-
-        table_tab.mySelectRows(selected_data)
-
-    def _slot_data_change(
-        action: str, selection: set, layerSelectionCopy: dict
-    ):
-
-        df = table_tab.myModel._data
-
-        if action == "select":
-            # TODO (cudmore) if Layer is labaeled then selection is a list
-            if isinstance(selection, list):
-                selection = set(selection)
-            _selectInTable(selection)
-            table_tab.signalDataChanged.emit(action, selection, df)
-
-        elif action == "add":
-            # addedRowList = selection
-            # myTableData = getLayerDataFrame(rowList=addedRowList)
-            myTableData = df
-            table_tab.myModel.myAppendRow(myTableData)
-            _selectInTable(selection)
-            table_tab.signalDataChanged.emit(action, selection, df)
-        elif action == "delete":
-            # was this
-            deleteRowSet = selection
-            # logger.info(f'myEventType:{myEventType} deleteRowSet:{deleteRowSet}')
-            # deletedDataFrame = myTable2.myModel.myGetData().iloc[list(deleteRowSet)]
-
-            _deleteRows(deleteRowSet)
-
-            # _blockDeleteFromTable = True
-            # myTable2.myModel.myDeleteRows(deleteRowList)
-            # _blockDeleteFromTable = False
-
-            table_tab.signalDataChanged.emit(action, selection, df)
-        elif action == "change":
-            moveRowList = list(selection)  # rowList is actually indexes
-            myTableData = df
-            # myTableData = getLayerDataFrame(rowList=moveRowList)
-            table_tab.myModel.mySetRow(moveRowList, myTableData)
-
-            table_tab.signalDataChanged.emit(action, selection, df)
-
-    def _slot_selection_changed(selectedRowList: List[int], isAlt: bool):
-        """Respond to user selecting a table row.
-        Note:
-            - This is coming from user selection in table,
-                we do not want to propogate
-        """
-
-        df = table_tab.myModel._data
-        # selectedRowSet = set(selectedRowList)
-        print(df)
-        # table_tab.signalDataChanged.emit("select", selectedRowSet, df)
-
-    def _deleteRows(rows: Set[int]):
-        table_tab.myModel.myDeleteRows(rows)
 
     def plot_main():
         _refreshPlotData()
@@ -646,20 +580,31 @@ def plugin_wrapper_track():
         hist_plot_class._reset_container(hist_plot_class.scroll_layout)
         stat_plot_class._reset_container(stat_plot_class.scroll_layout)
 
-    def _refreshTableData(df: pd.DataFrame):
+    def _refreshTableData(
+        df: pd.DataFrame, unique_cells: dict, time_key: str, other_key: str
+    ):
         """Refresh all data in table by setting its data model from provided dataframe.
         Args:
             df (pd.DataFrame): Pandas dataframe to refresh with.
         """
 
         if table_tab is None:
-            # interface has not been initialized
             return
 
         if df is None:
             return
-        TrackModel = pandasModel(df)
-        table_tab.mySetModel(TrackModel)
+
+        table_tab.data = df
+        table_tab.viewer = plugin.viewer.value
+        table_tab._unique_cells = unique_cells
+        for layer in list(plugin.viewer.value.layers):
+            if isinstance(layer, napari.layers.Tracks):
+                table_tab.layer = layer
+
+        table_tab.time_key = time_key
+        table_tab.other_key = other_key
+        table_tab._set_model()
+        # current_cell_id = table_tab._unique_cell_val
 
     def select_track_nature():
         key = plugin.track_model_type.value
@@ -703,9 +648,6 @@ def plugin_wrapper_track():
             widget.native.setStyleSheet(
                 "" if valid else "background-color: red"
             )
-
-    table_tab.signalDataChanged.connect(_slot_data_change)
-    table_tab.signalSelectionChanged.connect(_slot_selection_changed)
 
     @change_handler(plugin.track_id_box, init=False)
     def _track_id_box_change(value):
