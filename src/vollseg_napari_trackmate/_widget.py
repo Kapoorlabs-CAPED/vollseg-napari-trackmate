@@ -13,7 +13,7 @@ import napari
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from caped_ai_tabulour._tabulour import Tabulour
+from caped_ai_tabulour._tabulour import Tabulour, pandasModel
 from magicgui import magicgui
 from magicgui import widgets as mw
 from psygnal import Signal
@@ -468,9 +468,6 @@ def plugin_wrapper_track():
     plugin.native.layout().addWidget(tabs)
 
     def plot_main():
-        _refreshPlotData()
-
-    def _refreshPlotData():
 
         trackid_key = _trackmate_objects.track_analysis_spot_keys["track_id"]
         for k in _trackmate_objects.AllTrackValues.keys():
@@ -574,27 +571,22 @@ def plugin_wrapper_track():
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um")
 
-    @thread_worker(connect={"returned": [plot_main]})
-    def _refreshStatPlotData():
-        nonlocal _trackmate_objects
-        hist_plot_class._reset_container(hist_plot_class.scroll_layout)
-        stat_plot_class._reset_container(stat_plot_class.scroll_layout)
+        unique_cells = _trackmate_objects.unique_spot_properties
+        time_key = _trackmate_objects.frameid_key
+        other_key = _trackmate_objects.uniqueid_key
+        root_cells = {}
+        for (k, v) in tqdm(unique_cells.items()):
+            if _trackmate_objects.beforeid_key in v.keys():
+                is_root = v[_trackmate_objects.beforeid_key]
+                if is_root is None:
+                    for (subk, subv) in v.items():
 
-    def _refreshTableData(
-        df: pd.DataFrame, unique_cells: dict, time_key: str, other_key: str
-    ):
-        """Refresh all data in table by setting its data model from provided dataframe.
-        Args:
-            df (pd.DataFrame): Pandas dataframe to refresh with.
-        """
-
-        if table_tab is None:
-            return
-
-        if df is None:
-            return
-
-        table_tab.data = df
+                        root_cells[subk] = subv
+                        print(root_cells)
+        print("Making pandas dataframe")
+        df = pd.DataFrame(root_cells.items())
+        print("Making pandas Model")
+        table_tab.data = pandasModel(df)
         table_tab.viewer = plugin.viewer.value
         table_tab._unique_cells = unique_cells
         for layer in list(plugin.viewer.value.layers):
@@ -604,7 +596,12 @@ def plugin_wrapper_track():
         table_tab.time_key = time_key
         table_tab.other_key = other_key
         table_tab._set_model()
-        # current_cell_id = table_tab._unique_cell_val
+
+    @thread_worker(connect={"returned": [plot_main]})
+    def _refreshStatPlotData():
+        nonlocal _trackmate_objects
+        hist_plot_class._reset_container(hist_plot_class.scroll_layout)
+        stat_plot_class._reset_container(stat_plot_class.scroll_layout)
 
     def select_track_nature():
         key = plugin.track_model_type.value
@@ -720,18 +717,6 @@ def plugin_wrapper_track():
     def restore_function_parameters_defaults():
         for k, v in DEFAULTS_FUNC_PARAMETERS.items():
             getattr(plugin_function_parameters, k).value = v
-
-    # -> triggered by napari (if there are any open images on plugin launch)
-
-    def function_calculator(ndim: int):
-
-        data = []
-
-        df = pd.DataFrame(
-            data,
-            columns=[],
-        )
-        _refreshTableData(df)
 
     @change_handler(plugin.image, init=False)
     def _image_change(image: napari.layers.Image):
