@@ -463,6 +463,8 @@ def plugin_wrapper_track():
     tabs.addTab(stat_plot_tab, "Temporal Statistics")
 
     table_tab = Tabulour()
+    table_tab.clicked.connect(table_tab._on_user_click)
+    table_tab.clicked.connect(table_tab._make_boxes)
     tabs.addTab(table_tab, "Table")
 
     plugin.native.layout().addWidget(tabs)
@@ -477,7 +479,8 @@ def plugin_wrapper_track():
         unique_cells = _trackmate_objects.unique_spot_properties
         unique_tracks = _trackmate_objects.unique_tracks
         time_key = _trackmate_objects.frameid_key
-        other_key = _trackmate_objects.trackid_key
+        id_key = _trackmate_objects.trackid_key
+        size_key = _trackmate_objects.quality_key
         for (k, v) in tqdm(unique_cells.items()):
             if _trackmate_objects.beforeid_key in v.keys():
                 is_root = v[_trackmate_objects.beforeid_key]
@@ -496,6 +499,15 @@ def plugin_wrapper_track():
         columns[0] = "Root_Cell_ID"
         df = pd.DataFrame(root_cells, columns=columns, dtype=object)
         print("Making pandas Model")
+        table_tab.data = pandasModel(df)
+        table_tab.viewer = plugin.viewer.value
+        table_tab.unique_tracks = unique_tracks
+
+        table_tab.size_key = size_key
+        table_tab.time_key = time_key
+        table_tab.id_key = id_key
+        table_tab._set_model()
+
         for k in _trackmate_objects.AllTrackValues.keys():
             if k is not trackid_key:
                 TrackAttr = []
@@ -597,16 +609,9 @@ def plugin_wrapper_track():
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um")
 
-        table_tab.data = pandasModel(df)
-        table_tab.viewer = plugin.viewer.value
-        table_tab.unique_tracks = unique_tracks
         for layer in list(plugin.viewer.value.layers):
             if isinstance(layer, napari.layers.Tracks):
                 table_tab.layer = layer
-
-        table_tab.time_key = time_key
-        table_tab.other_key = other_key
-        table_tab._set_model()
 
     @thread_worker(connect={"returned": [plot_main]})
     def _refreshStatPlotData():
