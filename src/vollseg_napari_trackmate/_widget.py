@@ -506,6 +506,9 @@ def plugin_wrapper_track():
         table_tab.size_key = size_key
         table_tab.time_key = time_key
         table_tab.id_key = id_key
+        table_tab.zcalibration = _trackmate_objects.zcalibration
+        table_tab.ycalibration = _trackmate_objects.ycalibration
+        table_tab.xcalibration = _trackmate_objects.xcalibration
         table_tab._set_model()
 
         for k in _trackmate_objects.AllTrackValues.keys():
