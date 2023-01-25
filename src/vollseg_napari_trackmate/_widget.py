@@ -470,6 +470,32 @@ def plugin_wrapper_track():
     def plot_main():
 
         trackid_key = _trackmate_objects.track_analysis_spot_keys["track_id"]
+
+        root_cells = []
+        columns = None
+        root_cells = None
+        unique_cells = _trackmate_objects.unique_spot_properties
+        unique_tracks = _trackmate_objects.unique_tracks
+        time_key = _trackmate_objects.frameid_key
+        other_key = _trackmate_objects.trackid_key
+        for (k, v) in tqdm(unique_cells.items()):
+            if _trackmate_objects.beforeid_key in v.keys():
+                is_root = v[_trackmate_objects.beforeid_key]
+
+                if is_root is None:
+                    if columns is None:
+                        columns = [value for value in v.keys()]
+                    float_list = list(v.values())
+                    if root_cells is None:
+                        root_cells = np.asarray(float_list)
+                    else:
+                        root_cells = np.vstack(
+                            (root_cells, np.asarray(float_list))
+                        )
+        print(f"Making pandas dataframe  {root_cells.shape}")
+        columns[0] = "Root_Cell_ID"
+        df = pd.DataFrame(root_cells, columns=columns, dtype=object)
+        print("Making pandas Model")
         for k in _trackmate_objects.AllTrackValues.keys():
             if k is not trackid_key:
                 TrackAttr = []
@@ -571,33 +597,9 @@ def plugin_wrapper_track():
         stat_ax.set_xlabel("Time (min)")
         stat_ax.set_ylabel("um")
 
-        unique_cells = _trackmate_objects.unique_spot_properties
-        time_key = _trackmate_objects.frameid_key
-        other_key = _trackmate_objects.uniqueid_key
-        root_cells = []
-        columns = None
-        root_cells = None
-        for (k, v) in tqdm(unique_cells.items()):
-            if _trackmate_objects.beforeid_key in v.keys():
-                is_root = v[_trackmate_objects.beforeid_key]
-
-                if is_root is None:
-                    if columns is None:
-                        columns = [value for value in v.keys()]
-                    float_list = list(v.values())
-                    if root_cells is None:
-                        root_cells = np.asarray(float_list)
-                    else:
-                        root_cells = np.vstack(
-                            (root_cells, np.asarray(float_list))
-                        )
-        print(f"Making pandas dataframe  {root_cells.shape}")
-        print(root_cells)
-        df = pd.DataFrame(root_cells, columns=columns, dtype=object)
-        print("Making pandas Model")
         table_tab.data = pandasModel(df)
         table_tab.viewer = plugin.viewer.value
-        table_tab._unique_cells = unique_cells
+        table_tab.unique_tracks = unique_tracks
         for layer in list(plugin.viewer.value.layers):
             if isinstance(layer, napari.layers.Tracks):
                 table_tab.layer = layer
