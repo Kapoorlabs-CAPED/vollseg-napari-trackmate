@@ -23,8 +23,6 @@ from tqdm import tqdm
 
 def plugin_wrapper_track():
 
-    pass
-
     from csbdeep.utils import axes_dict
     from napari.qt.threading import thread_worker
     from napatrackmater.Trackmate import TrackMate
@@ -37,6 +35,13 @@ def plugin_wrapper_track():
     AttributeBoxname = "AttributeIDBox"
     TrackAttributeBoxname = "TrackAttributeIDBox"
     TrackidBox = "All"
+    _dividing_choices = ()
+    _current_choices = ()
+    _normal_choices = ()
+    _both_choices = ()
+    _dividing_track_ids_analyze = ()
+    _normal_track_ids_analyze = ()
+    _both_track_ids_analyze = ()
 
     def _raise(e):
         if isinstance(e, BaseException):
@@ -191,8 +196,8 @@ def plugin_wrapper_track():
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
-    def _refreshTrackData(unique_tracks, unique_tracks_properties):
-
+    def _refreshTrackData(pred):
+        unique_tracks, unique_tracks_properties = pred
         features = {
             "time": map(int, np.asarray(unique_tracks_properties)[:, 0]),
             "generation": map(int, np.asarray(unique_tracks_properties)[:, 1]),
@@ -206,12 +211,37 @@ def plugin_wrapper_track():
             "mean-intensity_ch2": map(
                 float, np.asarray(unique_tracks_properties)[:, 5]
             ),
+            "radius_pixels": map(
+                float, np.asarray(unique_tracks_properties)[:, 6]
+            ),
         }
         for layer in list(plugin.viewer.value.layers):
-            if "Track" == layer.name or "Track_points" == layer.name:
+            if "Track" == layer.name or "Boxes" == layer.name:
                 plugin.viewer.value.layers.remove(layer)
-        vertices = unique_tracks[:, 1:]
-        plugin.viewer.value.add_points(vertices, size=2, name="Track_points")
+        # vertices = unique_tracks[:, 1:]
+        _boxes = []
+        _sizes = []
+        ndim = unique_tracks.shape[1] - 1
+        for i in range(unique_tracks.shape[0]):
+            # TZYX
+            current_tracklet_location = unique_tracks[i][1:]
+            current_tracklet_properties = unique_tracks_properties[i][-2:-1]
+            _boxes.append([location for location in current_tracklet_location])
+            _sizes.append(
+                [
+                    math.pow(volume, 1.0 / 2.0)
+                    for volume in current_tracklet_properties
+                ]
+            )
+
+        plugin.viewer.value.add_points(
+            np.array(_boxes),
+            size=np.array(_sizes),
+            name="Boxes",
+            face_color=[0] * 4,
+            edge_color="green",
+            ndim=ndim,
+        )
         plugin.viewer.value.add_tracks(
             unique_tracks,
             name="Track",
@@ -354,14 +384,10 @@ def plugin_wrapper_track():
             widget_type="ComboBox",
             visible=True,
             label="Select Track ID to analyze",
-            choices=[TrackidBox],
-            value=TrackidBox,
+            choices=_current_choices,
         ),
         defaults_model_button=dict(
             widget_type="PushButton", text="Restore Model Defaults"
-        ),
-        show_track_id_button=dict(
-            widget_type="PushButton", text="Display Selected Tracks"
         ),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
@@ -382,7 +408,6 @@ def plugin_wrapper_track():
         track_model_type,
         track_id_box,
         defaults_model_button,
-        show_track_id_button,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
@@ -402,12 +427,11 @@ def plugin_wrapper_track():
 
         nonlocal worker, _trackmate_objects
 
-        def progress_thread(current_time):
+        progress_bar.label = "Analyzing Tracks"
 
-            progress_bar.label = "Analyzing Tracks"
-            # progress_bar.range = (0, n_frames - 1)
-            progress_bar.value = current_time
-            progress_bar.show()
+        # progress_bar.range = (0, n_frames - 1)
+        progress_bar.value = 0
+        progress_bar.show()
 
         _trackmate_objects = TrackMate(
             xml_path,
@@ -420,10 +444,7 @@ def plugin_wrapper_track():
             x,
             x_mask,
         )
-        worker = _refreshStatPlotData()
-        worker.returned.connect(plot_main)
-
-        select_track_nature()
+        _refreshStatPlotData()
 
         plugin_color_parameters.track_attributes.choices = (
             _trackmate_objects.TrackAttributeids
@@ -436,10 +457,8 @@ def plugin_wrapper_track():
     plugin.label_head.native.setSizePolicy(
         QSizePolicy.MinimumExpanding, QSizePolicy.Fixed
     )
+    plugin.progress_bar.hide()
 
-    plugin.show_track_id_button.native.setStyleSheet(
-        "background-color: orange"
-    )
     tabs = QTabWidget()
 
     parameter_function_tab = QWidget()
@@ -472,45 +491,6 @@ def plugin_wrapper_track():
     def plot_main():
 
         trackid_key = _trackmate_objects.track_analysis_spot_keys["track_id"]
-
-        root_cells = []
-        columns = None
-        root_cells = None
-        unique_cells = _trackmate_objects.unique_spot_properties
-        unique_tracks = _trackmate_objects.unique_tracks
-        time_key = _trackmate_objects.frameid_key
-        id_key = _trackmate_objects.trackid_key
-        size_key = _trackmate_objects.quality_key
-        for (k, v) in tqdm(unique_cells.items()):
-            if _trackmate_objects.beforeid_key in v.keys():
-                is_root = v[_trackmate_objects.beforeid_key]
-
-                if is_root is None:
-                    if columns is None:
-                        columns = [value for value in v.keys()]
-                    float_list = list(v.values())
-                    if root_cells is None:
-                        root_cells = np.asarray(float_list)
-                    else:
-                        root_cells = np.vstack(
-                            (root_cells, np.asarray(float_list))
-                        )
-        print(f"Making pandas dataframe  {root_cells.shape}")
-        columns[0] = "Root_Cell_ID"
-        df = pd.DataFrame(root_cells, columns=columns, dtype=object)
-        print("Making pandas Model")
-        table_tab.data = pandasModel(df)
-        table_tab.viewer = plugin.viewer.value
-        table_tab.unique_tracks = unique_tracks
-
-        table_tab.size_key = size_key
-        table_tab.time_key = time_key
-        table_tab.id_key = id_key
-        table_tab.zcalibration = _trackmate_objects.zcalibration
-        table_tab.ycalibration = _trackmate_objects.ycalibration
-        table_tab.xcalibration = _trackmate_objects.xcalibration
-        table_tab._set_model()
-
         for k in _trackmate_objects.AllTrackValues.keys():
             if k is not trackid_key:
                 TrackAttr = []
@@ -616,42 +596,105 @@ def plugin_wrapper_track():
             if isinstance(layer, napari.layers.Tracks):
                 table_tab.layer = layer
 
-    @thread_worker(connect={"returned": [plot_main]})
     def _refreshStatPlotData():
-        nonlocal _trackmate_objects
+        nonlocal _trackmate_objects, _current_choices, _dividing_choices, _normal_choices, _both_choices, _dividing_track_ids_analyze, _normal_track_ids_analyze, _both_track_ids_analyze
         hist_plot_class._reset_container(hist_plot_class.scroll_layout)
         stat_plot_class._reset_container(stat_plot_class.scroll_layout)
 
+        root_cells = []
+        columns = None
+        root_cells = None
+        unique_cells = _trackmate_objects.unique_spot_properties
+        unique_tracks = _trackmate_objects.unique_tracks
+        unique_track_properties = _trackmate_objects.unique_track_properties
+        time_key = _trackmate_objects.frameid_key
+        id_key = _trackmate_objects.trackid_key
+        size_key = _trackmate_objects.quality_key
+        dividing_key = _trackmate_objects.dividing_key
+        _dividing_choices = TrackidBox
+        _dividing_choices = _trackmate_objects.DividingTrackIds
+
+        _dividing_track_ids_analyze = (
+            _trackmate_objects.DividingTrackIds.copy()
+        )
+        if None in _dividing_track_ids_analyze:
+            _dividing_track_ids_analyze.remove(None)
+        if TrackidBox in _dividing_track_ids_analyze:
+            _dividing_track_ids_analyze.remove(TrackidBox)
+
+        _normal_choices = TrackidBox
+        _normal_choices = _trackmate_objects.NormalTrackIds
+        _normal_track_ids_analyze = _trackmate_objects.NormalTrackIds.copy()
+        if None in _normal_track_ids_analyze:
+            _normal_track_ids_analyze.remove(None)
+        if TrackidBox in _normal_track_ids_analyze:
+            _normal_track_ids_analyze.remove(TrackidBox)
+
+        _both_choices = TrackidBox
+        _both_choices = _trackmate_objects.AllTrackIds
+        _both_track_ids_analyze = _trackmate_objects.AllTrackIds.copy()
+        if TrackidBox in _both_track_ids_analyze:
+            _both_track_ids_analyze.remove(TrackidBox)
+        if None in _both_track_ids_analyze:
+            _both_track_ids_analyze.remove(None)
+        plugin.progress_bar.range = (0, len(unique_cells) - 1)
+
+        for count, (k, v) in enumerate(unique_cells.items()):
+
+            if _trackmate_objects.beforeid_key in v.keys():
+                is_root = v[_trackmate_objects.beforeid_key]
+
+                if is_root is None:
+                    if columns is None:
+                        columns = [value for value in v.keys()]
+                    float_list = list(v.values())
+                    if root_cells is None:
+                        root_cells = np.asarray(float_list)
+                    else:
+                        root_cells = np.vstack(
+                            (root_cells, np.asarray(float_list))
+                        )
+            plugin.progress_bar.value = count
+        print(f"Making pandas dataframe  {root_cells.shape}")
+        columns[0] = "Root_Cell_ID"
+        df = pd.DataFrame(root_cells, columns=columns, dtype=object)
+        print("Making pandas Model")
+        table_tab.data = pandasModel(df)
+        table_tab.viewer = plugin.viewer.value
+        table_tab.unique_tracks = unique_tracks
+        table_tab.unique_track_properties = unique_track_properties
+        table_tab.size_key = size_key
+        table_tab.time_key = time_key
+        table_tab.id_key = id_key
+        table_tab.dividing_key = dividing_key
+        table_tab.zcalibration = _trackmate_objects.zcalibration
+        table_tab.ycalibration = _trackmate_objects.ycalibration
+        table_tab.xcalibration = _trackmate_objects.xcalibration
+        table_tab._plugin = plugin
+        table_tab.normal_choices = _normal_choices
+        table_tab.dividing_choices = _dividing_choices
+        table_tab._set_model()
+
+        select_track_nature()
+
+        plot_main()
+
     def select_track_nature():
         key = plugin.track_model_type.value
-        nonlocal _trackmate_objects, _track_ids_analyze
+        nonlocal _trackmate_objects, _track_ids_analyze, _dividing_track_ids_analyze, _normal_track_ids_analyze, _both_track_ids_analyze, _current_choices
         if _trackmate_objects is not None:
             if key == "Dividing":
-                plugin.track_id_box.choices = TrackidBox
-                plugin.track_id_box.choices = (
-                    _trackmate_objects.DividingTrackIds
-                )
-                _track_ids_analyze = _trackmate_objects.DividingTrackIds.copy()
-                if "" in _track_ids_analyze:
-                    _track_ids_analyze.remove("")
-                if TrackidBox in _track_ids_analyze:
-                    _track_ids_analyze.remove(TrackidBox)
+                plugin.track_id_box.choices = _dividing_choices
+                _track_ids_analyze = _dividing_track_ids_analyze
+                _current_choices = _dividing_choices
             if key == "Non-Dividing":
-                plugin.track_id_box.choices = TrackidBox
-                plugin.track_id_box.choices = _trackmate_objects.NormalTrackIds
-                _track_ids_analyze = _trackmate_objects.NormalTrackIds.copy()
-                if "" in _track_ids_analyze:
-                    _track_ids_analyze.remove("")
-                if TrackidBox in _track_ids_analyze:
-                    _track_ids_analyze.remove(TrackidBox)
+                plugin.track_id_box.choices = _normal_choices
+                _track_ids_analyze = _normal_track_ids_analyze
+                _current_choices = _normal_choices
             if key == "Both":
-                plugin.track_id_box.choices = TrackidBox
-                plugin.track_id_box.choices = _trackmate_objects.AllTrackIds
-                _track_ids_analyze = _trackmate_objects.AllTrackIds.copy()
-                if TrackidBox in _track_ids_analyze:
-                    _track_ids_analyze.remove(TrackidBox)
-                if "" in _track_ids_analyze:
-                    _track_ids_analyze.remove("")
+                plugin.track_id_box.choices = _both_choices
+                _track_ids_analyze = _both_track_ids_analyze
+                _current_choices = _both_choices
 
             _track_ids_analyze = list(map(int, _track_ids_analyze))
 
@@ -665,48 +708,47 @@ def plugin_wrapper_track():
                 "" if valid else "background-color: red"
             )
 
+    def show_track(track_id):
+
+        unique_tracks = []
+        unique_tracks_properties = []
+
+        if track_id not in TrackidBox and track_id is not None:
+            _to_analyze = [int(track_id)]
+        else:
+            _to_analyze = _track_ids_analyze.copy()
+
+        for unique_track_id in tqdm(_to_analyze):
+
+            tracklets = _trackmate_objects.unique_tracks[unique_track_id]
+            tracklets_properties = _trackmate_objects.unique_track_properties[
+                unique_track_id
+            ]
+            unique_tracks.append(tracklets)
+            unique_tracks_properties.append(tracklets_properties)
+
+        unique_tracks = np.concatenate(unique_tracks, axis=0)
+        unique_tracks_properties = np.concatenate(
+            unique_tracks_properties, axis=0
+        )
+        pred = unique_tracks, unique_tracks_properties
+        _refreshTrackData(pred)
+
     @change_handler(plugin.track_id_box, init=False)
-    def _track_id_box_change(value):
-        plugin.track_id_box.value = value
+    def _track_id_box_change():
 
-    @change_handler(
-        plugin.show_track_id_button,
-        init=False,
-    )
-    def _analyze_id():
-
+        nonlocal worker
+        value = plugin.track_id_box.value
+        print(plugin.track_id_box.value)
         nonlocal _track_ids_analyze, _trackmate_objects
-        if _trackmate_objects is not None and _track_ids_analyze is not None:
+        if (
+            _trackmate_objects is not None
+            and _track_ids_analyze is not None
+            and value is not None
+        ):
 
-            track_id = plugin.track_id_box.value
-            unique_tracks = []
-            unique_tracks_properties = []
-
-            if track_id not in TrackidBox and track_id not in "":
-                _to_analyze = [int(track_id)]
-            else:
-                _to_analyze = _track_ids_analyze.copy()
-
-            for unique_track_id in tqdm(_to_analyze):
-
-                tracklets = _trackmate_objects.unique_tracks[unique_track_id]
-                tracklets_properties = (
-                    _trackmate_objects.unique_track_properties[unique_track_id]
-                )
-                unique_tracks.append(tracklets)
-                unique_tracks_properties.append(tracklets_properties)
-
-            unique_tracks = np.concatenate(unique_tracks, axis=0)
-            print("concatenated tracks")
-            unique_tracks_properties = np.concatenate(
-                unique_tracks_properties, axis=0
-            )
-            print("concatenated properties")
-            _refreshTrackData(unique_tracks, unique_tracks_properties)
-        selected = plugin.track_model_type
-        selected.changed(selected.value)
-        if track_id is not None:
-            plugin.track_id_box.value = track_id
+            track_id = value
+            show_track(track_id)
 
     @change_handler(plugin.track_model_type, init=False)
     def _change_track_model_type(value):
