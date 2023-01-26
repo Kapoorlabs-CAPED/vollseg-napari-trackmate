@@ -212,7 +212,9 @@ def plugin_wrapper_track():
                 float, np.asarray(unique_tracks_properties)[:, 5]
             ),
             "radius_pixels": map(
-                float, np.asarray(unique_tracks_properties)[:, 6]
+                float,
+                np.asarray(unique_tracks_properties)[:, 6],
+                dtype="float64",
             ),
         }
         for layer in list(plugin.viewer.value.layers):
