@@ -217,9 +217,13 @@ def plugin_wrapper_track():
             ),
         }
         for layer in list(plugin.viewer.value.layers):
-            if "Track" == layer.name or "Boxes" == layer.name:
+            if (
+                "Track" == layer.name
+                or "Boxes" == layer.name
+                or "Track_points" == layer.name
+            ):
                 plugin.viewer.value.layers.remove(layer)
-        # vertices = unique_tracks[:, 1:]
+        vertices = unique_tracks[:, 1:]
         _boxes = []
         _sizes = []
         ndim = unique_tracks.shape[1] - 1
@@ -228,13 +232,8 @@ def plugin_wrapper_track():
             current_tracklet_location = unique_tracks[i][1:]
             current_tracklet_properties = unique_tracks_properties[i][-2:-1]
             _boxes.append([location for location in current_tracklet_location])
-            _sizes.append(
-                [
-                    math.pow(volume, 1.0 / 2.0)
-                    for volume in current_tracklet_properties
-                ]
-            )
-
+            _sizes.append([volume for volume in current_tracklet_properties])
+        plugin.viewer.value.add_points(vertices, size=2, name="Track_points")
         plugin.viewer.value.add_points(
             np.array(_boxes),
             size=np.array(_sizes),
