@@ -214,9 +214,9 @@ def plugin_wrapper_track():
             "radius_pixels": map(
                 float,
                 np.asarray(unique_tracks_properties)[:, 6],
-                dtype="float64",
             ),
         }
+        print(np.asarray(unique_tracks_properties)[:, 6])
         for layer in list(plugin.viewer.value.layers):
             if "Track" == layer.name or "Boxes" == layer.name:
                 plugin.viewer.value.layers.remove(layer)
