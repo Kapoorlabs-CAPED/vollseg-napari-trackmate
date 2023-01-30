@@ -286,7 +286,7 @@ def plugin_wrapper_track():
                     float(current_spot[posix])
                     / _trackmate_objects.xcalibration
                 )
-                time = current_spot[frame]
+                time = int(float(current_spot[frame]))
 
                 if spot_attribute in current_spot.keys():
                     attr = current_spot[spot_attribute]
@@ -334,7 +334,7 @@ def plugin_wrapper_track():
                         float(current_spot[posix])
                         / _trackmate_objects.xcalibration
                     )
-                    time = current_spot[frame]
+                    time = int(float(current_spot[frame]))
 
                     if len(x_seg.shape) == 4:
                         centroid = (time, z, y, x)
