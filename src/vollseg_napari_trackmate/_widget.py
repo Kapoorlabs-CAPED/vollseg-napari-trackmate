@@ -290,6 +290,9 @@ def plugin_wrapper_track():
                             centroid = (int(time), int(y), int(x))
                         print([attr, centroid])
                         locations.append([attr, centroid])
+            new_seg_image = Relabel(x_seg.copy(), locations)
+
+            pred = new_seg_image, attribute
 
         if track_attribute != TrackAttributeBoxname:
 
@@ -327,9 +330,9 @@ def plugin_wrapper_track():
                 print([attr, centroid])
                 locations.append([attr, centroid])
 
-        new_seg_image = Relabel(x_seg.copy(), locations)
+            new_seg_image = Relabel(x_seg.copy(), locations)
 
-        pred = new_seg_image, attribute
+            pred = new_seg_image, attribute
 
         return pred
 
