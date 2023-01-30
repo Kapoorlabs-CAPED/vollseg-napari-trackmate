@@ -83,7 +83,7 @@ def plugin_wrapper_track():
         relabeled = map_array(
             Newseg_image, np.asarray(originallabels), np.asarray(newlabels)
         )
-
+        print(np.asarray(originallabels), np.asarray(newlabels))
         return relabeled
 
     def get_label_data(image, debug=DEBUG):
