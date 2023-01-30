@@ -275,6 +275,7 @@ def plugin_wrapper_track():
             ):
                 yield count
                 locations = []
+                print(k, spot_attribute)
                 if k == spot_attribute:
 
                     for attr, time, z, y, x in tqdm(
