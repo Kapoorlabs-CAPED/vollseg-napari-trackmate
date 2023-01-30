@@ -278,6 +278,7 @@ def plugin_wrapper_track():
                 y = current_spot[posiy]
                 x = current_spot[posix]
                 time = current_spot[frame]
+                print(current_spot.keys())
                 if spot_attribute in current_spot.keys():
                     attr = current_spot[spot_attribute]
                     if len(x_seg.shape) == 4:
