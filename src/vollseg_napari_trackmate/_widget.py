@@ -272,7 +272,7 @@ def plugin_wrapper_track():
 
             attribute = spot_attribute
             for count, (k, v) in enumerate(
-                _trackmate_objects.track_analysis_spot_keys.values()
+                _trackmate_objects.track_analysis_spot_keys.items()
             ):
                 yield count
                 locations = []
