@@ -289,7 +289,7 @@ def plugin_wrapper_track():
                 time = int(float(current_spot[frame]))
 
                 if spot_attribute in current_spot.keys():
-                    attr = current_spot[spot_attribute]
+                    attr = int(float(current_spot[spot_attribute]))
                     if len(x_seg.shape) == 4:
                         centroid = (time, z, y, x)
                     else:
