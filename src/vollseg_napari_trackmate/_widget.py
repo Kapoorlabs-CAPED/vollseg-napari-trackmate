@@ -252,6 +252,7 @@ def plugin_wrapper_track():
 
         if not isinstance(pred, int):
             new_seg_image, attribute = pred
+            new_seg_image = new_seg_image.astype("uint16")
             for layer in list(plugin.viewer.value.layers):
                 if attribute in layer.name:
                     plugin.viewer.value.layers.remove(layer)
@@ -270,8 +271,8 @@ def plugin_wrapper_track():
         if spot_attribute != AttributeBoxname:
 
             attribute = spot_attribute
-            for count, k in enumerate(
-                _trackmate_objects.track_analysis_spot_keys.keys()
+            for count, (k, v) in enumerate(
+                _trackmate_objects.track_analysis_spot_keys.values()
             ):
                 yield count
                 locations = []
@@ -280,13 +281,13 @@ def plugin_wrapper_track():
 
                     for attr, time, z, y, x in tqdm(
                         zip(
-                            _trackmate_objects.AllValues[k],
+                            _trackmate_objects.AllValues[v],
                             _trackmate_objects.AllValues[frame],
                             _trackmate_objects.AllValues[posiz],
                             _trackmate_objects.AllValues[posiy],
                             _trackmate_objects.AllValues[posix],
                         ),
-                        total=len(_trackmate_objects.AllValues[k]),
+                        total=len(_trackmate_objects.AllValues[v]),
                     ):
                         if len(x_seg.shape) == 4:
                             centroid = (time, z, y, x)
