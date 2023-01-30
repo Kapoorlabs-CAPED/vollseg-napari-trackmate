@@ -271,26 +271,21 @@ def plugin_wrapper_track():
 
             attribute = spot_attribute
             locations = []
-            for count, (k, v) in enumerate(
-                _trackmate_objects.track_analysis_spot_keys.items()
-            ):
-                yield count
 
-                if k == spot_attribute:
+            for (k, v) in _trackmate_objects.unique_spot_properties.items():
+                current_spot = _trackmate_objects.unique_spot_properties[k]
+                z = current_spot[posiz]
+                y = current_spot[posiy]
+                x = current_spot[posix]
+                time = current_spot[frame]
+                if spot_attribute in current_spot.keys():
+                    attr = current_spot[spot_attribute]
+                    if len(x_seg.shape) == 4:
+                        centroid = (time, z, y, x)
+                    else:
+                        centroid = (time, y, x)
+                    locations.append([attr, centroid])
 
-                    for attr, time, z, y, x in zip(
-                        _trackmate_objects.AllValues[v],
-                        _trackmate_objects.AllValues[frame],
-                        _trackmate_objects.AllValues[posiz],
-                        _trackmate_objects.AllValues[posiy],
-                        _trackmate_objects.AllValues[posix],
-                    ):
-                        if len(x_seg.shape) == 4:
-                            centroid = (time, z, y, x)
-                        else:
-                            centroid = (time, y, x)
-
-                        locations.append([attr, centroid])
             new_seg_image = Relabel(x_seg.copy(), locations)
 
             pred = new_seg_image, attribute
@@ -314,22 +309,21 @@ def plugin_wrapper_track():
                             idattr[trackid] = attr
 
             locations = []
-            for trackid, time, z, y, x in zip(
-                _trackmate_objects.AllValues[track_id],
-                _trackmate_objects.AllValues[frame],
-                _trackmate_objects.AllValues[posiz],
-                _trackmate_objects.AllValues[posiy],
-                _trackmate_objects.AllValues[posix],
-            ):
+            for (k, v) in _trackmate_objects.unique_spot_properties.items():
+                current_spot = _trackmate_objects.unique_spot_properties[k]
+                if track_id in current_spot.keys():
+                    z = current_spot[posiz]
+                    y = current_spot[posiy]
+                    x = current_spot[posix]
+                    time = current_spot[frame]
 
-                if len(x_seg.shape) == 4:
-                    centroid = (time, z, y, x)
-                else:
-                    centroid = (time, y, x)
-
-                attr = idattr[trackid]
-                print([attr, centroid])
-                locations.append([attr, centroid])
+                    if len(x_seg.shape) == 4:
+                        centroid = (time, z, y, x)
+                    else:
+                        centroid = (time, y, x)
+                    trackid = current_spot[track_id]
+                    attr = idattr[trackid]
+                    locations.append([attr, centroid])
 
             new_seg_image = Relabel(x_seg.copy(), locations)
 
