@@ -274,9 +274,18 @@ def plugin_wrapper_track():
 
             for (k, v) in _trackmate_objects.unique_spot_properties.items():
                 current_spot = _trackmate_objects.unique_spot_properties[k]
-                z = int(current_spot[posiz] / _trackmate_objects.zcalibration)
-                y = int(current_spot[posiy] / _trackmate_objects.ycalibration)
-                x = int(current_spot[posix] / _trackmate_objects.xcalibration)
+                z = int(
+                    float(current_spot[posiz])
+                    / _trackmate_objects.zcalibration
+                )
+                y = int(
+                    float(current_spot[posiy])
+                    / _trackmate_objects.ycalibration
+                )
+                x = int(
+                    float(current_spot[posix])
+                    / _trackmate_objects.xcalibration
+                )
                 time = current_spot[frame]
 
                 if spot_attribute in current_spot.keys():
@@ -314,13 +323,16 @@ def plugin_wrapper_track():
                 current_spot = _trackmate_objects.unique_spot_properties[k]
                 if track_id in current_spot.keys():
                     z = int(
-                        current_spot[posiz] / _trackmate_objects.zcalibration
+                        float(current_spot[posiz])
+                        / _trackmate_objects.zcalibration
                     )
                     y = int(
-                        current_spot[posiy] / _trackmate_objects.ycalibration
+                        float(current_spot[posiy])
+                        / _trackmate_objects.ycalibration
                     )
                     x = int(
-                        current_spot[posix] / _trackmate_objects.xcalibration
+                        float(current_spot[posix])
+                        / _trackmate_objects.xcalibration
                     )
                     time = current_spot[frame]
 
