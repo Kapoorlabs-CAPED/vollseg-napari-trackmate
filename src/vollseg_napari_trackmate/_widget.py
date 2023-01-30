@@ -62,6 +62,8 @@ def plugin_wrapper_track():
         relabeled = np.zeros_like(image)
         originallabels = {}
         newlabels = {}
+        current_label_array = []
+        new_label_array = []
         for relabelval, centroid in locations:
 
             if len(Newseg_image.shape) == 4:
@@ -74,8 +76,10 @@ def plugin_wrapper_track():
                     new_label_array.append(relabelval)
                     newlabels[time] = new_label_array
                 else:
-                    originallabels[time] = Newseg_image[time, z, y, x]
-                    newlabels[time] = relabelval
+                    current_label_array.append(Newseg_image[time, z, y, x])
+                    originallabels[time] = current_label_array
+                    new_label_array.append(relabelval)
+                    newlabels[time] = new_label_array
             else:
                 time, y, x = centroid
                 if time in originallabels:
@@ -87,8 +91,10 @@ def plugin_wrapper_track():
                     newlabels[time] = new_label_array
 
                 else:
-                    originallabels[time] = Newseg_image[time, y, x]
-                    newlabels[time] = relabelval
+                    current_label_array.append(Newseg_image[time, y, x])
+                    originallabels[time] = current_label_array
+                    new_label_array.append(relabelval)
+                    newlabels[time] = new_label_array
 
         for (k, v) in originallabels.items():
 
