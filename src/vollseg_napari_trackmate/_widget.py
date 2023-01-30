@@ -340,7 +340,7 @@ def plugin_wrapper_track():
                         centroid = (time, z, y, x)
                     else:
                         centroid = (time, y, x)
-                    trackid = current_spot[track_id]
+                    trackid = int(float(current_spot[track_id]))
                     attr = idattr[trackid]
                     locations.append([attr, centroid])
 
