@@ -275,7 +275,6 @@ def plugin_wrapper_track():
             ):
                 yield count
                 locations = []
-                print(k, spot_attribute)
                 if k == spot_attribute:
 
                     for attr, time, z, y, x in zip(
@@ -286,9 +285,9 @@ def plugin_wrapper_track():
                         _trackmate_objects.AllValues[posix],
                     ):
                         if len(x_seg.shape) == 4:
-                            centroid = (time, z, y, x)
+                            centroid = (int(time), int(z), int(y), int(x))
                         else:
-                            centroid = (time, y, x)
+                            centroid = (int(time), int(y), int(x))
                         print([attr, centroid])
                         locations.append([attr, centroid])
 
@@ -320,11 +319,12 @@ def plugin_wrapper_track():
             ):
 
                 if len(x_seg.shape) == 4:
-                    centroid = (time, z, y, x)
+                    centroid = (int(time), int(z), int(y), int(x))
                 else:
-                    centroid = (time, y, x)
+                    centroid = (int(time), int(y), int(x))
 
                 attr = idattr[trackid]
+                print([attr, centroid])
                 locations.append([attr, centroid])
 
         new_seg_image = Relabel(x_seg.copy(), locations)
