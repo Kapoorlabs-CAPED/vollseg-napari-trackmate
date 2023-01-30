@@ -286,9 +286,9 @@ def plugin_wrapper_track():
                         _trackmate_objects.AllValues[posix],
                     ):
                         if len(x_seg.shape) == 4:
-                            centroid = (int(time), int(z), int(y), int(x))
+                            centroid = (time, z, y, x)
                         else:
-                            centroid = (int(time), int(y), int(x))
+                            centroid = (time, y, x)
 
                         locations.append([attr, centroid])
             new_seg_image = Relabel(x_seg.copy(), locations)
@@ -323,9 +323,9 @@ def plugin_wrapper_track():
             ):
 
                 if len(x_seg.shape) == 4:
-                    centroid = (int(time), int(z), int(y), int(x))
+                    centroid = (time, z, y, x)
                 else:
-                    centroid = (int(time), int(y), int(x))
+                    centroid = (time, y, x)
 
                 attr = idattr[trackid]
                 print([attr, centroid])
