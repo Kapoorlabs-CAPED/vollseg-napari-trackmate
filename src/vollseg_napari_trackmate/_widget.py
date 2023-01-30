@@ -59,32 +59,44 @@ def plugin_wrapper_track():
 
         print("Relabelling image with chosen trackmate attribute")
         Newseg_image = np.copy(image)
-        originallabels = []
-        newlabels = []
+        relabeled = np.zeros_like(image)
+        originallabels = {}
+        newlabels = {}
         for relabelval, centroid in locations:
-            if relabelval == 405:
-                print("here", relabelval, centroid)
+
             if len(Newseg_image.shape) == 4:
                 time, z, y, x = centroid
+                if time in originallabels:
+                    current_label_array = originallabels[time]
+                    current_label_array.append(Newseg_image[time, z, y, x])
+                    originallabels[time] = current_label_array
+                    new_label_array = newlabels[time]
+                    new_label_array.append(relabelval)
+                    newlabels[time] = new_label_array
+                else:
+                    originallabels[time] = Newseg_image[time, z, y, x]
+                    newlabels[time] = relabelval
             else:
                 time, y, x = centroid
+                if time in originallabels:
+                    current_label_array = originallabels[time]
+                    current_label_array.append(Newseg_image[time, y, x])
+                    originallabels[time] = current_label_array
+                    new_label_array = newlabels[time]
+                    new_label_array.append(relabelval)
+                    newlabels[time] = new_label_array
 
-            if len(Newseg_image.shape) == 4:
-                originallabel = Newseg_image[time, z, y, x]
-            else:
-                originallabel = Newseg_image[time, y, x]
+                else:
+                    originallabels[time] = Newseg_image[time, y, x]
+                    newlabels[time] = relabelval
 
-            if originallabel == 0:
-                relabelval = 0
-            if math.isnan(relabelval):
-                relabelval = -1
-            originallabels.append(int(originallabel))
-            newlabels.append(int(relabelval))
+        for (k, v) in originallabels.items():
 
-        relabeled = map_array(
-            Newseg_image, np.asarray(originallabels), np.asarray(newlabels)
-        )
-        print(np.asarray(originallabels), np.asarray(newlabels))
+            relabeled[k, :] = map_array(
+                Newseg_image[k, :],
+                np.asarray(originallabels[k]),
+                np.asarray(newlabels[k]),
+            )
         return relabeled
 
     def get_label_data(image, debug=DEBUG):
