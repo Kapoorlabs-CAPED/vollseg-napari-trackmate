@@ -62,7 +62,8 @@ def plugin_wrapper_track():
         originallabels = []
         newlabels = []
         for relabelval, centroid in locations:
-            print("here", relabelval, centroid)
+            if relabelval == 405:
+                print("here", relabelval, centroid)
             if len(Newseg_image.shape) == 4:
                 time, z, y, x = centroid
             else:
