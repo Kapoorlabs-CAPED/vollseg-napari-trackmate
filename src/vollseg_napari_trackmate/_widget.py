@@ -18,7 +18,6 @@ from magicgui import magicgui
 from magicgui import widgets as mw
 from psygnal import Signal
 from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
-from tqdm import tqdm
 
 
 def plugin_wrapper_track():
@@ -279,21 +278,18 @@ def plugin_wrapper_track():
                 print(k, spot_attribute)
                 if k == spot_attribute:
 
-                    for attr, time, z, y, x in tqdm(
-                        zip(
-                            _trackmate_objects.AllValues[v],
-                            _trackmate_objects.AllValues[frame],
-                            _trackmate_objects.AllValues[posiz],
-                            _trackmate_objects.AllValues[posiy],
-                            _trackmate_objects.AllValues[posix],
-                        ),
-                        total=len(_trackmate_objects.AllValues[v]),
+                    for attr, time, z, y, x in zip(
+                        _trackmate_objects.AllValues[v],
+                        _trackmate_objects.AllValues[frame],
+                        _trackmate_objects.AllValues[posiz],
+                        _trackmate_objects.AllValues[posiy],
+                        _trackmate_objects.AllValues[posix],
                     ):
                         if len(x_seg.shape) == 4:
                             centroid = (time, z, y, x)
                         else:
                             centroid = (time, y, x)
-
+                        print([attr, centroid])
                         locations.append([attr, centroid])
 
         if track_attribute != TrackAttributeBoxname:
@@ -305,12 +301,9 @@ def plugin_wrapper_track():
 
                 if k == track_attribute:
 
-                    for attr, trackid in tqdm(
-                        zip(
-                            _trackmate_objects.AllTrackValues[k],
-                            _trackmate_objects.AllTrackValues[track_id],
-                        ),
-                        total=len(_trackmate_objects.AllTrackValues[k]),
+                    for attr, trackid in zip(
+                        _trackmate_objects.AllTrackValues[k],
+                        _trackmate_objects.AllTrackValues[track_id],
                     ):
                         if math.isnan(trackid):
                             continue
@@ -318,15 +311,12 @@ def plugin_wrapper_track():
                             idattr[trackid] = attr
 
             locations = []
-            for trackid, time, z, y, x in tqdm(
-                zip(
-                    _trackmate_objects.AllValues[track_id],
-                    _trackmate_objects.AllValues[frame],
-                    _trackmate_objects.AllValues[posiz],
-                    _trackmate_objects.AllValues[posiy],
-                    _trackmate_objects.AllValues[posix],
-                ),
-                total=len(_trackmate_objects.AllValues[track_id]),
+            for trackid, time, z, y, x in zip(
+                _trackmate_objects.AllValues[track_id],
+                _trackmate_objects.AllValues[frame],
+                _trackmate_objects.AllValues[posiz],
+                _trackmate_objects.AllValues[posiy],
+                _trackmate_objects.AllValues[posix],
             ):
 
                 if len(x_seg.shape) == 4:
@@ -496,12 +486,9 @@ def plugin_wrapper_track():
         for k in _trackmate_objects.AllTrackValues.keys():
             if k is not trackid_key:
                 TrackAttr = []
-                for attr, trackid in tqdm(
-                    zip(
-                        _trackmate_objects.AllTrackValues[k],
-                        _trackmate_objects.AllTrackValues[trackid_key],
-                    ),
-                    total=len(_trackmate_objects.AllTrackValues[k]),
+                for attr, trackid in zip(
+                    _trackmate_objects.AllTrackValues[k],
+                    _trackmate_objects.AllTrackValues[trackid_key],
                 ):
 
                     TrackAttr.append(float(attr))
@@ -720,7 +707,7 @@ def plugin_wrapper_track():
         else:
             _to_analyze = _track_ids_analyze.copy()
 
-        for unique_track_id in tqdm(_to_analyze):
+        for unique_track_id in _to_analyze:
 
             tracklets = _trackmate_objects.unique_tracks[unique_track_id]
             tracklets_properties = _trackmate_objects.unique_track_properties[
