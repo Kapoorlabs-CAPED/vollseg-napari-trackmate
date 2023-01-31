@@ -668,8 +668,14 @@ def plugin_wrapper_track():
             plugin.progress_bar.value = count
         print(f"Making pandas dataframe  {root_cells.shape}")
         columns[0] = "Root_Cell_ID"
+        colindex = 0
+        for i in range(len(columns)):
+            col = columns[i]
+            if col == id_key:
+                colindex = i
+
         df = pd.DataFrame(
-            root_cells, columns=columns, index=columns[id_key], dtype=object
+            root_cells, columns=columns, index=columns[colindex], dtype=object
         )
         df = df.round(decimals=2)
         print("Making pandas Model")
