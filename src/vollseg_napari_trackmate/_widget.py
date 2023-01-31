@@ -669,6 +669,7 @@ def plugin_wrapper_track():
         print(f"Making pandas dataframe  {root_cells.shape}")
         columns[0] = "Root_Cell_ID"
         df = pd.DataFrame(root_cells, columns=columns, dtype=object)
+        df = df.round(decimals=2)
         print("Making pandas Model")
         table_tab.data = pandasModel(df)
         table_tab.viewer = plugin.viewer.value
