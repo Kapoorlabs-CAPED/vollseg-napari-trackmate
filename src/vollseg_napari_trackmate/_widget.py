@@ -673,7 +673,10 @@ def plugin_wrapper_track():
             col = columns[i]
             if col == id_key:
                 colindex = i
-
+        track_id_list = root_cells[:, colindex]
+        root_cells = np.vstack((root_cells, np.asarray(track_id_list)))
+        root_cells[0, :] = root_cells[-1, :]
+        columns.insert(id_key, 0)
         df = pd.DataFrame(
             root_cells,
             columns=columns,
