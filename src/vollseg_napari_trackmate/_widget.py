@@ -675,7 +675,10 @@ def plugin_wrapper_track():
                 colindex = i
 
         df = pd.DataFrame(
-            root_cells, columns=columns, index=columns[colindex], dtype=object
+            root_cells,
+            columns=columns,
+            index=root_cells[colindex],
+            dtype=object,
         )
         df = df.round(decimals=2)
         print("Making pandas Model")
