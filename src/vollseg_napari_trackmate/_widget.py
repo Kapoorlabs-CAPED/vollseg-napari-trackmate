@@ -679,7 +679,7 @@ def plugin_wrapper_track():
             (root_cells, np.asarray(track_id_list)), axis=-1
         )
         root_cells[0, :] = root_cells[-1, :]
-        columns.insert(id_key, 0)
+        columns.insert(0, id_key)
         df = pd.DataFrame(
             root_cells,
             columns=columns,
