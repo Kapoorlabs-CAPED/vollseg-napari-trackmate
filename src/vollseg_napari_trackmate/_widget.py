@@ -677,7 +677,7 @@ def plugin_wrapper_track():
         df = pd.DataFrame(
             root_cells,
             columns=columns,
-            index=root_cells[colindex],
+            index=root_cells[:, colindex],
             dtype=object,
         )
         df = df.round(decimals=2)
