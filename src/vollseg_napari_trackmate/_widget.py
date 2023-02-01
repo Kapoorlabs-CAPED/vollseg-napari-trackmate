@@ -748,7 +748,7 @@ def plugin_wrapper_track():
                 stat_ax.set_xlabel("Time (min)")
                 stat_ax.set_ylabel("um")
 
-            else:
+            if key == "Both":
 
                 stat_plot_class._repeat_after_plot()
                 stat_ax = stat_plot_class.stat_ax
