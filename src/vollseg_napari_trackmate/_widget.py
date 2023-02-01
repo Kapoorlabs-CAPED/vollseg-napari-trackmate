@@ -503,10 +503,12 @@ def plugin_wrapper_track():
     plugin.native.layout().addWidget(tabs)
 
     def plot_main():
-
-        trackid_key = _trackmate_objects.track_analysis_spot_keys["track_id"]
-        key = plugin.track_model_type.value
-        if key is not None:
+        nonlocal _trackmate_objects
+        if _trackmate_objects is not None:
+            trackid_key = _trackmate_objects.track_analysis_spot_keys[
+                "track_id"
+            ]
+            key = plugin.track_model_type.value
             for k in _trackmate_objects.AllTrackValues.keys():
                 if k is not trackid_key:
                     TrackAttr = []
