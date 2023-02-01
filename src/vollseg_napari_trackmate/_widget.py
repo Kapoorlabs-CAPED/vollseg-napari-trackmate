@@ -126,6 +126,7 @@ def plugin_wrapper_track():
 
     worker = None
     _track_ids_analyze = None
+    _to_analyze = None
     _trackmate_objects = None
     track_model_type_choices = [
         ("Dividing", "Dividing"),
@@ -201,6 +202,9 @@ def plugin_wrapper_track():
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
     def _refreshTrackData(pred):
+
+        nonlocal _to_analyze
+
         unique_tracks, unique_tracks_properties = pred
         features = {
             "time": map(int, np.asarray(unique_tracks_properties)[:, 0]),
@@ -223,7 +227,7 @@ def plugin_wrapper_track():
 
         fft_plot_class._reset_container(fft_plot_class.scroll_layout)
         if _track_ids_analyze is not None:
-            _to_analyze = _track_ids_analyze.copy()
+
             unique_fft_properties = []
             for unique_track_id in _to_analyze:
                 (
@@ -312,6 +316,7 @@ def plugin_wrapper_track():
             name="Track",
             features=features,
         )
+        select_track_nature()
 
     def return_color_tracks(pred):
 
@@ -1049,6 +1054,7 @@ def plugin_wrapper_track():
 
     def show_track(track_id):
 
+        nonlocal _track_ids_analyze, _to_analyze
         unique_tracks = []
         unique_tracks_properties = []
 
