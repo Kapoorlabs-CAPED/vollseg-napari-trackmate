@@ -201,7 +201,7 @@ def plugin_wrapper_track():
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
     def _refreshTrackData(pred):
-        unique_tracks, unique_tracks_properties, unique_fft_properties = pred
+        unique_tracks, unique_tracks_properties = pred
         features = {
             "time": map(int, np.asarray(unique_tracks_properties)[:, 0]),
             "generation": map(int, np.asarray(unique_tracks_properties)[:, 1]),
@@ -488,12 +488,16 @@ def plugin_wrapper_track():
     tabs.addTab(color_tracks_tab, "Color Tracks")
 
     hist_plot_class = TemporalStatistics(tabs)
-    hist_plot_tab = hist_plot_class.stat_plot_tab
+    hist_plot_tab = hist_plot_class.plot_tab
     tabs.addTab(hist_plot_tab, "Histogram Statistics")
 
     stat_plot_class = TemporalStatistics(tabs)
-    stat_plot_tab = stat_plot_class.stat_plot_tab
-    tabs.addTab(stat_plot_tab, "Temporal Statistics")
+    plot_tab = stat_plot_class.plot_tab
+    tabs.addTab(plot_tab, "Temporal Statistics")
+
+    fft_plot_class = TemporalStatistics(tabs)
+    fft_plot_tab = fft_plot_class.plot_tab
+    tabs.addTab(fft_plot_tab, "Intensity Oscillations")
 
     table_tab = Tabulour()
     table_tab.clicked.connect(table_tab._on_user_click)
@@ -506,6 +510,61 @@ def plugin_wrapper_track():
 
         hist_plot_class._reset_container(hist_plot_class.scroll_layout)
         stat_plot_class._reset_container(stat_plot_class.scroll_layout)
+        fft_plot_class._reset_container(fft_plot_class.scroll_layout)
+        if _track_ids_analyze is not None:
+            _to_analyze = _track_ids_analyze.copy()
+            unique_fft_properties = []
+            for unique_track_id in _to_analyze:
+                (
+                    time,
+                    xf_sample_ch1,
+                    ffttotal_sample_ch1,
+                    xf_sample_ch2,
+                    ffttotal_sample_ch2,
+                ) = _trackmate_objects.unique_fft_properties[unique_track_id]
+                unique_fft_properties.append(
+                    [
+                        time,
+                        xf_sample_ch1,
+                        ffttotal_sample_ch1,
+                        xf_sample_ch2,
+                        ffttotal_sample_ch2,
+                    ]
+                )
+            fft_plot_class._repeat_after_plot()
+            plot_ax = fft_plot_class.plot_ax
+            plot_ax.cla()
+            for unique_property in unique_fft_properties:
+                (
+                    time,
+                    xf_sample_ch1,
+                    ffttotal_sample_ch1,
+                    xf_sample_ch2,
+                    ffttotal_sample_ch2,
+                ) = unique_property
+                plot_ax.lineplot(
+                    xf_sample_ch1,
+                    ffttotal_sample_ch1,
+                )
+                plot_ax.set_title("FFT Intensity Ch1")
+                plot_ax.set_xlabel("Frequency (1/min)")
+                plot_ax.set_ylabel("Amplitude")
+
+                fft_plot_class._repeat_after_plot()
+                plot_ax = fft_plot_class.plot_ax
+                plot_ax.cla()
+
+                plot_ax.lineplot(
+                    xf_sample_ch2,
+                    ffttotal_sample_ch2,
+                )
+                plot_ax.set_title("FFT Intensity Ch2")
+                plot_ax.set_xlabel("Frequency (1/min)")
+                plot_ax.set_ylabel("Amplitude")
+
+                fft_plot_class._repeat_after_plot()
+                plot_ax = fft_plot_class.plot_ax
+                plot_ax.cla()
 
         nonlocal _trackmate_objects
         if _trackmate_objects is not None:
@@ -538,17 +597,17 @@ def plugin_wrapper_track():
                             TrackAttr.append(float(attr))
 
                     hist_plot_class._repeat_after_plot()
-                    hist_ax = hist_plot_class.stat_ax
+                    hist_ax = hist_plot_class.plot_ax
                     sns.histplot(TrackAttr, kde=True, ax=hist_ax)
                     hist_ax.set_title(str(k))
 
             if key == "Dividing":
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
-                stat_ax.cla()
+                plot_ax = stat_plot_class.plot_ax
+                plot_ax.cla()
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.mitotic_mean_directional_change,
                     _trackmate_objects.mitotic_var_directional_change,
@@ -557,15 +616,15 @@ def plugin_wrapper_track():
                     mfc="green",
                     ecolor="green",
                 )
-                stat_ax.set_title("Instantaneous Directional change")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("angle (degrees)")
+                plot_ax.set_title("Instantaneous Directional change")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
-                stat_ax.cla()
+                plot_ax = stat_plot_class.plot_ax
+                plot_ax.cla()
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.mitotic_mean_speed,
                     _trackmate_objects.mitotic_var_speed,
@@ -574,14 +633,14 @@ def plugin_wrapper_track():
                     mfc="green",
                     ecolor="green",
                 )
-                stat_ax.set_title("Speed")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um/min")
+                plot_ax.set_title("Speed")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um/min")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.mitotic_mean_radius,
                     _trackmate_objects.mitotic_var_radius,
@@ -590,14 +649,14 @@ def plugin_wrapper_track():
                     mfc="green",
                     ecolor="green",
                 )
-                stat_ax.set_title("Radius")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Radius")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.mitotic_mean_disp_z,
                     _trackmate_objects.mitotic_var_disp_z,
@@ -607,14 +666,14 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
 
-                stat_ax.set_title("Displacement in Z")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Displacement in Z")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.mitotic_mean_disp_y,
                     _trackmate_objects.mitotic_var_disp_y,
@@ -624,14 +683,14 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
 
-                stat_ax.set_title("Displacement in Y")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Displacement in Y")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.mitotic_mean_disp_x,
                     _trackmate_objects.mitotic_var_disp_x,
@@ -641,17 +700,17 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
 
-                stat_ax.set_title("Displacement in X")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Displacement in X")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
             if key == "Non-Dividing":
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
-                stat_ax.cla()
+                plot_ax = stat_plot_class.plot_ax
+                plot_ax.cla()
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_directional_change,
                     _trackmate_objects.non_mitotic_var_directional_change,
@@ -660,15 +719,15 @@ def plugin_wrapper_track():
                     mfc="green",
                     ecolor="green",
                 )
-                stat_ax.set_title("Instantaneous Directional change")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("angle (degrees)")
+                plot_ax.set_title("Instantaneous Directional change")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
-                stat_ax.cla()
+                plot_ax = stat_plot_class.plot_ax
+                plot_ax.cla()
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_speed,
                     _trackmate_objects.non_mitotic_var_speed,
@@ -677,14 +736,14 @@ def plugin_wrapper_track():
                     mfc="green",
                     ecolor="green",
                 )
-                stat_ax.set_title("Instantaneous Speed")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um/min")
+                plot_ax.set_title("Instantaneous Speed")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um/min")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_radius,
                     _trackmate_objects.non_mitotic_var_radius,
@@ -693,14 +752,14 @@ def plugin_wrapper_track():
                     mfc="green",
                     ecolor="green",
                 )
-                stat_ax.set_title("Radius")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Radius")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_disp_z,
                     _trackmate_objects.non_mitotic_var_disp_z,
@@ -710,14 +769,14 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
 
-                stat_ax.set_title("Displacement in Z")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Displacement in Z")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_disp_y,
                     _trackmate_objects.non_mitotic_var_disp_y,
@@ -727,14 +786,14 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
 
-                stat_ax.set_title("Displacement in Y")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Displacement in Y")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_disp_x,
                     _trackmate_objects.non_mitotic_var_disp_x,
@@ -744,17 +803,17 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
 
-                stat_ax.set_title("Displacement in X")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Displacement in X")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
             if key == "Both":
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
-                stat_ax.cla()
+                plot_ax = stat_plot_class.plot_ax
+                plot_ax.cla()
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.all_mean_directional_change,
                     _trackmate_objects.all_var_directional_change,
@@ -763,15 +822,15 @@ def plugin_wrapper_track():
                     mfc="green",
                     ecolor="green",
                 )
-                stat_ax.set_title("Instantaneous Directional change")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("angle (degrees)")
+                plot_ax.set_title("Instantaneous Directional change")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
-                stat_ax.cla()
+                plot_ax = stat_plot_class.plot_ax
+                plot_ax.cla()
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_speed,
                     _trackmate_objects.non_mitotic_var_speed,
@@ -780,14 +839,14 @@ def plugin_wrapper_track():
                     mfc="green",
                     ecolor="green",
                 )
-                stat_ax.set_title("Instantaneous  Speed")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um/min")
+                plot_ax.set_title("Instantaneous  Speed")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um/min")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_radius,
                     _trackmate_objects.non_mitotic_var_radius,
@@ -796,14 +855,14 @@ def plugin_wrapper_track():
                     mfc="green",
                     ecolor="green",
                 )
-                stat_ax.set_title("Radius")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Radius")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_disp_z,
                     _trackmate_objects.non_mitotic_var_disp_z,
@@ -813,14 +872,14 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
 
-                stat_ax.set_title("Displacement in Z")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Displacement in Z")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_disp_y,
                     _trackmate_objects.non_mitotic_var_disp_y,
@@ -830,14 +889,14 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
 
-                stat_ax.set_title("Displacement in Y")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Displacement in Y")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
-                stat_ax = stat_plot_class.stat_ax
+                plot_ax = stat_plot_class.plot_ax
 
-                stat_ax.errorbar(
+                plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_disp_x,
                     _trackmate_objects.non_mitotic_var_disp_x,
@@ -847,9 +906,9 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
 
-                stat_ax.set_title("Displacement in X")
-                stat_ax.set_xlabel("Time (min)")
-                stat_ax.set_ylabel("um")
+                plot_ax.set_title("Displacement in X")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
 
             for layer in list(plugin.viewer.value.layers):
                 if isinstance(layer, napari.layers.Tracks):
@@ -986,7 +1045,6 @@ def plugin_wrapper_track():
 
         unique_tracks = []
         unique_tracks_properties = []
-        unique_fft_properties = []
 
         if track_id not in TrackidBox and track_id is not None:
             _to_analyze = [int(track_id)]
@@ -999,22 +1057,7 @@ def plugin_wrapper_track():
             tracklets_properties = _trackmate_objects.unique_track_properties[
                 unique_track_id
             ]
-            (
-                time,
-                xf_sample_ch1,
-                ffttotal_sample_ch1,
-                xf_sample_ch2,
-                ffttotal_sample_ch2,
-            ) = _trackmate_objects.unique_fft_properties[unique_track_id]
-            unique_fft_properties.append(
-                [
-                    time,
-                    xf_sample_ch1,
-                    ffttotal_sample_ch1,
-                    xf_sample_ch2,
-                    ffttotal_sample_ch2,
-                ]
-            )
+
             unique_tracks.append(tracklets)
             unique_tracks_properties.append(tracklets_properties)
 
@@ -1022,7 +1065,7 @@ def plugin_wrapper_track():
         unique_tracks_properties = np.concatenate(
             unique_tracks_properties, axis=0
         )
-        pred = unique_tracks, unique_tracks_properties, unique_fft_properties
+        pred = unique_tracks, unique_tracks_properties
         _refreshTrackData(pred)
 
     @change_handler(plugin.track_id_box, init=False)

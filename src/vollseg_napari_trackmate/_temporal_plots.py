@@ -20,7 +20,7 @@ class TemporalStatistics(QWidget):
 
     def _set_model(self):
 
-        self.stat_plot_tab = QWidget()
+        self.plot_tab = QWidget()
         self.scroll_area = QScrollArea()
         self.scroll_area.setVerticalScrollBarPolicy(
             QtCore.Qt.ScrollBarAlwaysOn
@@ -29,14 +29,14 @@ class TemporalStatistics(QWidget):
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setWidget(self.scroll_container)
         self.scroll_layout = QHBoxLayout(self.scroll_container)
-        self.lay = QVBoxLayout(self.stat_plot_tab)
+        self.lay = QVBoxLayout(self.plot_tab)
         self.lay.addWidget(self.scroll_area)
         self.container = None
 
     def _repeat_after_plot(self):
 
         self.stat_canvas = FigureCanvas(Figure())
-        self.stat_ax = self.stat_canvas.figure.add_subplot(111)
+        self.plot_ax = self.stat_canvas.figure.add_subplot(111)
         self.toolbar = NavigationToolbar(self.stat_canvas, self.tabs)
         self.container = QWidget()
         self.lay = QVBoxLayout(self.container)
