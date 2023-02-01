@@ -226,7 +226,7 @@ def plugin_wrapper_track():
         }
 
         fft_plot_class._reset_container(fft_plot_class.scroll_layout)
-        if _track_ids_analyze is not None:
+        if _to_analyze is not None:
 
             unique_fft_properties = []
             for unique_track_id in _to_analyze:
@@ -317,6 +317,7 @@ def plugin_wrapper_track():
             features=features,
         )
         select_track_nature()
+        plugin.track_id_box.value = _to_analyze[0]
 
     def return_color_tracks(pred):
 
