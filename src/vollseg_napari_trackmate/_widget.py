@@ -545,6 +545,24 @@ def plugin_wrapper_track():
                     hist_ax.set_title(str(k))
 
             if key == "Dividing":
+
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+                stat_ax.cla()
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_directional_change,
+                    _trackmate_objects.mitotic_var_directional_change,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                stat_ax.set_title("Instantaneous Directional change")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("angle (degrees)")
+
                 stat_plot_class._repeat_after_plot()
                 stat_ax = stat_plot_class.stat_ax
                 stat_ax.cla()
@@ -630,6 +648,24 @@ def plugin_wrapper_track():
                 stat_ax.set_ylabel("um")
 
             if key == "Non-Dividing":
+
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+                stat_ax.cla()
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_directional_change,
+                    _trackmate_objects.non_mitotic_var_directional_change,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                stat_ax.set_title("Instantaneous Directional change")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("angle (degrees)")
+
                 stat_plot_class._repeat_after_plot()
                 stat_ax = stat_plot_class.stat_ax
                 stat_ax.cla()
@@ -643,7 +679,7 @@ def plugin_wrapper_track():
                     mfc="green",
                     ecolor="green",
                 )
-                stat_ax.set_title("Speed")
+                stat_ax.set_title("Instantaneous Speed")
                 stat_ax.set_xlabel("Time (min)")
                 stat_ax.set_ylabel("um/min")
 
@@ -715,6 +751,24 @@ def plugin_wrapper_track():
                 stat_ax.set_ylabel("um")
 
             else:
+
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+                stat_ax.cla()
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.all_mean_directional_change,
+                    _trackmate_objects.all_var_directional_change,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                stat_ax.set_title("Instantaneous Directional change")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("angle (degrees)")
+
                 stat_plot_class._repeat_after_plot()
                 stat_ax = stat_plot_class.stat_ax
                 stat_ax.cla()
