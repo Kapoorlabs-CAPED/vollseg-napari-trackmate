@@ -555,9 +555,6 @@ def plugin_wrapper_track():
                 plot_ax.set_ylabel("Amplitude")
 
             for unique_property in unique_fft_properties:
-                fft_plot_class._repeat_after_plot()
-                plot_ax = fft_plot_class.plot_ax
-                plot_ax.cla()
 
                 data_plot = pd.DataFrame(
                     {
