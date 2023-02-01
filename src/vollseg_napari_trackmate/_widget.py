@@ -508,6 +508,7 @@ def plugin_wrapper_track():
 
     def plot_main():
 
+        nonlocal _trackmate_objects
         hist_plot_class._reset_container(hist_plot_class.scroll_layout)
         stat_plot_class._reset_container(stat_plot_class.scroll_layout)
         fft_plot_class._reset_container(fft_plot_class.scroll_layout)
