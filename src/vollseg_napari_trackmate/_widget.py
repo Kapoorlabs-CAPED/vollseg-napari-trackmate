@@ -806,7 +806,7 @@ def plugin_wrapper_track():
             track_id = value
             show_track(track_id)
 
-    @change_handler(plugin.track_model_type, init=False)
+    @change_handler(plugin.track_model_type, init=True)
     def _change_track_model_type(value):
 
         plugin.track_model_type.value = value
