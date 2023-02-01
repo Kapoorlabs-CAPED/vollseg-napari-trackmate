@@ -673,15 +673,13 @@ def plugin_wrapper_track():
             col = columns[i]
             if col == id_key:
                 colindex = i
-        track_id_list = root_cells[:, colindex]
-        track_id_list = np.reshape(track_id_list, (track_id_list.shape[0], 1))
-        root_cells = np.vstack((np.asarray(track_id_list), root_cells))
-        columns.insert(0, id_key)
         df = pd.DataFrame(
             root_cells,
             columns=columns,
             dtype=object,
         )
+        columns_titles = [columns[0], columns[colindex]]
+        df = df.reindex(columns=columns_titles)
         print("Making pandas Model")
         table_tab.data = pandasModel(df)
         table_tab.viewer = plugin.viewer.value
