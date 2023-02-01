@@ -554,6 +554,7 @@ def plugin_wrapper_track():
                 plot_ax.set_xlabel("Frequency (1/min)")
                 plot_ax.set_ylabel("Amplitude")
 
+            for unique_property in unique_fft_properties:
                 fft_plot_class._repeat_after_plot()
                 plot_ax = fft_plot_class.plot_ax
                 plot_ax.cla()
@@ -569,9 +570,9 @@ def plugin_wrapper_track():
                 plot_ax.set_xlabel("Frequency (1/min)")
                 plot_ax.set_ylabel("Amplitude")
 
-                fft_plot_class._repeat_after_plot()
-                plot_ax = fft_plot_class.plot_ax
-                plot_ax.cla()
+            fft_plot_class._repeat_after_plot()
+            plot_ax = fft_plot_class.plot_ax
+            plot_ax.cla()
 
         if _trackmate_objects is not None:
             trackid_key = _trackmate_objects.track_analysis_spot_keys[
