@@ -676,9 +676,8 @@ def plugin_wrapper_track():
         track_id_list = root_cells[:, colindex]
         track_id_list = np.reshape(track_id_list, (track_id_list.shape[0], 1))
         root_cells = np.concatenate(
-            (root_cells, np.asarray(track_id_list)), axis=-1
+            (np.asarray(track_id_list), root_cells), axis=-1
         )
-        root_cells[0, :] = root_cells[-1, :]
         columns.insert(0, id_key)
         df = pd.DataFrame(
             root_cells,
