@@ -503,6 +503,12 @@ def plugin_wrapper_track():
     plugin.native.layout().addWidget(tabs)
 
     def plot_main():
+
+        if hist_plot_class.scroll_layout.count() > 0:
+            hist_plot_class._reset_container(hist_plot_class.scroll_layout)
+        if stat_plot_class.scroll_layout.count() > 0:
+            stat_plot_class._reset_container(stat_plot_class.scroll_layout)
+
         nonlocal _trackmate_objects
         if _trackmate_objects is not None:
             trackid_key = _trackmate_objects.track_analysis_spot_keys[
@@ -630,8 +636,6 @@ def plugin_wrapper_track():
 
     def _refreshStatPlotData():
         nonlocal _trackmate_objects, _current_choices, _dividing_choices, _normal_choices, _both_choices, _dividing_track_ids_analyze, _normal_track_ids_analyze, _both_track_ids_analyze
-        hist_plot_class._reset_container(hist_plot_class.scroll_layout)
-        stat_plot_class._reset_container(stat_plot_class.scroll_layout)
 
         root_cells = []
         columns = None
