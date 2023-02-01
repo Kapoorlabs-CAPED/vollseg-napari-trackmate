@@ -201,7 +201,7 @@ def plugin_wrapper_track():
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
     def _refreshTrackData(pred):
-        unique_tracks, unique_tracks_properties = pred
+        unique_tracks, unique_tracks_properties, unique_fft_properties = pred
         features = {
             "time": map(int, np.asarray(unique_tracks_properties)[:, 0]),
             "generation": map(int, np.asarray(unique_tracks_properties)[:, 1]),
@@ -505,6 +505,7 @@ def plugin_wrapper_track():
     def plot_main():
 
         trackid_key = _trackmate_objects.track_analysis_spot_keys["track_id"]
+        key = plugin.track_model_type.value
         for k in _trackmate_objects.AllTrackValues.keys():
             if k is not trackid_key:
                 TrackAttr = []
@@ -513,7 +514,18 @@ def plugin_wrapper_track():
                     _trackmate_objects.AllTrackValues[trackid_key],
                 ):
 
-                    TrackAttr.append(float(attr))
+                    if key == "Dividing":
+
+                        if str(trackid) in _trackmate_objects.DividingTrackIds:
+
+                            TrackAttr.append(float(attr))
+                    if key == "Non-Dividing":
+                        if str(trackid) in _trackmate_objects.NormalTrackIds:
+
+                            TrackAttr.append(float(attr))
+                    else:
+
+                        TrackAttr.append(float(attr))
 
                 hist_plot_class._repeat_after_plot()
                 hist_ax = hist_plot_class.stat_ax
@@ -740,6 +752,7 @@ def plugin_wrapper_track():
 
         unique_tracks = []
         unique_tracks_properties = []
+        unique_fft_properties = []
 
         if track_id not in TrackidBox and track_id is not None:
             _to_analyze = [int(track_id)]
@@ -752,6 +765,22 @@ def plugin_wrapper_track():
             tracklets_properties = _trackmate_objects.unique_track_properties[
                 unique_track_id
             ]
+            (
+                time,
+                xf_sample_ch1,
+                ffttotal_sample_ch1,
+                xf_sample_ch2,
+                ffttotal_sample_ch2,
+            ) = _trackmate_objects.unique_fft_properties[unique_track_id]
+            unique_fft_properties.append(
+                [
+                    time,
+                    xf_sample_ch1,
+                    ffttotal_sample_ch1,
+                    xf_sample_ch2,
+                    ffttotal_sample_ch2,
+                ]
+            )
             unique_tracks.append(tracklets)
             unique_tracks_properties.append(tracklets_properties)
 
@@ -759,7 +788,7 @@ def plugin_wrapper_track():
         unique_tracks_properties = np.concatenate(
             unique_tracks_properties, axis=0
         )
-        pred = unique_tracks, unique_tracks_properties
+        pred = unique_tracks, unique_tracks_properties, unique_fft_properties
         _refreshTrackData(pred)
 
     @change_handler(plugin.track_id_box, init=False)
@@ -782,6 +811,7 @@ def plugin_wrapper_track():
 
         plugin.track_model_type.value = value
         select_track_nature()
+        plot_main()
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
