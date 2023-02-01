@@ -35,7 +35,7 @@ def plugin_wrapper_track():
     TrackAttributeBoxname = "TrackAttributeIDBox"
     TrackidBox = "All"
     _dividing_choices = ()
-    _current_choices = ()
+    _current_choices = ""
     _normal_choices = ()
     _both_choices = ()
     _dividing_track_ids_analyze = ()
@@ -465,7 +465,7 @@ def plugin_wrapper_track():
             visible=True,
             label="Select Track ID to analyze",
             choices=_current_choices,
-            value=_current_choices,
+            value=_current_choices[0],
         ),
         defaults_model_button=dict(
             widget_type="PushButton", text="Restore Model Defaults"
