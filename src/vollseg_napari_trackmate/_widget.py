@@ -512,6 +512,7 @@ def plugin_wrapper_track():
         hist_plot_class._reset_container(hist_plot_class.scroll_layout)
         stat_plot_class._reset_container(stat_plot_class.scroll_layout)
         fft_plot_class._reset_container(fft_plot_class.scroll_layout)
+        print(_track_ids_analyze)
         if _track_ids_analyze is not None:
             _to_analyze = _track_ids_analyze.copy()
             unique_fft_properties = []
@@ -576,10 +577,6 @@ def plugin_wrapper_track():
                 plot_ax.set_title("FFT Intensity Ch2")
                 plot_ax.set_xlabel("Frequency (1/min)")
                 plot_ax.set_ylabel("Amplitude")
-
-            fft_plot_class._repeat_after_plot()
-            plot_ax = fft_plot_class.plot_ax
-            plot_ax.cla()
 
         if _trackmate_objects is not None:
             trackid_key = _trackmate_objects.track_analysis_spot_keys[
