@@ -522,7 +522,6 @@ def plugin_wrapper_track():
                         _trackmate_objects.AllTrackValues[k],
                         _trackmate_objects.AllTrackValues[trackid_key],
                     ):
-                        print()
                         if key == "Dividing":
 
                             if (
@@ -544,89 +543,261 @@ def plugin_wrapper_track():
                     hist_ax = hist_plot_class.stat_ax
                     sns.histplot(TrackAttr, kde=True, ax=hist_ax)
                     hist_ax.set_title(str(k))
-            stat_plot_class._repeat_after_plot()
-            stat_ax = stat_plot_class.stat_ax
-            stat_ax.cla()
 
-            stat_ax.errorbar(
-                _trackmate_objects.Time,
-                _trackmate_objects.Allspeedmean,
-                _trackmate_objects.Allspeedvar,
-                linestyle="None",
-                marker=".",
-                mfc="green",
-                ecolor="green",
-            )
-            stat_ax.set_title("Speed")
-            stat_ax.set_xlabel("Time (min)")
-            stat_ax.set_ylabel("um/min")
+            if key == "Dividing":
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+                stat_ax.cla()
 
-            stat_plot_class._repeat_after_plot()
-            stat_ax = stat_plot_class.stat_ax
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_speed,
+                    _trackmate_objects.mitotic_var_speed,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                stat_ax.set_title("Speed")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um/min")
 
-            stat_ax.errorbar(
-                _trackmate_objects.Time,
-                _trackmate_objects.Allradiusmean,
-                _trackmate_objects.Allradiusvar,
-                linestyle="None",
-                marker=".",
-                mfc="green",
-                ecolor="green",
-            )
-            stat_ax.set_title("Radius")
-            stat_ax.set_xlabel("Time (min)")
-            stat_ax.set_ylabel("um")
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
 
-            stat_plot_class._repeat_after_plot()
-            stat_ax = stat_plot_class.stat_ax
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_radius,
+                    _trackmate_objects.mitotic_var_radius,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                stat_ax.set_title("Radius")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
 
-            stat_ax.errorbar(
-                _trackmate_objects.Time,
-                _trackmate_objects.Alldispmeanpos,
-                _trackmate_objects.Alldispvarpos,
-                linestyle="None",
-                marker=".",
-                mfc="green",
-                ecolor="green",
-            )
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
 
-            stat_ax.set_title("Displacement in Z")
-            stat_ax.set_xlabel("Time (min)")
-            stat_ax.set_ylabel("um")
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_disp_z,
+                    _trackmate_objects.mitotic_var_disp_z,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
 
-            stat_plot_class._repeat_after_plot()
-            stat_ax = stat_plot_class.stat_ax
+                stat_ax.set_title("Displacement in Z")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
 
-            stat_ax.errorbar(
-                _trackmate_objects.Time,
-                _trackmate_objects.Alldispmeanposy,
-                _trackmate_objects.Alldispvarposy,
-                linestyle="None",
-                marker=".",
-                mfc="green",
-                ecolor="green",
-            )
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
 
-            stat_ax.set_title("Displacement in Y")
-            stat_ax.set_xlabel("Time (min)")
-            stat_ax.set_ylabel("um")
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_disp_y,
+                    _trackmate_objects.mitotic_var_disp_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
 
-            stat_plot_class._repeat_after_plot()
-            stat_ax = stat_plot_class.stat_ax
+                stat_ax.set_title("Displacement in Y")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
 
-            stat_ax.errorbar(
-                _trackmate_objects.Time,
-                _trackmate_objects.Alldispmeanposx,
-                _trackmate_objects.Alldispvarposx,
-                linestyle="None",
-                marker=".",
-                mfc="green",
-                ecolor="green",
-            )
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
 
-            stat_ax.set_title("Displacement in X")
-            stat_ax.set_xlabel("Time (min)")
-            stat_ax.set_ylabel("um")
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_disp_x,
+                    _trackmate_objects.mitotic_var_disp_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                stat_ax.set_title("Displacement in X")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
+
+            if key == "Non-Dividing":
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+                stat_ax.cla()
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_speed,
+                    _trackmate_objects.non_mitotic_var_speed,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                stat_ax.set_title("Speed")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um/min")
+
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_radius,
+                    _trackmate_objects.non_mitotic_var_radius,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                stat_ax.set_title("Radius")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_disp_z,
+                    _trackmate_objects.non_mitotic_var_disp_z,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                stat_ax.set_title("Displacement in Z")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_disp_y,
+                    _trackmate_objects.non_mitotic_var_disp_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                stat_ax.set_title("Displacement in Y")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_disp_x,
+                    _trackmate_objects.non_mitotic_var_disp_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                stat_ax.set_title("Displacement in X")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
+
+            else:
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+                stat_ax.cla()
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_speed,
+                    _trackmate_objects.non_mitotic_var_speed,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                stat_ax.set_title("Speed")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um/min")
+
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_radius,
+                    _trackmate_objects.non_mitotic_var_radius,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                stat_ax.set_title("Radius")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_disp_z,
+                    _trackmate_objects.non_mitotic_var_disp_z,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                stat_ax.set_title("Displacement in Z")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_disp_y,
+                    _trackmate_objects.non_mitotic_var_disp_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                stat_ax.set_title("Displacement in Y")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                stat_ax = stat_plot_class.stat_ax
+
+                stat_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_disp_x,
+                    _trackmate_objects.non_mitotic_var_disp_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                stat_ax.set_title("Displacement in X")
+                stat_ax.set_xlabel("Time (min)")
+                stat_ax.set_ylabel("um")
 
             for layer in list(plugin.viewer.value.layers):
                 if isinstance(layer, napari.layers.Tracks):
