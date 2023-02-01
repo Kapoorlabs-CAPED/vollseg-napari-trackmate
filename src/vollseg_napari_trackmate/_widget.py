@@ -6,6 +6,7 @@ Made by Kapoorlabs, 2022
 
 import functools
 import math
+import time
 from pathlib import Path
 from typing import List, Union
 
@@ -226,7 +227,7 @@ def plugin_wrapper_track():
         }
 
         fft_plot_class._reset_container(fft_plot_class.scroll_layout)
-        """ if _to_analyze is not None:
+        if _to_analyze is not None:
 
             unique_fft_properties = []
             for unique_track_id in _to_analyze:
@@ -284,7 +285,7 @@ def plugin_wrapper_track():
                 plot_ax.set_title("FFT Intensity Ch2")
                 plot_ax.set_xlabel("Frequency (1/min)")
                 plot_ax.set_ylabel("Amplitude")
-                """
+
         for layer in list(plugin.viewer.value.layers):
             if (
                 "Track" == layer.name
@@ -317,7 +318,6 @@ def plugin_wrapper_track():
             features=features,
         )
         select_track_nature()
-        plugin.track_id_box.value = str(_to_analyze[0])
 
     def return_color_tracks(pred):
 
@@ -1086,6 +1086,7 @@ def plugin_wrapper_track():
 
         nonlocal worker
         plugin.track_id_box.value = value
+        time.sleep(5)
         nonlocal _track_ids_analyze, _trackmate_objects
         if (
             _trackmate_objects is not None
