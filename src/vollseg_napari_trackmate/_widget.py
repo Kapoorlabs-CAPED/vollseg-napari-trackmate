@@ -35,7 +35,7 @@ def plugin_wrapper_track():
     TrackAttributeBoxname = "TrackAttributeIDBox"
     TrackidBox = "All"
     _dividing_choices = ()
-    _current_choices = ""
+    _current_choices = ("",)
     _normal_choices = ()
     _both_choices = ()
     _dividing_track_ids_analyze = ()
