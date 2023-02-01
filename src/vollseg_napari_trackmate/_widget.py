@@ -1081,10 +1081,10 @@ def plugin_wrapper_track():
         _refreshTrackData(pred)
 
     @change_handler(plugin.track_id_box, init=False)
-    def _track_id_box_change():
+    def _track_id_box_change(value):
 
         nonlocal worker
-        value = plugin.track_id_box.value
+        plugin.track_id_box.value = value
         nonlocal _track_ids_analyze, _trackmate_objects
         if (
             _trackmate_objects is not None
