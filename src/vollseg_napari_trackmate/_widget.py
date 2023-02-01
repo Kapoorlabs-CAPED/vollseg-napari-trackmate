@@ -460,7 +460,7 @@ def plugin_wrapper_track():
             choices=track_model_type_choices,
             value=DEFAULTS_MODEL["track_model_type"],
         ),
-        track_id_value=dict(label="Track ID chosen"),
+        track_id_value=dict(widget_type="Label", label="Track ID chosen"),
         track_id_box=dict(
             widget_type="ComboBox",
             visible=True,
