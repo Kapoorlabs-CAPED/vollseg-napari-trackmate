@@ -504,10 +504,8 @@ def plugin_wrapper_track():
 
     def plot_main():
 
-        if hist_plot_class.scroll_layout.count() > 0:
-            hist_plot_class._reset_container(hist_plot_class.scroll_layout)
-        if stat_plot_class.scroll_layout.count() > 0:
-            stat_plot_class._reset_container(stat_plot_class.scroll_layout)
+        hist_plot_class._reset_container(hist_plot_class.scroll_layout)
+        stat_plot_class._reset_container(stat_plot_class.scroll_layout)
 
         nonlocal _trackmate_objects
         if _trackmate_objects is not None:
@@ -782,7 +780,7 @@ def plugin_wrapper_track():
                     mfc="green",
                     ecolor="green",
                 )
-                stat_ax.set_title("Speed")
+                stat_ax.set_title("Instantaneous  Speed")
                 stat_ax.set_xlabel("Time (min)")
                 stat_ax.set_ylabel("um/min")
 
