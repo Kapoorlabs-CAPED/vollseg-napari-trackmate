@@ -6,7 +6,6 @@ Made by Kapoorlabs, 2022
 
 import functools
 import math
-import time
 from pathlib import Path
 from typing import List, Union
 
@@ -461,6 +460,7 @@ def plugin_wrapper_track():
             choices=track_model_type_choices,
             value=DEFAULTS_MODEL["track_model_type"],
         ),
+        track_id_value=dict(label="Track ID chosen"),
         track_id_box=dict(
             widget_type="ComboBox",
             visible=True,
@@ -488,6 +488,7 @@ def plugin_wrapper_track():
         axes,
         track_model_type,
         track_id_box,
+        track_id_value,
         defaults_model_button,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
@@ -1086,7 +1087,8 @@ def plugin_wrapper_track():
 
         nonlocal worker
         plugin.track_id_box.value = value
-        time.sleep(5)
+        plugin.track_id_value.value = value
+
         nonlocal _track_ids_analyze, _trackmate_objects
         if (
             _trackmate_objects is not None
