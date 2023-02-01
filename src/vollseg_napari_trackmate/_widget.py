@@ -522,24 +522,22 @@ def plugin_wrapper_track():
                         _trackmate_objects.AllTrackValues[k],
                         _trackmate_objects.AllTrackValues[trackid_key],
                     ):
-
+                        print()
                         if key == "Dividing":
 
                             if (
-                                str(trackid)
+                                str(int(trackid))
                                 in _trackmate_objects.DividingTrackIds
                             ):
 
                                 TrackAttr.append(float(attr))
                         if key == "Non-Dividing":
                             if (
-                                str(trackid)
+                                str(int(trackid))
                                 in _trackmate_objects.NormalTrackIds
                             ):
-
                                 TrackAttr.append(float(attr))
                         else:
-
                             TrackAttr.append(float(attr))
 
                     hist_plot_class._repeat_after_plot()
