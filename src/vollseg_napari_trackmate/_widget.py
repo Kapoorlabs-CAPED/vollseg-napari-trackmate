@@ -543,7 +543,10 @@ def plugin_wrapper_track():
                     xf_sample_ch2,
                     ffttotal_sample_ch2,
                 ) = unique_property
-                sns.lineplot(xf_sample_ch1, ffttotal_sample_ch1, ax=plot_ax)
+                data_plot = pd.DataFrame(
+                    {"Frequ": xf_sample_ch1, "Amplitude": ffttotal_sample_ch1}
+                )
+                sns.lineplot(data_plot, x="Frequ", y="Amplitude", ax=plot_ax)
                 plot_ax.set_title("FFT Intensity Ch1")
                 plot_ax.set_xlabel("Frequency (1/min)")
                 plot_ax.set_ylabel("Amplitude")
@@ -552,7 +555,10 @@ def plugin_wrapper_track():
                 plot_ax = fft_plot_class.plot_ax
                 plot_ax.cla()
 
-                sns.lineplot(xf_sample_ch2, ffttotal_sample_ch2, ax=plot_ax)
+                data_plot = pd.DataFrame(
+                    {"Frequ": xf_sample_ch2, "Amplitude": ffttotal_sample_ch2}
+                )
+                sns.lineplot(data_plot, x="Frequ", y="Amplitude", ax=plot_ax)
                 plot_ax.set_title("FFT Intensity Ch2")
                 plot_ax.set_xlabel("Frequency (1/min)")
                 plot_ax.set_ylabel("Amplitude")
