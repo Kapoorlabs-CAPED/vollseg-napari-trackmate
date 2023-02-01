@@ -506,118 +506,125 @@ def plugin_wrapper_track():
 
         trackid_key = _trackmate_objects.track_analysis_spot_keys["track_id"]
         key = plugin.track_model_type.value
-        for k in _trackmate_objects.AllTrackValues.keys():
-            if k is not trackid_key:
-                TrackAttr = []
-                for attr, trackid in zip(
-                    _trackmate_objects.AllTrackValues[k],
-                    _trackmate_objects.AllTrackValues[trackid_key],
-                ):
+        if key is not None:
+            for k in _trackmate_objects.AllTrackValues.keys():
+                if k is not trackid_key:
+                    TrackAttr = []
+                    for attr, trackid in zip(
+                        _trackmate_objects.AllTrackValues[k],
+                        _trackmate_objects.AllTrackValues[trackid_key],
+                    ):
 
-                    if key == "Dividing":
+                        if key == "Dividing":
 
-                        if str(trackid) in _trackmate_objects.DividingTrackIds:
+                            if (
+                                str(trackid)
+                                in _trackmate_objects.DividingTrackIds
+                            ):
+
+                                TrackAttr.append(float(attr))
+                        if key == "Non-Dividing":
+                            if (
+                                str(trackid)
+                                in _trackmate_objects.NormalTrackIds
+                            ):
+
+                                TrackAttr.append(float(attr))
+                        else:
 
                             TrackAttr.append(float(attr))
-                    if key == "Non-Dividing":
-                        if str(trackid) in _trackmate_objects.NormalTrackIds:
 
-                            TrackAttr.append(float(attr))
-                    else:
+                    hist_plot_class._repeat_after_plot()
+                    hist_ax = hist_plot_class.stat_ax
+                    sns.histplot(TrackAttr, kde=True, ax=hist_ax)
+                    hist_ax.set_title(str(k))
+            stat_plot_class._repeat_after_plot()
+            stat_ax = stat_plot_class.stat_ax
+            stat_ax.cla()
 
-                        TrackAttr.append(float(attr))
+            stat_ax.errorbar(
+                _trackmate_objects.Time,
+                _trackmate_objects.Allspeedmean,
+                _trackmate_objects.Allspeedvar,
+                linestyle="None",
+                marker=".",
+                mfc="green",
+                ecolor="green",
+            )
+            stat_ax.set_title("Speed")
+            stat_ax.set_xlabel("Time (min)")
+            stat_ax.set_ylabel("um/min")
 
-                hist_plot_class._repeat_after_plot()
-                hist_ax = hist_plot_class.stat_ax
-                sns.histplot(TrackAttr, kde=True, ax=hist_ax)
-                hist_ax.set_title(str(k))
-        stat_plot_class._repeat_after_plot()
-        stat_ax = stat_plot_class.stat_ax
-        stat_ax.cla()
+            stat_plot_class._repeat_after_plot()
+            stat_ax = stat_plot_class.stat_ax
 
-        stat_ax.errorbar(
-            _trackmate_objects.Time,
-            _trackmate_objects.Allspeedmean,
-            _trackmate_objects.Allspeedvar,
-            linestyle="None",
-            marker=".",
-            mfc="green",
-            ecolor="green",
-        )
-        stat_ax.set_title("Speed")
-        stat_ax.set_xlabel("Time (min)")
-        stat_ax.set_ylabel("um/min")
+            stat_ax.errorbar(
+                _trackmate_objects.Time,
+                _trackmate_objects.Allradiusmean,
+                _trackmate_objects.Allradiusvar,
+                linestyle="None",
+                marker=".",
+                mfc="green",
+                ecolor="green",
+            )
+            stat_ax.set_title("Radius")
+            stat_ax.set_xlabel("Time (min)")
+            stat_ax.set_ylabel("um")
 
-        stat_plot_class._repeat_after_plot()
-        stat_ax = stat_plot_class.stat_ax
+            stat_plot_class._repeat_after_plot()
+            stat_ax = stat_plot_class.stat_ax
 
-        stat_ax.errorbar(
-            _trackmate_objects.Time,
-            _trackmate_objects.Allradiusmean,
-            _trackmate_objects.Allradiusvar,
-            linestyle="None",
-            marker=".",
-            mfc="green",
-            ecolor="green",
-        )
-        stat_ax.set_title("Radius")
-        stat_ax.set_xlabel("Time (min)")
-        stat_ax.set_ylabel("um")
+            stat_ax.errorbar(
+                _trackmate_objects.Time,
+                _trackmate_objects.Alldispmeanpos,
+                _trackmate_objects.Alldispvarpos,
+                linestyle="None",
+                marker=".",
+                mfc="green",
+                ecolor="green",
+            )
 
-        stat_plot_class._repeat_after_plot()
-        stat_ax = stat_plot_class.stat_ax
+            stat_ax.set_title("Displacement in Z")
+            stat_ax.set_xlabel("Time (min)")
+            stat_ax.set_ylabel("um")
 
-        stat_ax.errorbar(
-            _trackmate_objects.Time,
-            _trackmate_objects.Alldispmeanpos,
-            _trackmate_objects.Alldispvarpos,
-            linestyle="None",
-            marker=".",
-            mfc="green",
-            ecolor="green",
-        )
+            stat_plot_class._repeat_after_plot()
+            stat_ax = stat_plot_class.stat_ax
 
-        stat_ax.set_title("Displacement in Z")
-        stat_ax.set_xlabel("Time (min)")
-        stat_ax.set_ylabel("um")
+            stat_ax.errorbar(
+                _trackmate_objects.Time,
+                _trackmate_objects.Alldispmeanposy,
+                _trackmate_objects.Alldispvarposy,
+                linestyle="None",
+                marker=".",
+                mfc="green",
+                ecolor="green",
+            )
 
-        stat_plot_class._repeat_after_plot()
-        stat_ax = stat_plot_class.stat_ax
+            stat_ax.set_title("Displacement in Y")
+            stat_ax.set_xlabel("Time (min)")
+            stat_ax.set_ylabel("um")
 
-        stat_ax.errorbar(
-            _trackmate_objects.Time,
-            _trackmate_objects.Alldispmeanposy,
-            _trackmate_objects.Alldispvarposy,
-            linestyle="None",
-            marker=".",
-            mfc="green",
-            ecolor="green",
-        )
+            stat_plot_class._repeat_after_plot()
+            stat_ax = stat_plot_class.stat_ax
 
-        stat_ax.set_title("Displacement in Y")
-        stat_ax.set_xlabel("Time (min)")
-        stat_ax.set_ylabel("um")
+            stat_ax.errorbar(
+                _trackmate_objects.Time,
+                _trackmate_objects.Alldispmeanposx,
+                _trackmate_objects.Alldispvarposx,
+                linestyle="None",
+                marker=".",
+                mfc="green",
+                ecolor="green",
+            )
 
-        stat_plot_class._repeat_after_plot()
-        stat_ax = stat_plot_class.stat_ax
+            stat_ax.set_title("Displacement in X")
+            stat_ax.set_xlabel("Time (min)")
+            stat_ax.set_ylabel("um")
 
-        stat_ax.errorbar(
-            _trackmate_objects.Time,
-            _trackmate_objects.Alldispmeanposx,
-            _trackmate_objects.Alldispvarposx,
-            linestyle="None",
-            marker=".",
-            mfc="green",
-            ecolor="green",
-        )
-
-        stat_ax.set_title("Displacement in X")
-        stat_ax.set_xlabel("Time (min)")
-        stat_ax.set_ylabel("um")
-
-        for layer in list(plugin.viewer.value.layers):
-            if isinstance(layer, napari.layers.Tracks):
-                table_tab.layer = layer
+            for layer in list(plugin.viewer.value.layers):
+                if isinstance(layer, napari.layers.Tracks):
+                    table_tab.layer = layer
 
     def _refreshStatPlotData():
         nonlocal _trackmate_objects, _current_choices, _dividing_choices, _normal_choices, _both_choices, _dividing_track_ids_analyze, _normal_track_ids_analyze, _both_track_ids_analyze
@@ -806,7 +813,7 @@ def plugin_wrapper_track():
             track_id = value
             show_track(track_id)
 
-    @change_handler(plugin.track_model_type, init=True)
+    @change_handler(plugin.track_model_type, init=False)
     def _change_track_model_type(value):
 
         plugin.track_model_type.value = value
