@@ -220,6 +220,67 @@ def plugin_wrapper_track():
                 np.asarray(unique_tracks_properties)[:, 6],
             ),
         }
+
+        fft_plot_class._reset_container(fft_plot_class.scroll_layout)
+        if _track_ids_analyze is not None:
+            _to_analyze = _track_ids_analyze.copy()
+            unique_fft_properties = []
+            for unique_track_id in _to_analyze:
+                (
+                    time,
+                    xf_sample_ch1,
+                    ffttotal_sample_ch1,
+                    xf_sample_ch2,
+                    ffttotal_sample_ch2,
+                ) = _trackmate_objects.unique_fft_properties[unique_track_id]
+                unique_fft_properties.append(
+                    [
+                        time,
+                        xf_sample_ch1,
+                        ffttotal_sample_ch1,
+                        xf_sample_ch2,
+                        ffttotal_sample_ch2,
+                    ]
+                )
+            fft_plot_class._repeat_after_plot()
+            plot_ax = fft_plot_class.plot_ax
+            plot_ax.cla()
+            for unique_property in unique_fft_properties:
+                (
+                    time,
+                    xf_sample_ch1,
+                    ffttotal_sample_ch1,
+                    xf_sample_ch2,
+                    ffttotal_sample_ch2,
+                ) = unique_property
+                data_plot = pd.DataFrame(
+                    {
+                        "Frequ": xf_sample_ch1,
+                        "Amplitude": ffttotal_sample_ch1.flatten(),
+                    }
+                )
+                sns.lineplot(data_plot, x="Frequ", y="Amplitude", ax=plot_ax)
+                plot_ax.set_title("FFT Intensity Ch1")
+                plot_ax.set_xlabel("Frequency (1/min)")
+                plot_ax.set_ylabel("Amplitude")
+
+            fft_plot_class._repeat_after_plot()
+            plot_ax = fft_plot_class.plot_ax
+            plot_ax.cla()
+
+            for unique_property in unique_fft_properties:
+
+                data_plot = pd.DataFrame(
+                    {
+                        "Frequ": xf_sample_ch2,
+                        "Amplitude": ffttotal_sample_ch2.flatten(),
+                    }
+                )
+                sns.lineplot(data_plot, x="Frequ", y="Amplitude", ax=plot_ax)
+                plot_ax.set_title("FFT Intensity Ch2")
+                plot_ax.set_xlabel("Frequency (1/min)")
+                plot_ax.set_ylabel("Amplitude")
+
         for layer in list(plugin.viewer.value.layers):
             if (
                 "Track" == layer.name
@@ -511,72 +572,6 @@ def plugin_wrapper_track():
         nonlocal _trackmate_objects
         hist_plot_class._reset_container(hist_plot_class.scroll_layout)
         stat_plot_class._reset_container(stat_plot_class.scroll_layout)
-        fft_plot_class._reset_container(fft_plot_class.scroll_layout)
-        print(_track_ids_analyze)
-        if _track_ids_analyze is not None:
-            _to_analyze = _track_ids_analyze.copy()
-            unique_fft_properties = []
-            for unique_track_id in _to_analyze:
-                (
-                    time,
-                    xf_sample_ch1,
-                    ffttotal_sample_ch1,
-                    xf_sample_ch2,
-                    ffttotal_sample_ch2,
-                ) = _trackmate_objects.unique_fft_properties[unique_track_id]
-                unique_fft_properties.append(
-                    [
-                        time,
-                        xf_sample_ch1,
-                        ffttotal_sample_ch1,
-                        xf_sample_ch2,
-                        ffttotal_sample_ch2,
-                    ]
-                )
-            fft_plot_class._repeat_after_plot()
-            plot_ax = fft_plot_class.plot_ax
-            plot_ax.cla()
-            for unique_property in unique_fft_properties:
-                (
-                    time,
-                    xf_sample_ch1,
-                    ffttotal_sample_ch1,
-                    xf_sample_ch2,
-                    ffttotal_sample_ch2,
-                ) = unique_property
-                data_plot = pd.DataFrame(
-                    {
-                        "Frequ": xf_sample_ch1,
-                        "Amplitude": ffttotal_sample_ch1.flatten(),
-                    }
-                )
-                fft_results = sns.lineplot(
-                    data_plot, x="Frequ", y="Amplitude", ax=plot_ax
-                )
-                fft_results.set(yscale="log")
-                plot_ax.set_title("FFT Intensity Ch1")
-                plot_ax.set_xlabel("Frequency (1/min)")
-                plot_ax.set_ylabel("Amplitude")
-
-            fft_plot_class._repeat_after_plot()
-            plot_ax = fft_plot_class.plot_ax
-            plot_ax.cla()
-
-            for unique_property in unique_fft_properties:
-
-                data_plot = pd.DataFrame(
-                    {
-                        "Frequ": xf_sample_ch2,
-                        "Amplitude": ffttotal_sample_ch2.flatten(),
-                    }
-                )
-                fft_results = sns.lineplot(
-                    data_plot, x="Frequ", y="Amplitude", ax=plot_ax
-                )
-                fft_results.set(yscale="log")
-                plot_ax.set_title("FFT Intensity Ch2")
-                plot_ax.set_xlabel("Frequency (1/min)")
-                plot_ax.set_ylabel("Amplitude")
 
         if _trackmate_objects is not None:
             trackid_key = _trackmate_objects.track_analysis_spot_keys[
