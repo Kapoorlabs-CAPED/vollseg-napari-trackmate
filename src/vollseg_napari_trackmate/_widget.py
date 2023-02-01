@@ -317,7 +317,7 @@ def plugin_wrapper_track():
             features=features,
         )
         select_track_nature()
-        plugin.track_id_box.value = _to_analyze[0]
+        plugin.track_id_box.value = str(_to_analyze[0])
 
     def return_color_tracks(pred):
 
