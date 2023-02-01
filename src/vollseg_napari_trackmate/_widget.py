@@ -767,7 +767,6 @@ def plugin_wrapper_track():
 
         nonlocal worker
         value = plugin.track_id_box.value
-        print(plugin.track_id_box.value)
         nonlocal _track_ids_analyze, _trackmate_objects
         if (
             _trackmate_objects is not None
