@@ -678,8 +678,7 @@ def plugin_wrapper_track():
             columns=columns,
             dtype=object,
         )
-        columns_titles = [columns[0], columns[colindex]]
-        df = df.reindex(columns=columns_titles)
+        df = df_column_switch(df, columns[0], columns[colindex])
         print("Making pandas Model")
         table_tab.data = pandasModel(df)
         table_tab.viewer = plugin.viewer.value
@@ -700,6 +699,13 @@ def plugin_wrapper_track():
         select_track_nature()
 
         plot_main()
+
+    def df_column_switch(df, column1, column2):
+        i = list(df.columns)
+        a, b = i.index(column1), i.index(column2)
+        i[b], i[a] = i[a], i[b]
+        df = df[i]
+        return df
 
     def select_track_nature():
         key = plugin.track_model_type.value
