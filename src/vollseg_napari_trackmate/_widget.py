@@ -465,7 +465,7 @@ def plugin_wrapper_track():
             visible=True,
             label="Select Track ID to analyze",
             choices=_current_choices,
-            value=_current_choices[0],
+            value=_current_choices,
         ),
         defaults_model_button=dict(
             widget_type="PushButton", text="Restore Model Defaults"
