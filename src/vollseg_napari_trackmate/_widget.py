@@ -167,7 +167,6 @@ def plugin_wrapper_track():
         defaults_params_button=dict(
             widget_type="PushButton", text="Restore Parameter Defaults"
         ),
-        progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
         persist=False,
         call_button=False,
@@ -231,12 +230,12 @@ def plugin_wrapper_track():
 
         worker = _Color_tracks(spot_attributes, track_attributes)
         worker.returned.connect(return_color_tracks)
-        if "T" in plugin.axes.value:
-            t = axes_dict(plugin.axes.value)["T"]
-            if plugin.image.value is not None:
-                n_frames = get_data(plugin.image.value).shape[t]
+        if "T" in plugin_data.axes.value:
+            t = axes_dict(plugin_data.axes.value)["T"]
+            if plugin_data.image.value is not None:
+                n_frames = get_data(plugin_data.image.value).shape[t]
             else:
-                n_frames = get_label_data(plugin.seg_image.value).shape[t]
+                n_frames = get_label_data(plugin_data.seg_image.value).shape[t]
 
             def progress_thread(current_time):
 
@@ -397,7 +396,7 @@ def plugin_wrapper_track():
     def _Color_tracks(spot_attribute, track_attribute):
         nonlocal _trackmate_objects
         yield 0
-        x_seg = get_label_data(plugin.seg_image.value)
+        x_seg = get_label_data(plugin_data.seg_image.value)
         posix = _trackmate_objects.track_analysis_spot_keys["posix"]
         posiy = _trackmate_objects.track_analysis_spot_keys["posiy"]
         posiz = _trackmate_objects.track_analysis_spot_keys["posiz"]
@@ -1145,9 +1144,9 @@ def plugin_wrapper_track():
         for k, v in DEFAULTS_FUNC_PARAMETERS.items():
             getattr(plugin_data, k).value = v
 
-    @change_handler(plugin.image, init=False)
+    @change_handler(plugin_data.image, init=False)
     def _image_change(image: napari.layers.Image):
-        plugin.image.tooltip = (
+        plugin_data.image.tooltip = (
             f"Shape: {get_data(image).shape, str(image.name)}"
         )
 
@@ -1162,16 +1161,16 @@ def plugin_wrapper_track():
             axes = "YX"
         else:
             axes = "TZYX"
-        if axes == plugin.axes.value:
+        if axes == plugin_data.axes.value:
             # make sure to trigger a changed event, even if value didn't actually change
-            plugin.axes.changed(axes)
+            plugin_data.axes.changed(axes)
         else:
-            plugin.axes.value = axes
+            plugin_data.axes.value = axes
 
     # -> triggered by _image_change
-    @change_handler(plugin.axes, init=False)
+    @change_handler(plugin_data.axes, init=False)
     def _axes_change():
-        value = plugin.axes.value
+        value = plugin_data.axes.value
         print(f"axes is {value}")
 
     return plugin
