@@ -608,7 +608,7 @@ def plugin_wrapper_track():
 
     fft_plot_class = TemporalStatistics(tabs)
     fft_plot_tab = fft_plot_class.plot_tab
-    tabs.addTab(fft_plot_tab, "Intensity Oscillations")
+    tabs.addTab(fft_plot_tab, "Phenotype analysis")
 
     table_tab = Tabulour()
     table_tab.clicked.connect(table_tab._on_user_click)
