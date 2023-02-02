@@ -338,17 +338,17 @@ def plugin_wrapper_track():
                 all_xf_sample_ch2.append(xf_sample_ch1)
                 all_ffttotal_sample_ch2.append(ffttotal_sample_ch2.flatten())
 
-            max_all_xf_sample_ch1 = max(all_xf_sample_ch1, key=tuple).flatten()
-            max_all_xf_sample_ch2 = max(all_xf_sample_ch2, key=tuple).flatten()
+            max_all_xf_sample_ch1 = max(all_xf_sample_ch1, key=tuple)
+            max_all_xf_sample_ch2 = max(all_xf_sample_ch2, key=tuple)
             resize_all_ffttotal_sample_ch1 = []
             resize_all_ffttotal_sample_ch2 = []
             for i in range(len(all_ffttotal_sample_ch1)):
                 sample_ch1 = np.pad(
-                    all_ffttotal_sample_ch1[i].flatten(),
+                    all_ffttotal_sample_ch1[i],
                     (
                         0,
-                        max_all_xf_sample_ch1
-                        - all_ffttotal_sample_ch1[i].flatten().shape[0],
+                        max_all_xf_sample_ch1.shape[0]
+                        - all_ffttotal_sample_ch1[i].shape[0],
                     ),
                 )
                 resize_all_ffttotal_sample_ch1.append(sample_ch1)
@@ -357,7 +357,7 @@ def plugin_wrapper_track():
                     all_ffttotal_sample_ch2[i],
                     (
                         0,
-                        max_all_xf_sample_ch2
+                        max_all_xf_sample_ch2.shape[0]
                         - all_ffttotal_sample_ch2[i].shape[0],
                     ),
                 )
