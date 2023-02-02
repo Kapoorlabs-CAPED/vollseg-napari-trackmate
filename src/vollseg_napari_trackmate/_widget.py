@@ -338,16 +338,39 @@ def plugin_wrapper_track():
                 all_xf_sample_ch2.append(xf_sample_ch1)
                 all_ffttotal_sample_ch2.append(ffttotal_sample_ch2.flatten())
 
+            max_all_xf_sample_ch1 = max(all_xf_sample_ch1, key=tuple)
+            max_all_xf_sample_ch2 = max(all_xf_sample_ch2, key=tuple)
+            resize_all_ffttotal_sample_ch1 = []
+            resize_all_ffttotal_sample_ch2 = []
+            for i in range(len(all_ffttotal_sample_ch1)):
+                sample_ch1 = np.pad(
+                    all_ffttotal_sample_ch1[i],
+                    (
+                        0,
+                        max_all_xf_sample_ch1
+                        - all_ffttotal_sample_ch1[i].shape[0],
+                    ),
+                )
+                resize_all_ffttotal_sample_ch1.append(sample_ch1)
+            for i in range(len(all_ffttotal_sample_ch2)):
+                sample_ch2 = np.pad(
+                    all_ffttotal_sample_ch2[i],
+                    (
+                        0,
+                        max_all_xf_sample_ch2
+                        - all_ffttotal_sample_ch2[i].shape[0],
+                    ),
+                )
+                resize_all_ffttotal_sample_ch2.append(sample_ch2)
+
             data_plot = pd.DataFrame(
                 {
-                    "Frequ_ch1": sum(all_xf_sample_ch1)
-                    / len(all_xf_sample_ch1),
-                    "Frequ_ch2": sum(all_xf_sample_ch2)
-                    / len(all_xf_sample_ch2),
-                    "Amplitude_ch1": sum(all_ffttotal_sample_ch1)
-                    / len(all_ffttotal_sample_ch1),
-                    "Amplitude_ch2": sum(all_ffttotal_sample_ch2)
-                    / len(all_ffttotal_sample_ch2),
+                    "Frequ_ch1": max_all_xf_sample_ch1,
+                    "Frequ_ch2": max_all_xf_sample_ch2,
+                    "Amplitude_ch1": sum(resize_all_ffttotal_sample_ch1)
+                    / len(resize_all_ffttotal_sample_ch1),
+                    "Amplitude_ch2": sum(resize_all_ffttotal_sample_ch2)
+                    / len(resize_all_ffttotal_sample_ch2),
                 }
             )
             sns.lineplot(
