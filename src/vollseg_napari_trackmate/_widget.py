@@ -168,8 +168,8 @@ def plugin_wrapper_track():
             widget_type="PushButton", text="Restore Parameter Defaults"
         ),
         layout="vertical",
-        persist=False,
-        call_button=False,
+        persist=True,
+        call_button=True,
     )
     def plugin_data(
         image: Union[napari.layers.Image, None],
@@ -181,8 +181,6 @@ def plugin_wrapper_track():
         edges_csv_path,
         axes,
         defaults_params_button,
-        persist=True,
-        call_button=False,
     ) -> List[napari.types.LayerDataTuple]:
 
         x = None
@@ -505,9 +503,6 @@ def plugin_wrapper_track():
             label="Select Track ID to analyze",
             choices=_current_choices,
         ),
-        defaults_model_button=dict(
-            widget_type="PushButton", text="Restore Model Defaults"
-        ),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
         persist=True,
@@ -520,7 +515,6 @@ def plugin_wrapper_track():
         track_model_type,
         track_id_box,
         track_id_value,
-        defaults_model_button,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
