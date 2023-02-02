@@ -201,10 +201,10 @@ def plugin_wrapper_track():
         plugin.progress_bar.show()
 
         _trackmate_objects = TrackMate(
-            plugin_data.xml_path,
-            plugin_data.spot_csv_path,
-            plugin_data.track_csv_path,
-            plugin_data.edges_csv_path,
+            xml_path,
+            spot_csv_path,
+            track_csv_path,
+            edges_csv_path,
             AttributeBoxname,
             TrackAttributeBoxname,
             TrackidBox,
