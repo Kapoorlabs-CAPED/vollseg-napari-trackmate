@@ -208,8 +208,8 @@ def plugin_wrapper_track():
             AttributeBoxname,
             TrackAttributeBoxname,
             TrackidBox,
-            plugin_data.x,
-            plugin_data.x_mask,
+            x,
+            x_mask,
         )
         _refreshStatPlotData()
 
