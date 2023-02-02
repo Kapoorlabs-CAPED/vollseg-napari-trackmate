@@ -539,7 +539,7 @@ def plugin_wrapper_track():
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
-        return plugin
+        pass
 
     plugin.label_head.value = '<br>Citation <tt><a href="https://doi.org/10.25080/majora-1b6fd038-014" style="color:gray;">NapaTrackMater Scipy</a></tt>'
     plugin.label_head.native.setSizePolicy(
@@ -1157,4 +1157,4 @@ def plugin_wrapper_track():
         value = plugin_data.axes.value
         print(f"axes is {value}")
 
-    return plugin_data
+    return plugin
