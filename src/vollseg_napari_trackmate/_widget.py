@@ -135,7 +135,6 @@ def plugin_wrapper_track():
     ]
 
     DEFAULTS_MODEL = dict(axes="TZYX", track_model_type="Both")
-    DEFAULTS_FUNC_PARAMETERS = dict()
 
     @magicgui(
         image=dict(label="Input Image"),
@@ -1128,11 +1127,6 @@ def plugin_wrapper_track():
     def _track_attribute_color(value):
 
         plugin_color_parameters.track_attributes.value = value
-
-    @change_handler(plugin_data.defaults_params_button, init=False)
-    def restore_function_parameters_defaults():
-        for k, v in DEFAULTS_FUNC_PARAMETERS.items():
-            getattr(plugin_data, k).value = v
 
     @change_handler(plugin_data.image, init=False)
     def _image_change(image: napari.layers.Image):
