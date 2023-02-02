@@ -334,9 +334,9 @@ def plugin_wrapper_track():
 
                 all_time.append(time)
                 all_xf_sample_ch1.append(xf_sample_ch1)
-                all_ffttotal_sample_ch1.append(ffttotal_sample_ch1.flatten())
+                all_ffttotal_sample_ch1.append(np.ravel(ffttotal_sample_ch1))
                 all_xf_sample_ch2.append(xf_sample_ch1)
-                all_ffttotal_sample_ch2.append(ffttotal_sample_ch2.flatten())
+                all_ffttotal_sample_ch2.append(np.ravel(ffttotal_sample_ch2))
             max_size_ch1 = 0
             max_size_ch1_index = 0
             for i in range(len(all_ffttotal_sample_ch1)):
