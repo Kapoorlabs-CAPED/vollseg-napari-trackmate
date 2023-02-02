@@ -138,6 +138,32 @@ def plugin_wrapper_track():
     DEFAULTS_FUNC_PARAMETERS = dict()
 
     @magicgui(
+        image=dict(label="Input Image"),
+        seg_image=dict(label="Optional Segmentation Image"),
+        mask_image=dict(label="Optional Mask Image"),
+        xml_path=dict(
+            widget_type="FileEdit",
+            visible=True,
+            label="TrackMate xml",
+            mode="r",
+        ),
+        track_csv_path=dict(
+            widget_type="FileEdit", visible=True, label="Track csv", mode="r"
+        ),
+        spot_csv_path=dict(
+            widget_type="FileEdit", visible=True, label="Spot csv", mode="r"
+        ),
+        edges_csv_path=dict(
+            widget_type="FileEdit",
+            visible=True,
+            label="Edges/Links csv",
+            mode="r",
+        ),
+        axes=dict(
+            widget_type="LineEdit",
+            label="Image Axes",
+            value=DEFAULTS_MODEL["axes"],
+        ),
         defaults_params_button=dict(
             widget_type="PushButton", text="Restore Parameter Defaults"
         ),
@@ -146,12 +172,35 @@ def plugin_wrapper_track():
         persist=False,
         call_button=False,
     )
-    def plugin_function_parameters(
+    def plugin_data(
+        image: Union[napari.layers.Image, None],
+        seg_image: Union[napari.layers.Labels, None],
+        mask_image: Union[napari.layers.Labels, None],
+        xml_path,
+        track_csv_path,
+        spot_csv_path,
+        edges_csv_path,
+        axes,
         defaults_params_button,
-        progress_bar: mw.ProgressBar,
+        persist=True,
+        call_button=False,
     ) -> List[napari.types.LayerDataTuple]:
 
-        return plugin_function_parameters
+        x = None
+        x_seg = None
+        x_mask = None
+        if image is not None:
+            x = get_data(image)
+            print(x.shape)
+
+        if seg_image is not None:
+            x_seg = get_label_data(seg_image)
+            print(x_seg.shape)
+        if mask_image is not None:
+            x_mask = get_label_data(mask_image)
+            print(x_mask.shape)
+
+        return plugin_data
 
     @magicgui(
         spot_attributes=dict(
@@ -249,6 +298,13 @@ def plugin_wrapper_track():
             fft_plot_class._repeat_after_plot()
             plot_ax = fft_plot_class.plot_ax
             plot_ax.cla()
+
+            all_time = []
+            all_xf_sample_ch1 = []
+            all_ffttotal_sample_ch1 = []
+            all_xf_sample_ch2 = []
+            all_ffttotal_sample_ch2 = []
+
             for unique_property in unique_fft_properties:
                 (
                     time,
@@ -257,33 +313,42 @@ def plugin_wrapper_track():
                     xf_sample_ch2,
                     ffttotal_sample_ch2,
                 ) = unique_property
-                data_plot = pd.DataFrame(
-                    {
-                        "Frequ": xf_sample_ch1,
-                        "Amplitude": ffttotal_sample_ch1.flatten(),
-                    }
-                )
-                sns.lineplot(data_plot, x="Frequ", y="Amplitude", ax=plot_ax)
-                plot_ax.set_title("FFT Intensity Ch1")
-                plot_ax.set_xlabel("Frequency (1/min)")
-                plot_ax.set_ylabel("Amplitude")
+
+                all_time.append(time)
+                all_xf_sample_ch1.append(xf_sample_ch1)
+                all_ffttotal_sample_ch1.append(ffttotal_sample_ch1.flatten())
+                all_xf_sample_ch2.append(xf_sample_ch1)
+                all_ffttotal_sample_ch2.append(ffttotal_sample_ch2.flatten())
+
+            data_plot = pd.DataFrame(
+                {
+                    "Frequ_ch1": sum(all_xf_sample_ch1)
+                    / len(all_xf_sample_ch1),
+                    "Frequ_ch2": sum(all_xf_sample_ch2)
+                    / len(all_xf_sample_ch2),
+                    "Amplitude_ch1": sum(all_ffttotal_sample_ch1)
+                    / len(all_ffttotal_sample_ch1),
+                    "Amplitude_ch2": sum(all_ffttotal_sample_ch2)
+                    / len(all_ffttotal_sample_ch2),
+                }
+            )
+            sns.lineplot(
+                data_plot, x="Frequ_ch1", y="Amplitude_ch1", ax=plot_ax
+            )
+            plot_ax.set_title("FFT Intensity Ch1")
+            plot_ax.set_xlabel("Frequency (1/min)")
+            plot_ax.set_ylabel("Amplitude")
 
             fft_plot_class._repeat_after_plot()
             plot_ax = fft_plot_class.plot_ax
             plot_ax.cla()
 
-            for unique_property in unique_fft_properties:
-
-                data_plot = pd.DataFrame(
-                    {
-                        "Frequ": xf_sample_ch2,
-                        "Amplitude": ffttotal_sample_ch2.flatten(),
-                    }
-                )
-                sns.lineplot(data_plot, x="Frequ", y="Amplitude", ax=plot_ax)
-                plot_ax.set_title("FFT Intensity Ch2")
-                plot_ax.set_xlabel("Frequency (1/min)")
-                plot_ax.set_ylabel("Amplitude")
+            sns.lineplot(
+                data_plot, x="Frequ_ch2", y="Amplitude_ch2", ax=plot_ax
+            )
+            plot_ax.set_title("FFT Intensity Ch2")
+            plot_ax.set_xlabel("Frequency (1/min)")
+            plot_ax.set_ylabel("Amplitude")
 
         for layer in list(plugin.viewer.value.layers):
             if (
@@ -427,32 +492,6 @@ def plugin_wrapper_track():
             label=f'<h1> <img src="{kapoorlogo}"> </h1>',
             value=f'<h5><a href=" {citation}"> NapaTrackMater: Track Analysis of TrackMate in Napari</a></h5>',
         ),
-        image=dict(label="Input Image"),
-        seg_image=dict(label="Optional Segmentation Image"),
-        mask_image=dict(label="Optional Mask Image"),
-        xml_path=dict(
-            widget_type="FileEdit",
-            visible=True,
-            label="TrackMate xml",
-            mode="r",
-        ),
-        track_csv_path=dict(
-            widget_type="FileEdit", visible=True, label="Track csv", mode="r"
-        ),
-        spot_csv_path=dict(
-            widget_type="FileEdit", visible=True, label="Spot csv", mode="r"
-        ),
-        edges_csv_path=dict(
-            widget_type="FileEdit",
-            visible=True,
-            label="Edges/Links csv",
-            mode="r",
-        ),
-        axes=dict(
-            widget_type="LineEdit",
-            label="Image Axes",
-            value=DEFAULTS_MODEL["axes"],
-        ),
         track_model_type=dict(
             widget_type="RadioButtons",
             label="Track Model Type",
@@ -473,18 +512,11 @@ def plugin_wrapper_track():
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
         persist=True,
-        call_button=True,
+        call_button=False,
     )
     def plugin(
         viewer: napari.Viewer,
         label_head,
-        image: Union[napari.layers.Image, None],
-        seg_image: Union[napari.layers.Labels, None],
-        mask_image: Union[napari.layers.Labels, None],
-        xml_path,
-        track_csv_path,
-        spot_csv_path,
-        edges_csv_path,
         axes,
         track_model_type,
         track_id_box,
@@ -492,20 +524,6 @@ def plugin_wrapper_track():
         defaults_model_button,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
-
-        x = None
-        x_seg = None
-        x_mask = None
-        if image is not None:
-            x = get_data(image)
-            print(x.shape)
-
-        if seg_image is not None:
-            x_seg = get_label_data(seg_image)
-            print(x_seg.shape)
-        if mask_image is not None:
-            x_mask = get_label_data(mask_image)
-            print(x_mask.shape)
 
         nonlocal worker, _trackmate_objects
 
@@ -516,15 +534,15 @@ def plugin_wrapper_track():
         progress_bar.show()
 
         _trackmate_objects = TrackMate(
-            xml_path,
-            spot_csv_path,
-            track_csv_path,
-            edges_csv_path,
+            plugin_data.xml_path,
+            plugin_data.spot_csv_path,
+            plugin_data.track_csv_path,
+            plugin_data.edges_csv_path,
             AttributeBoxname,
             TrackAttributeBoxname,
             TrackidBox,
-            x,
-            x_mask,
+            plugin_data.x,
+            plugin_data.x_mask,
         )
         _refreshStatPlotData()
 
@@ -546,7 +564,7 @@ def plugin_wrapper_track():
     parameter_function_tab = QWidget()
     _parameter_function_tab_layout = QVBoxLayout()
     parameter_function_tab.setLayout(_parameter_function_tab_layout)
-    _parameter_function_tab_layout.addWidget(plugin_function_parameters.native)
+    _parameter_function_tab_layout.addWidget(plugin_data.native)
     tabs.addTab(parameter_function_tab, "Parameter Selection")
 
     color_tracks_tab = QWidget()
@@ -1122,12 +1140,10 @@ def plugin_wrapper_track():
 
         plugin_color_parameters.track_attributes.value = value
 
-    @change_handler(
-        plugin_function_parameters.defaults_params_button, init=False
-    )
+    @change_handler(plugin_data.defaults_params_button, init=False)
     def restore_function_parameters_defaults():
         for k, v in DEFAULTS_FUNC_PARAMETERS.items():
-            getattr(plugin_function_parameters, k).value = v
+            getattr(plugin_data, k).value = v
 
     @change_handler(plugin.image, init=False)
     def _image_change(image: napari.layers.Image):
