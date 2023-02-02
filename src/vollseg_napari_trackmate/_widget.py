@@ -164,9 +164,6 @@ def plugin_wrapper_track():
             label="Image Axes",
             value=DEFAULTS_MODEL["axes"],
         ),
-        defaults_params_button=dict(
-            widget_type="PushButton", text="Restore Parameter Defaults"
-        ),
         layout="vertical",
         persist=True,
         call_button=True,
@@ -180,7 +177,6 @@ def plugin_wrapper_track():
         spot_csv_path,
         edges_csv_path,
         axes,
-        defaults_params_button,
     ) -> List[napari.types.LayerDataTuple]:
 
         x = None
@@ -197,7 +193,33 @@ def plugin_wrapper_track():
             x_mask = get_label_data(mask_image)
             print(x_mask.shape)
 
-        return plugin_data
+        nonlocal worker, _trackmate_objects
+
+        plugin.progress_bar.label = "Analyzing Tracks"
+
+        # progress_bar.range = (0, n_frames - 1)
+        plugin.progress_bar.value = 0
+        plugin.progress_bar.show()
+
+        _trackmate_objects = TrackMate(
+            plugin_data.xml_path,
+            plugin_data.spot_csv_path,
+            plugin_data.track_csv_path,
+            plugin_data.edges_csv_path,
+            AttributeBoxname,
+            TrackAttributeBoxname,
+            TrackidBox,
+            plugin_data.x,
+            plugin_data.x_mask,
+        )
+        _refreshStatPlotData()
+
+        plugin_color_parameters.track_attributes.choices = (
+            _trackmate_objects.TrackAttributeids
+        )
+        plugin_color_parameters.spot_attributes.choices = (
+            _trackmate_objects.Attributeids
+        )
 
     @magicgui(
         spot_attributes=dict(
@@ -518,33 +540,7 @@ def plugin_wrapper_track():
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
-        nonlocal worker, _trackmate_objects
-
-        progress_bar.label = "Analyzing Tracks"
-
-        # progress_bar.range = (0, n_frames - 1)
-        progress_bar.value = 0
-        progress_bar.show()
-
-        _trackmate_objects = TrackMate(
-            plugin_data.xml_path,
-            plugin_data.spot_csv_path,
-            plugin_data.track_csv_path,
-            plugin_data.edges_csv_path,
-            AttributeBoxname,
-            TrackAttributeBoxname,
-            TrackidBox,
-            plugin_data.x,
-            plugin_data.x_mask,
-        )
-        _refreshStatPlotData()
-
-        plugin_color_parameters.track_attributes.choices = (
-            _trackmate_objects.TrackAttributeids
-        )
-        plugin_color_parameters.spot_attributes.choices = (
-            _trackmate_objects.Attributeids
-        )
+        return plugin
 
     plugin.label_head.value = '<br>Citation <tt><a href="https://doi.org/10.25080/majora-1b6fd038-014" style="color:gray;">NapaTrackMater Scipy</a></tt>'
     plugin.label_head.native.setSizePolicy(
@@ -1167,4 +1163,4 @@ def plugin_wrapper_track():
         value = plugin_data.axes.value
         print(f"axes is {value}")
 
-    return plugin
+    return plugin_data
