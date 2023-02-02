@@ -337,9 +337,23 @@ def plugin_wrapper_track():
                 all_ffttotal_sample_ch1.append(ffttotal_sample_ch1.flatten())
                 all_xf_sample_ch2.append(xf_sample_ch1)
                 all_ffttotal_sample_ch2.append(ffttotal_sample_ch2.flatten())
+            max_size_ch1 = 0
+            max_size_ch1_index = 0
+            for i in range(len(all_ffttotal_sample_ch1)):
+                size = all_ffttotal_sample_ch1[i]
+                if size > max_size_ch1:
+                    max_size_ch1 = size
+                    max_size_ch1_index = i
+            max_size_ch2 = 0
+            max_size_ch2_index = 0
+            for i in range(len(all_ffttotal_sample_ch2)):
+                size = all_ffttotal_sample_ch2[i]
+                if size > max_size_ch2:
+                    max_size_ch2 = size
+                    max_size_ch2_index = i
 
-            max_all_xf_sample_ch1 = max(all_xf_sample_ch1, key=tuple)
-            max_all_xf_sample_ch2 = max(all_xf_sample_ch2, key=tuple)
+            max_all_xf_sample_ch1 = all_xf_sample_ch1[max_size_ch1_index]
+            max_all_xf_sample_ch2 = all_xf_sample_ch2[max_size_ch2_index]
             resize_all_ffttotal_sample_ch1 = []
             resize_all_ffttotal_sample_ch2 = []
             for i in range(len(all_ffttotal_sample_ch1)):
