@@ -593,6 +593,12 @@ def plugin_wrapper_track():
 
     tabs = QTabWidget()
 
+    data_tab = QWidget()
+    _data_tab_layout = QVBoxLayout()
+    data_tab.setLayout(_data_tab_layout)
+    _data_tab_layout.addWidget(plugin_data.native)
+    tabs.addTab(data_tab, "Input Data")
+
     color_tracks_tab = QWidget()
     _color_tracks_tab_layout = QVBoxLayout()
     color_tracks_tab.setLayout(_color_tracks_tab_layout)
