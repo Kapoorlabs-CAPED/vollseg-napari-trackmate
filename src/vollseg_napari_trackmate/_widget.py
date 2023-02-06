@@ -139,6 +139,7 @@ def plugin_wrapper_track():
     @magicgui(
         image=dict(label="Input Image"),
         seg_image=dict(label="Optional Segmentation Image"),
+        channel_seg_image=dict(label="Second channel (new XML)"),
         mask_image=dict(label="Optional Mask Image"),
         xml_path=dict(
             widget_type="FileEdit",
@@ -170,6 +171,7 @@ def plugin_wrapper_track():
     def plugin_data(
         image: Union[napari.layers.Image, None],
         seg_image: Union[napari.layers.Labels, None],
+        channel_seg_image: Union[napari.layers.Labels, None],
         mask_image: Union[napari.layers.Labels, None],
         xml_path,
         track_csv_path,
@@ -180,6 +182,7 @@ def plugin_wrapper_track():
 
         x = None
         x_seg = None
+        x_channel_seg = None
         x_mask = None
         if image is not None:
             x = get_data(image)
@@ -191,6 +194,9 @@ def plugin_wrapper_track():
         if mask_image is not None:
             x_mask = get_label_data(mask_image)
             print(x_mask.shape)
+        if channel_seg_image is not None:
+            x_channel_seg = get_label_data(channel_seg_image)
+            print(x_channel_seg.shape)
 
         nonlocal worker, _trackmate_objects
 
@@ -208,8 +214,9 @@ def plugin_wrapper_track():
             AttributeBoxname,
             TrackAttributeBoxname,
             TrackidBox,
-            x,
-            x_mask,
+            channel_seg_image=x_channel_seg,
+            image=x,
+            mask=x_mask,
         )
         _refreshStatPlotData()
 
@@ -585,12 +592,6 @@ def plugin_wrapper_track():
     plugin.progress_bar.hide()
 
     tabs = QTabWidget()
-
-    parameter_function_tab = QWidget()
-    _parameter_function_tab_layout = QVBoxLayout()
-    parameter_function_tab.setLayout(_parameter_function_tab_layout)
-    _parameter_function_tab_layout.addWidget(plugin_data.native)
-    tabs.addTab(parameter_function_tab, "Parameter Selection")
 
     color_tracks_tab = QWidget()
     _color_tracks_tab_layout = QVBoxLayout()
