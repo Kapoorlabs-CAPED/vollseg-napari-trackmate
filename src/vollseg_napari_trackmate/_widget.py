@@ -1040,9 +1040,9 @@ def plugin_wrapper_track():
                 if columns is None:
                     columns = [value for value in v.keys()]
                 futures.append(executor.submit(_analyze_tracks, v, count))
-            lists_float_list = [r.result() for r in futures]
 
-            for float_list in lists_float_list:
+            for r in futures:
+                float_list = r.result()
                 if float_list is not None:
                     if root_cells is None:
                         root_cells = np.asarray(float_list)
