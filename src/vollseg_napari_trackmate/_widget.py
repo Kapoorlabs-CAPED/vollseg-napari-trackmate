@@ -233,7 +233,7 @@ def plugin_wrapper_track():
         worker.yielded.connect(progress_thread)
         plugin.progress_bar.value = _trackmate_objects.count
 
-        _refreshStatPlotData()
+        worker.returned.connect(_refreshStatPlotData())
 
         plugin_color_parameters.track_attributes.choices = (
             _trackmate_objects.TrackAttributeids
