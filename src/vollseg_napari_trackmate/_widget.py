@@ -232,8 +232,6 @@ def plugin_wrapper_track():
         worker = _trackmate_objects._get_xml_data()
         worker.yielded.connect(progress_thread)
         plugin.progress_bar.value = _trackmate_objects.count
-        _trackmate_objects._get_attributes()
-        _trackmate_objects._temporal_plots_trackmate()
 
         _refreshStatPlotData()
 
