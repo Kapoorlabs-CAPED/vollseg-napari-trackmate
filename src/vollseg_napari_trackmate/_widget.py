@@ -211,7 +211,7 @@ def plugin_wrapper_track():
             plugin.progress_bar.label = "Collecting Tracks"
             plugin.progress_bar.range = (
                 0,
-                _trackmate_objects.filtered_track_ids,
+                len(_trackmate_objects.filtered_track_ids),
             )
             plugin.progress_bar.value = current_track
             plugin.progress_bar.show()
@@ -233,15 +233,7 @@ def plugin_wrapper_track():
         worker.returned.connect(_refreshStatPlotData)
         worker.yielded.connect(progress_thread)
         plugin.progress_bar.value = _trackmate_objects.count
-
         worker.start()
-
-        plugin_color_parameters.track_attributes.choices = (
-            _trackmate_objects.TrackAttributeids
-        )
-        plugin_color_parameters.spot_attributes.choices = (
-            _trackmate_objects.Attributeids
-        )
 
     @magicgui(
         spot_attributes=dict(
@@ -1033,6 +1025,13 @@ def plugin_wrapper_track():
         if None in _both_track_ids_analyze:
             _both_track_ids_analyze.remove(None)
         plugin.progress_bar.range = (0, len(unique_cells) - 1)
+
+        plugin_color_parameters.track_attributes.choices = (
+            _trackmate_objects.TrackAttributeids
+        )
+        plugin_color_parameters.spot_attributes.choices = (
+            _trackmate_objects.Attributeids
+        )
 
         for count, (k, v) in enumerate(unique_cells.items()):
 
