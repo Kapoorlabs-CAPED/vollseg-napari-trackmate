@@ -206,6 +206,16 @@ def plugin_wrapper_track():
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
 
+        def progress_thread(current_track):
+
+            plugin.progress_bar.label = "Collecting Tracks"
+            plugin.progress_bar.range = (
+                0,
+                _trackmate_objects.filtered_track_ids,
+            )
+            plugin.progress_bar.value = current_track
+            plugin.progress_bar.show()
+
         _trackmate_objects = TrackMate(
             xml_path,
             spot_csv_path,
@@ -218,6 +228,13 @@ def plugin_wrapper_track():
             image=x,
             mask=x_mask,
         )
+
+        worker = _trackmate_objects._get_xml_data()
+        worker.yielded.connect(progress_thread)
+        plugin.progress_bar.value = _trackmate_objects.count
+        _trackmate_objects._get_attributes()
+        _trackmate_objects._temporal_plots_trackmate()
+
         _refreshStatPlotData()
 
         plugin_color_parameters.track_attributes.choices = (
@@ -270,7 +287,7 @@ def plugin_wrapper_track():
                 progress_bar.value = current_time
                 progress_bar.show()
 
-            worker.yielded.connect(return_color_tracks)
+            worker.yielded.connect(progress_thread)
 
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
