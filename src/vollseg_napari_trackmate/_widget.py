@@ -230,10 +230,10 @@ def plugin_wrapper_track():
         )
 
         worker = _trackmate_objects._get_xml_data()
+        worker.returned.connect(_refreshStatPlotData)
         worker.yielded.connect(progress_thread)
         plugin.progress_bar.value = _trackmate_objects.count
 
-        worker.returned.connect(_refreshStatPlotData())
         worker.start()
 
         plugin_color_parameters.track_attributes.choices = (
