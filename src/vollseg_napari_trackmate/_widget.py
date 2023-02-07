@@ -20,7 +20,6 @@ from magicgui import magicgui
 from magicgui import widgets as mw
 from psygnal import Signal
 from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
-from tqdm import tqdm
 
 
 def plugin_wrapper_track():
@@ -988,7 +987,6 @@ def plugin_wrapper_track():
     def _refreshStatPlotData():
         nonlocal _trackmate_objects, _current_choices, _dividing_choices, _normal_choices, _both_choices, _dividing_track_ids_analyze, _normal_track_ids_analyze, _both_track_ids_analyze
         plugin.progress_bar.label = "Analyzing Tracks"
-        root_cells = []
         columns = None
         root_cells = None
         unique_cells = _trackmate_objects.unique_spot_properties
@@ -1042,7 +1040,13 @@ def plugin_wrapper_track():
                     columns = [value for value in v.keys()]
                 futures.append(executor.submit(_analyze_tracks, v, count))
 
-            for r in tqdm(futures):
+            count = 0
+            plugin.progress_bar.label = "Creating Table"
+            plugin.progress_bar.range = (0, len(futures) - 1)
+
+            for r in futures:
+                count = count + 1
+                plugin.progress_bar.value = count
                 float_list = r.result()
                 if float_list is not None:
                     if root_cells is None:
