@@ -200,9 +200,6 @@ def plugin_wrapper_track():
 
         nonlocal worker, _trackmate_objects
 
-        plugin.progress_bar.label = "Analyzing Tracks"
-
-        # progress_bar.range = (0, n_frames - 1)
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
 
@@ -232,7 +229,7 @@ def plugin_wrapper_track():
         worker = _trackmate_objects._get_xml_data()
         worker.returned.connect(_refreshStatPlotData)
         worker.yielded.connect(progress_thread)
-        plugin.progress_bar.value = _trackmate_objects.count
+
         worker.start()
 
     @magicgui(
@@ -987,7 +984,7 @@ def plugin_wrapper_track():
 
     def _refreshStatPlotData():
         nonlocal _trackmate_objects, _current_choices, _dividing_choices, _normal_choices, _both_choices, _dividing_track_ids_analyze, _normal_track_ids_analyze, _both_track_ids_analyze
-
+        plugin.progress_bar.label = "Analyzing Tracks"
         root_cells = []
         columns = None
         root_cells = None
