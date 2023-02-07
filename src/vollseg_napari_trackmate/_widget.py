@@ -211,11 +211,7 @@ def plugin_wrapper_track():
             plugin.progress_bar.label = "Collecting Tracks"
             plugin.progress_bar.range = (
                 0,
-                len(
-                    _trackmate_objects.xml_content.find("Model")
-                    .find("AllTracks")
-                    .findall("Track")
-                ),
+                len(_trackmate_objects.filtered_track_ids),
             )
             plugin.progress_bar.value = current_track
             plugin.progress_bar.show()
