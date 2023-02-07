@@ -20,6 +20,7 @@ from magicgui import magicgui
 from magicgui import widgets as mw
 from psygnal import Signal
 from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
+from tqdm import tqdm
 
 
 def plugin_wrapper_track():
@@ -1041,7 +1042,7 @@ def plugin_wrapper_track():
                     columns = [value for value in v.keys()]
                 futures.append(executor.submit(_analyze_tracks, v, count))
 
-            for r in futures:
+            for r in tqdm(futures):
                 float_list = r.result()
                 if float_list is not None:
                     if root_cells is None:
