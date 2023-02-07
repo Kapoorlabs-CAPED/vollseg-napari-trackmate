@@ -1043,12 +1043,13 @@ def plugin_wrapper_track():
             lists_float_list = [r.result() for r in futures]
 
             for float_list in lists_float_list:
-                if root_cells is None:
-                    root_cells = np.asarray(float_list)
-                else:
-                    root_cells = np.vstack(
-                        (root_cells, np.asarray(float_list))
-                    )
+                if float_list is not None:
+                    if root_cells is None:
+                        root_cells = np.asarray(float_list)
+                    else:
+                        root_cells = np.vstack(
+                            (root_cells, np.asarray(float_list))
+                        )
 
         print(f"Making pandas dataframe  {root_cells.shape}")
         columns[0] = "Root_Cell_ID"
@@ -1091,7 +1092,7 @@ def plugin_wrapper_track():
             if is_root is None:
 
                 float_list = list(v.values())
-            return float_list
+                return float_list
 
         plugin.progress_bar.value = count
 
