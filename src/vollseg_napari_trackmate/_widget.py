@@ -24,8 +24,6 @@ from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 
 def plugin_wrapper_track():
 
-    from csbdeep.utils import axes_dict
-    from napari.qt.threading import thread_worker
     from napatrackmater.Trackmate import TrackMate
     from skimage.util import map_array
 
@@ -126,7 +124,6 @@ def plugin_wrapper_track():
 
         return decorator_change_handler
 
-    worker = None
     _track_ids_analyze = None
     _to_analyze = None
     _trackmate_objects = None
@@ -200,7 +197,7 @@ def plugin_wrapper_track():
             x_channel_seg = get_label_data(channel_seg_image)
             print(x_channel_seg.shape)
 
-        nonlocal worker, _trackmate_objects
+        nonlocal _trackmate_objects
 
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
@@ -252,25 +249,7 @@ def plugin_wrapper_track():
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
-        nonlocal worker
-
-        worker = _Color_tracks(spot_attributes, track_attributes)
-        worker.returned.connect(return_color_tracks)
-        if "T" in plugin_data.axes.value:
-            t = axes_dict(plugin_data.axes.value)["T"]
-            if plugin_data.image.value is not None:
-                n_frames = get_data(plugin_data.image.value).shape[t]
-            else:
-                n_frames = get_label_data(plugin_data.seg_image.value).shape[t]
-
-            def progress_thread(current_time):
-
-                progress_bar.label = "Coloring cells with chosen attribute"
-                progress_bar.range = (0, n_frames - 1)
-                progress_bar.value = current_time
-                progress_bar.show()
-
-            worker.yielded.connect(progress_thread)
+        _Color_tracks(spot_attributes, track_attributes)
 
     kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
     citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
@@ -455,7 +434,6 @@ def plugin_wrapper_track():
                     plugin.viewer.value.layers.remove(layer)
             plugin.viewer.value.add_labels(new_seg_image, name=attribute)
 
-    @thread_worker(connect={"returned": return_color_tracks})
     def _Color_tracks(spot_attribute, track_attribute):
         nonlocal _trackmate_objects
         yield 0
@@ -545,7 +523,7 @@ def plugin_wrapper_track():
             new_seg_image = Relabel(x_seg.copy(), locations)
 
             pred = new_seg_image, attribute
-
+            return_color_tracks(pred)
         return pred
 
     @magicgui(
@@ -1161,7 +1139,6 @@ def plugin_wrapper_track():
     @change_handler(plugin.track_id_box, init=False)
     def _track_id_box_change(value):
 
-        nonlocal worker
         plugin.track_id_box.value = value
         plugin.track_id_value.value = value
 
