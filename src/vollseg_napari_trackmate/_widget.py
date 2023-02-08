@@ -997,6 +997,7 @@ def plugin_wrapper_track():
 
         v = next(iter(root_spots.values()))
         columns = [value for value in v.keys()]
+        print(len(root_spots.items()))
         for count, (k, v) in enumerate(root_spots.items()):
 
             plugin.progress_bar.value = count
