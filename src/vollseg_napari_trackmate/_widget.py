@@ -953,6 +953,7 @@ def plugin_wrapper_track():
         columns = None
         root_cells = None
         unique_cells = _trackmate_objects.unique_spot_properties
+        root_spots = _trackmate_objects.root_spots
         unique_tracks = _trackmate_objects.unique_tracks
         unique_track_properties = _trackmate_objects.unique_track_properties
         time_key = _trackmate_objects.frameid_key
@@ -994,8 +995,8 @@ def plugin_wrapper_track():
             _trackmate_objects.Attributeids
         )
         plugin.progress_bar.label = "Creating Table"
-        plugin.progress_bar.range = (0, len(unique_cells) - 1)
-        for count, (k, v) in enumerate(unique_cells.items()):
+        plugin.progress_bar.range = (0, len(root_spots) - 1)
+        for count, (k, v) in enumerate(root_spots.items()):
 
             plugin.progress_bar.value = count
             if columns is None:
@@ -1044,12 +1045,8 @@ def plugin_wrapper_track():
         plot_main()
 
     def _analyze_tracks(v, count):
-        if _trackmate_objects.beforeid_key in v.keys():
-            is_root = v[_trackmate_objects.beforeid_key]
-            if is_root is None:
-
-                float_list = list(v.values())
-                return float_list
+        float_list = list(v.values())
+        return float_list
 
     def df_column_switch(df, column1, column2):
         i = list(df.columns)
