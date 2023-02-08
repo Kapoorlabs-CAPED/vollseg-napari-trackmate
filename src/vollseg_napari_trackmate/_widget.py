@@ -994,11 +994,12 @@ def plugin_wrapper_track():
         )
         plugin.progress_bar.label = "Creating Table"
         plugin.progress_bar.range = (0, len(root_spots) - 1)
+
+        v = next(iter(root_spots.values()))
+        columns = [value for value in v.keys()]
         for count, (k, v) in enumerate(root_spots.items()):
 
             plugin.progress_bar.value = count
-            if columns is None:
-                columns = [value for value in v.keys()]
             float_list = _analyze_tracks(v)
             if root_cells is None:
                 root_cells = np.asarray(float_list)
