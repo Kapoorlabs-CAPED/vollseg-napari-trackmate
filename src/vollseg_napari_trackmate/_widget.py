@@ -952,7 +952,6 @@ def plugin_wrapper_track():
         plugin.progress_bar.label = "Analyzing Tracks"
         columns = None
         root_cells = None
-        unique_cells = _trackmate_objects.unique_spot_properties
         root_spots = _trackmate_objects.root_spots
         unique_tracks = _trackmate_objects.unique_tracks
         unique_track_properties = _trackmate_objects.unique_track_properties
@@ -986,7 +985,6 @@ def plugin_wrapper_track():
             _both_track_ids_analyze.remove(TrackidBox)
         if None in _both_track_ids_analyze:
             _both_track_ids_analyze.remove(None)
-        plugin.progress_bar.range = (0, len(unique_cells) - 1)
 
         plugin_color_parameters.track_attributes.choices = (
             _trackmate_objects.TrackAttributeids
@@ -1001,14 +999,11 @@ def plugin_wrapper_track():
             plugin.progress_bar.value = count
             if columns is None:
                 columns = [value for value in v.keys()]
-            float_list = _analyze_tracks(v, count)
-            if float_list is not None:
-                if root_cells is None:
-                    root_cells = np.asarray(float_list)
-                else:
-                    root_cells = np.vstack(
-                        (root_cells, np.asarray(float_list))
-                    )
+            float_list = _analyze_tracks(v)
+            if root_cells is None:
+                root_cells = np.asarray(float_list)
+            else:
+                root_cells = np.vstack((root_cells, np.asarray(float_list)))
 
         print(f"Making pandas dataframe  {root_cells.shape}")
         columns[0] = "Root_Cell_ID"
@@ -1044,7 +1039,7 @@ def plugin_wrapper_track():
 
         plot_main()
 
-    def _analyze_tracks(v, count):
+    def _analyze_tracks(v):
         float_list = list(v.values())
         return float_list
 
