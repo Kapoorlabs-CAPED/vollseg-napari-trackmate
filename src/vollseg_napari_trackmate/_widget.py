@@ -219,7 +219,7 @@ def plugin_wrapper_track():
         )
 
         _trackmate_objects._get_xml_data()
-        _refreshStatPlotData()
+
         plugin.progress_bar.label = "Collecting Tracks"
         plugin.progress_bar.range = (
             0,
@@ -227,6 +227,7 @@ def plugin_wrapper_track():
         )
         plugin.progress_bar.value = _trackmate_objects.count
         plugin.progress_bar.show()
+        _refreshStatPlotData()
 
     @magicgui(
         spot_attributes=dict(
