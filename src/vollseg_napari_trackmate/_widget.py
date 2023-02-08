@@ -211,16 +211,10 @@ def plugin_wrapper_track():
             channel_seg_image=x_channel_seg,
             image=x,
             mask=x_mask,
+            progress_bar=plugin.progress_bar,
         )
 
-        plugin.progress_bar.label = "Collecting Tracks"
-        plugin.progress_bar.range = (
-            0,
-            len(_trackmate_objects.filtered_track_ids),
-        )
-        plugin.progress_bar.show()
-        # _trackmate_objects._get_xml_data(plugin.progress_bar)
-        # _refreshStatPlotData()
+        _refreshStatPlotData()
 
     @magicgui(
         spot_attributes=dict(
