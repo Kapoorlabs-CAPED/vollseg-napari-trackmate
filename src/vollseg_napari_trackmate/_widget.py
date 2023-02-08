@@ -219,7 +219,7 @@ def plugin_wrapper_track():
         )
 
         _trackmate_objects._get_xml_data()
-        worker.returned.connect(_refreshStatPlotData)
+        _refreshStatPlotData()
         plugin.progress_bar.label = "Collecting Tracks"
         plugin.progress_bar.range = (
             0,
