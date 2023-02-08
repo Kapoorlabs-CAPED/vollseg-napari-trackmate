@@ -205,16 +205,6 @@ def plugin_wrapper_track():
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
 
-        def progress_thread(current_track):
-
-            plugin.progress_bar.label = "Collecting Tracks"
-            plugin.progress_bar.range = (
-                0,
-                len(_trackmate_objects.filtered_track_ids),
-            )
-            plugin.progress_bar.value = current_track
-            plugin.progress_bar.show()
-
         _trackmate_objects = TrackMate(
             xml_path,
             spot_csv_path,
@@ -228,11 +218,15 @@ def plugin_wrapper_track():
             mask=x_mask,
         )
 
-        worker = _trackmate_objects._get_xml_data()
+        _trackmate_objects._get_xml_data()
         worker.returned.connect(_refreshStatPlotData)
-        worker.yielded.connect(progress_thread)
-
-        worker.start()
+        plugin.progress_bar.label = "Collecting Tracks"
+        plugin.progress_bar.range = (
+            0,
+            len(_trackmate_objects.filtered_track_ids),
+        )
+        plugin.progress_bar.value = _trackmate_objects.count
+        plugin.progress_bar.show()
 
     @magicgui(
         spot_attributes=dict(
