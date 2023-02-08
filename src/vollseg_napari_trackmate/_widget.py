@@ -4,10 +4,8 @@ VollSeg Napari Track .
 Made by Kapoorlabs, 2022
 """
 
-import concurrent
 import functools
 import math
-import os
 from pathlib import Path
 from typing import List, Union
 
@@ -1001,31 +999,21 @@ def plugin_wrapper_track():
         plugin_color_parameters.spot_attributes.choices = (
             _trackmate_objects.Attributeids
         )
+        plugin.progress_bar.label = "Creating Table"
+        plugin.progress_bar.range = (0, len(unique_cells) - 1)
+        for count, (k, v) in enumerate(unique_cells.items()):
 
-        futures = []
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=os.cpu_count()
-        ) as executor:
-            for count, (k, v) in enumerate(unique_cells.items()):
-                if columns is None:
-                    columns = [value for value in v.keys()]
-                futures.append(executor.submit(_analyze_tracks, v, count))
-
-            count = 0
-            plugin.progress_bar.label = "Creating Table"
-            plugin.progress_bar.range = (0, len(futures) - 1)
-
-            for r in futures:
-                count = count + 1
-                plugin.progress_bar.value = count
-                float_list = r.result()
-                if float_list is not None:
-                    if root_cells is None:
-                        root_cells = np.asarray(float_list)
-                    else:
-                        root_cells = np.vstack(
-                            (root_cells, np.asarray(float_list))
-                        )
+            plugin.progress_bar.value = count
+            if columns is None:
+                columns = [value for value in v.keys()]
+            float_list = _analyze_tracks(v, count)
+            if float_list is not None:
+                if root_cells is None:
+                    root_cells = np.asarray(float_list)
+                else:
+                    root_cells = np.vstack(
+                        (root_cells, np.asarray(float_list))
+                    )
 
         print(f"Making pandas dataframe  {root_cells.shape}")
         columns[0] = "Root_Cell_ID"
@@ -1064,13 +1052,10 @@ def plugin_wrapper_track():
     def _analyze_tracks(v, count):
         if _trackmate_objects.beforeid_key in v.keys():
             is_root = v[_trackmate_objects.beforeid_key]
-
             if is_root is None:
 
                 float_list = list(v.values())
                 return float_list
-
-        plugin.progress_bar.value = count
 
     def df_column_switch(df, column1, column2):
         i = list(df.columns)
