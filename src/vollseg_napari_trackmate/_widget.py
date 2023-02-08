@@ -166,7 +166,7 @@ def plugin_wrapper_track():
         call_button=True,
     )
     def plugin_data(
-        image: napari.layers.Image,
+        image: Union[napari.layers.Image, None],
         seg_image: Union[napari.layers.Labels, None],
         channel_seg_image: Union[napari.layers.Labels, None],
         mask_image: Union[napari.layers.Labels, None],
@@ -219,7 +219,7 @@ def plugin_wrapper_track():
             len(_trackmate_objects.filtered_track_ids),
         )
         plugin.progress_bar.show()
-        _trackmate_objects._get_xml_data(plugin.progress_bar)
+        # _trackmate_objects._get_xml_data(plugin.progress_bar)
         # _refreshStatPlotData()
 
     @magicgui(
