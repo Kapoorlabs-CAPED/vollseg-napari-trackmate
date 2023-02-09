@@ -254,33 +254,27 @@ def plugin_wrapper_track():
         features = {
             "time": map(
                 int,
-                np.asarray(unique_tracks_properties)[:, 0],
-                dtype="float64",
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 0],
             ),
             "generation": map(
                 int,
-                np.asarray(unique_tracks_properties)[:, 1],
-                dtype="float64",
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 1],
             ),
             "speed": map(
                 float,
-                np.asarray(unique_tracks_properties)[:, 2],
-                dtype="float64",
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 2],
             ),
             "directional_change_rate": map(
                 float,
-                np.asarray(unique_tracks_properties)[:, 3],
-                dtype="float64",
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 3],
             ),
             "mean-intensity": map(
                 float,
-                np.asarray(unique_tracks_properties)[:, 4],
-                dtype="float64",
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 4],
             ),
             "radius_pixels": map(
                 float,
-                np.asarray(unique_tracks_properties)[:, 5],
-                dtype="float64",
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 5],
             ),
         }
 
