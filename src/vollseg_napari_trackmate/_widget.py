@@ -47,11 +47,9 @@ def plugin_wrapper_track():
             raise ValueError(e)
 
     def get_data(image, debug=DEBUG):
-
-        image = image.data[0] if image.multiscale else image.data
-        if debug:
-            print("image loaded")
-        return np.asarray(image)
+        if image is not None:
+            image = image.data[0] if image.multiscale else image.data
+            return np.asarray(image)
 
     def Relabel(image, locations):
 
@@ -90,11 +88,9 @@ def plugin_wrapper_track():
         return NewSegimage
 
     def get_label_data(image, debug=DEBUG):
-
-        image = image.data[0] if image.multiscale else image.data
-        if debug:
-            print("Label image loaded")
-        return np.asarray(image).astype(np.uint16)
+        if image is not None:
+            image = image.data[0] if image.multiscale else image.data
+            return np.asarray(image).astype(np.uint16)
 
     def abspath(root, relpath):
         root = Path(root)
