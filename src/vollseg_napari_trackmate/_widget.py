@@ -268,13 +268,17 @@ def plugin_wrapper_track():
                 float,
                 np.asarray(unique_tracks_properties, dtype="float64")[:, 3],
             ),
-            "mean-intensity": map(
+            "total-intensity": map(
                 float,
                 np.asarray(unique_tracks_properties, dtype="float64")[:, 4],
             ),
-            "radius_pixels": map(
+            "volume_pixels": map(
                 float,
                 np.asarray(unique_tracks_properties, dtype="float64")[:, 5],
+            ),
+            "acceleration": map(
+                float,
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 6],
             ),
         }
 
@@ -959,7 +963,6 @@ def plugin_wrapper_track():
 
         v = next(iter(root_spots.values()))
         columns = [value for value in v.keys()]
-        print(len(root_spots.items()))
         for count, (k, v) in enumerate(root_spots.items()):
 
             plugin.progress_bar.value = count
