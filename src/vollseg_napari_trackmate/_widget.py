@@ -335,10 +335,6 @@ def plugin_wrapper_track():
             plot_ax.set_xlabel("Frequency (1/min)")
             plot_ax.set_ylabel("Amplitude")
 
-            fft_plot_class._repeat_after_plot()
-            plot_ax = fft_plot_class.plot_ax
-            plot_ax.cla()
-
         for layer in list(plugin.viewer.value.layers):
             if (
                 "Track" == layer.name
