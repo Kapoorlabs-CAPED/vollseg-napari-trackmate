@@ -1114,7 +1114,11 @@ def plugin_wrapper_track():
         plugin_color_parameters.track_attributes.value = value
 
     @change_handler(
-        plugin_data.image, napari.layers.Image, napari.layers.Labels, init=True
+        plugin_data.image,
+        plugin_data.seg_image,
+        plugin_data.channel_seg_image,
+        plugin_data.mask_image,
+        init=True,
     )
     def _image_change(image: napari.layers.Image):
 
