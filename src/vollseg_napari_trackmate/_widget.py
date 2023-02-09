@@ -46,9 +46,11 @@ def plugin_wrapper_track():
             raise ValueError(e)
 
     def get_data(image, debug=DEBUG):
-        if image is not None:
-            image = image.data[0] if image.multiscale else image.data
-            return np.asarray(image)
+
+        image = image.data[0] if image.multiscale else image.data
+        if debug:
+            print("image loaded")
+        return np.asarray(image)
 
     def Relabel(image, locations):
 
@@ -87,9 +89,11 @@ def plugin_wrapper_track():
         return NewSegimage
 
     def get_label_data(image, debug=DEBUG):
-        if image is not None:
-            image = image.data[0] if image.multiscale else image.data
-            return np.asarray(image).astype(np.uint16)
+
+        image = image.data[0] if image.multiscale else image.data
+        if debug:
+            print("Label image loaded")
+        return np.asarray(image).astype(np.uint16)
 
     def abspath(root, relpath):
         root = Path(root)
@@ -1051,26 +1055,25 @@ def plugin_wrapper_track():
 
         if str(track_id) not in TrackidBox and track_id is not None:
             _to_analyze = [int(track_id)]
-        elif _track_ids_analyze is not None:
+        else:
             _to_analyze = _track_ids_analyze.copy()
-        if _to_analyze is not None:
-            for unique_track_id in _to_analyze:
 
-                tracklets = _trackmate_objects.unique_tracks[unique_track_id]
-                tracklets_properties = (
-                    _trackmate_objects.unique_track_properties[unique_track_id]
-                )
+        for unique_track_id in _to_analyze:
 
-                unique_tracks.append(tracklets)
-                unique_tracks_properties.append(tracklets_properties)
+            tracklets = _trackmate_objects.unique_tracks[unique_track_id]
+            tracklets_properties = _trackmate_objects.unique_track_properties[
+                unique_track_id
+            ]
 
-            unique_tracks = np.concatenate(unique_tracks, axis=0)
-            unique_tracks_properties = np.concatenate(
-                unique_tracks_properties, axis=0
-            )
-            print(unique_tracks_properties)
-            pred = unique_tracks, unique_tracks_properties
-            _refreshTrackData(pred)
+            unique_tracks.append(tracklets)
+            unique_tracks_properties.append(tracklets_properties)
+
+        unique_tracks = np.concatenate(unique_tracks, axis=0)
+        unique_tracks_properties = np.concatenate(
+            unique_tracks_properties, axis=0
+        )
+        pred = unique_tracks, unique_tracks_properties
+        _refreshTrackData(pred)
 
     @change_handler(plugin.track_id_box, init=False)
     def _track_id_box_change(value):
@@ -1094,7 +1097,6 @@ def plugin_wrapper_track():
         plugin.track_model_type.value = value
         select_track_nature()
         plot_main()
-        show_track(None)
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
@@ -1112,34 +1114,28 @@ def plugin_wrapper_track():
 
         plugin_color_parameters.track_attributes.value = value
 
-    @change_handler(
-        plugin_data.image,
-        plugin_data.seg_image,
-        plugin_data.channel_seg_image,
-        plugin_data.mask_image,
-        init=True,
-    )
+    @change_handler(plugin_data.image, init=False)
     def _image_change(image: napari.layers.Image):
+        plugin_data.image.tooltip = (
+            f"Shape: {get_data(image).shape, str(image.name)}"
+        )
 
         # dimensionality of selected model: 2, 3, or None (unknown)
-        if image is not None:
-            plugin_data.image.tooltip = (
-                f"Shape: {get_data(image).shape, str(image.name)}"
-            )
-            ndim = get_data(image).ndim
-            if ndim == 4:
-                axes = "TZYX"
-            if ndim == 3:
-                axes = "TYX"
-            if ndim == 2:
-                axes = "YX"
-            else:
-                axes = "TZYX"
-            if axes == plugin_data.axes.value:
-                # make sure to trigger a changed event, even if value didn't actually change
-                plugin_data.axes.changed(axes)
-            else:
-                plugin_data.axes.value = axes
+
+        ndim = get_data(image).ndim
+        if ndim == 4:
+            axes = "TZYX"
+        if ndim == 3:
+            axes = "TYX"
+        if ndim == 2:
+            axes = "YX"
+        else:
+            axes = "TZYX"
+        if axes == plugin_data.axes.value:
+            # make sure to trigger a changed event, even if value didn't actually change
+            plugin_data.axes.changed(axes)
+        else:
+            plugin_data.axes.value = axes
 
     # -> triggered by _image_change
     @change_handler(plugin_data.axes, init=False)
