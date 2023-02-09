@@ -1052,7 +1052,7 @@ def plugin_wrapper_track():
 
         if str(track_id) not in TrackidBox and track_id is not None:
             _to_analyze = [int(track_id)]
-        else:
+        elif _track_ids_analyze is not None:
             _to_analyze = _track_ids_analyze.copy()
 
         for unique_track_id in _to_analyze:
