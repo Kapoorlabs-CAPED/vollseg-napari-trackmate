@@ -1117,12 +1117,12 @@ def plugin_wrapper_track():
         plugin_data.image, napari.layers.Image, napari.layers.Labels, init=True
     )
     def _image_change(image: napari.layers.Image):
-        plugin_data.image.tooltip = (
-            f"Shape: {get_data(image).shape, str(image.name)}"
-        )
 
         # dimensionality of selected model: 2, 3, or None (unknown)
         if image is not None:
+            plugin_data.image.tooltip = (
+                f"Shape: {get_data(image).shape, str(image.name)}"
+            )
             ndim = get_data(image).ndim
             if ndim == 4:
                 axes = "TZYX"
