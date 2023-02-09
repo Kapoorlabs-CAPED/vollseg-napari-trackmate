@@ -1006,7 +1006,7 @@ def plugin_wrapper_track():
 
         plot_main()
 
-        show_track()
+        show_track(None)
 
     def _analyze_tracks(v):
         float_list = list(v.values())
