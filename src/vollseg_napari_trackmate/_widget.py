@@ -1019,7 +1019,7 @@ def plugin_wrapper_track():
 
     def select_track_nature():
         key = plugin.track_model_type.value
-        nonlocal _trackmate_objects, _track_ids_analyze, _dividing_track_ids_analyze, _normal_track_ids_analyze, _both_track_ids_analyze, _current_choices
+        nonlocal _trackmate_objects, _track_ids_analyze, _dividing_track_ids_analyze, _normal_track_ids_analyze, _both_track_ids_analyze, _current_choices, _to_analyze
         if _trackmate_objects is not None:
             if key == "Dividing":
                 plugin.track_id_box.choices = _dividing_choices
@@ -1035,6 +1035,7 @@ def plugin_wrapper_track():
                 _current_choices = _both_choices
 
             _track_ids_analyze = list(map(int, _track_ids_analyze))
+            _to_analyze = _track_ids_analyze
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
