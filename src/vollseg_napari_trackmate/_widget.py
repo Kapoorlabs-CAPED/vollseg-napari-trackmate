@@ -908,7 +908,7 @@ def plugin_wrapper_track():
                 plot_ax.set_title("Displacement in X")
                 plot_ax.set_xlabel("Time (min)")
                 plot_ax.set_ylabel("um")
-
+            select_track_nature()
             for layer in list(plugin.viewer.value.layers):
                 if isinstance(layer, napari.layers.Tracks):
                     table_tab.layer = layer
@@ -1004,7 +1004,6 @@ def plugin_wrapper_track():
 
         select_track_nature()
         plot_main()
-        show_track(None)
 
     def _analyze_tracks(v):
         float_list = list(v.values())
