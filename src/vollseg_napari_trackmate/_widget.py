@@ -1056,24 +1056,24 @@ def plugin_wrapper_track():
         if str(track_id) not in TrackidBox and track_id is not None:
             _to_analyze = [int(track_id)]
         else:
-            _to_analyze = _track_ids_analyze.copy()
+            _to_analyze = _track_ids_analyze
+        if _to_analyze is not None:
+            for unique_track_id in _to_analyze:
 
-        for unique_track_id in _to_analyze:
+                tracklets = _trackmate_objects.unique_tracks[unique_track_id]
+                tracklets_properties = (
+                    _trackmate_objects.unique_track_properties[unique_track_id]
+                )
 
-            tracklets = _trackmate_objects.unique_tracks[unique_track_id]
-            tracklets_properties = _trackmate_objects.unique_track_properties[
-                unique_track_id
-            ]
+                unique_tracks.append(tracklets)
+                unique_tracks_properties.append(tracklets_properties)
 
-            unique_tracks.append(tracklets)
-            unique_tracks_properties.append(tracklets_properties)
-
-        unique_tracks = np.concatenate(unique_tracks, axis=0)
-        unique_tracks_properties = np.concatenate(
-            unique_tracks_properties, axis=0
-        )
-        pred = unique_tracks, unique_tracks_properties
-        _refreshTrackData(pred)
+            unique_tracks = np.concatenate(unique_tracks, axis=0)
+            unique_tracks_properties = np.concatenate(
+                unique_tracks_properties, axis=0
+            )
+            pred = unique_tracks, unique_tracks_properties
+            _refreshTrackData(pred)
 
     @change_handler(plugin.track_id_box, init=False)
     def _track_id_box_change(value):
