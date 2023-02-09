@@ -1099,6 +1099,7 @@ def plugin_wrapper_track():
         plugin.track_model_type.value = value
         select_track_nature()
         plot_main()
+        show_track(None)
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
@@ -1116,7 +1117,9 @@ def plugin_wrapper_track():
 
         plugin_color_parameters.track_attributes.value = value
 
-    @change_handler(plugin_data.image, init=False)
+    @change_handler(
+        plugin_data.image, napari.layers.Image, napari.layers.Labels, init=True
+    )
     def _image_change(image: napari.layers.Image):
         plugin_data.image.tooltip = (
             f"Shape: {get_data(image).shape, str(image.name)}"
