@@ -1006,6 +1006,8 @@ def plugin_wrapper_track():
 
         plot_main()
 
+        show_track()
+
     def _analyze_tracks(v):
         float_list = list(v.values())
         return float_list
@@ -1052,7 +1054,7 @@ def plugin_wrapper_track():
         unique_tracks = []
         unique_tracks_properties = []
 
-        if track_id not in TrackidBox and track_id is not None:
+        if str(track_id) not in TrackidBox and track_id is not None:
             _to_analyze = [int(track_id)]
         else:
             _to_analyze = _track_ids_analyze.copy()
