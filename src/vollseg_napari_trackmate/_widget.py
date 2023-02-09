@@ -1122,21 +1122,21 @@ def plugin_wrapper_track():
         )
 
         # dimensionality of selected model: 2, 3, or None (unknown)
-
-        ndim = get_data(image).ndim
-        if ndim == 4:
-            axes = "TZYX"
-        if ndim == 3:
-            axes = "TYX"
-        if ndim == 2:
-            axes = "YX"
-        else:
-            axes = "TZYX"
-        if axes == plugin_data.axes.value:
-            # make sure to trigger a changed event, even if value didn't actually change
-            plugin_data.axes.changed(axes)
-        else:
-            plugin_data.axes.value = axes
+        if image is not None:
+            ndim = get_data(image).ndim
+            if ndim == 4:
+                axes = "TZYX"
+            if ndim == 3:
+                axes = "TYX"
+            if ndim == 2:
+                axes = "YX"
+            else:
+                axes = "TZYX"
+            if axes == plugin_data.axes.value:
+                # make sure to trigger a changed event, even if value didn't actually change
+                plugin_data.axes.changed(axes)
+            else:
+                plugin_data.axes.value = axes
 
     # -> triggered by _image_change
     @change_handler(plugin_data.axes, init=False)
