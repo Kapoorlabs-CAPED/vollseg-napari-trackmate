@@ -252,18 +252,35 @@ def plugin_wrapper_track():
 
         unique_tracks, unique_tracks_properties = pred
         features = {
-            "time": map(int, np.asarray(unique_tracks_properties)[:, 0]),
-            "generation": map(int, np.asarray(unique_tracks_properties)[:, 1]),
-            "speed": map(float, np.asarray(unique_tracks_properties)[:, 2]),
+            "time": map(
+                int,
+                np.asarray(unique_tracks_properties)[:, 0],
+                dtype="float64",
+            ),
+            "generation": map(
+                int,
+                np.asarray(unique_tracks_properties)[:, 1],
+                dtype="float64",
+            ),
+            "speed": map(
+                float,
+                np.asarray(unique_tracks_properties)[:, 2],
+                dtype="float64",
+            ),
             "directional_change_rate": map(
-                float, np.asarray(unique_tracks_properties)[:, 3]
+                float,
+                np.asarray(unique_tracks_properties)[:, 3],
+                dtype="float64",
             ),
             "mean-intensity": map(
-                float, np.asarray(unique_tracks_properties)[:, 4]
+                float,
+                np.asarray(unique_tracks_properties)[:, 4],
+                dtype="float64",
             ),
             "radius_pixels": map(
                 float,
                 np.asarray(unique_tracks_properties)[:, 5],
+                dtype="float64",
             ),
         }
 
@@ -326,8 +343,7 @@ def plugin_wrapper_track():
             data_plot = pd.DataFrame(
                 {
                     "Frequ": max_all_xf_sample,
-                    "Amplitude": sum(resize_all_ffttotal_sample)
-                    / len(resize_all_ffttotal_sample),
+                    "Amplitude": sum(resize_all_ffttotal_sample),
                 }
             )
             sns.lineplot(data_plot, x="Frequ", y="Amplitude", ax=plot_ax)
