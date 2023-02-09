@@ -258,15 +258,12 @@ def plugin_wrapper_track():
             "directional_change_rate": map(
                 float, np.asarray(unique_tracks_properties)[:, 3]
             ),
-            "mean-intensity_ch1": map(
+            "mean-intensity": map(
                 float, np.asarray(unique_tracks_properties)[:, 4]
-            ),
-            "mean-intensity_ch2": map(
-                float, np.asarray(unique_tracks_properties)[:, 5]
             ),
             "radius_pixels": map(
                 float,
-                np.asarray(unique_tracks_properties)[:, 6],
+                np.asarray(unique_tracks_properties)[:, 5],
             ),
         }
 
@@ -277,18 +274,14 @@ def plugin_wrapper_track():
             for unique_track_id in _to_analyze:
                 (
                     time,
-                    xf_sample_ch1,
-                    ffttotal_sample_ch1,
-                    xf_sample_ch2,
-                    ffttotal_sample_ch2,
+                    xf_sample,
+                    ffttotal_sample,
                 ) = _trackmate_objects.unique_fft_properties[unique_track_id]
                 unique_fft_properties.append(
                     [
                         time,
-                        xf_sample_ch1,
-                        ffttotal_sample_ch1,
-                        xf_sample_ch2,
-                        ffttotal_sample_ch2,
+                        xf_sample,
+                        ffttotal_sample,
                     ]
                 )
             fft_plot_class._repeat_after_plot()
@@ -296,92 +289,55 @@ def plugin_wrapper_track():
             plot_ax.cla()
 
             all_time = []
-            all_xf_sample_ch1 = []
-            all_ffttotal_sample_ch1 = []
-            all_xf_sample_ch2 = []
-            all_ffttotal_sample_ch2 = []
+            all_xf_sample = []
+            all_ffttotal_sample = []
 
             for unique_property in unique_fft_properties:
                 (
                     time,
-                    xf_sample_ch1,
-                    ffttotal_sample_ch1,
-                    xf_sample_ch2,
-                    ffttotal_sample_ch2,
+                    xf_sample,
+                    ffttotal_sample,
                 ) = unique_property
 
                 all_time.append(time)
-                all_xf_sample_ch1.append(xf_sample_ch1)
-                all_ffttotal_sample_ch1.append(np.ravel(ffttotal_sample_ch1))
-                all_xf_sample_ch2.append(xf_sample_ch1)
-                all_ffttotal_sample_ch2.append(np.ravel(ffttotal_sample_ch2))
-            max_size_ch1 = 0
-            max_size_ch1_index = 0
-            for i in range(len(all_ffttotal_sample_ch1)):
-                size = all_ffttotal_sample_ch1[i].shape[0]
-                if size > max_size_ch1:
-                    max_size_ch1 = size
-                    max_size_ch1_index = i
-            max_size_ch2 = 0
-            max_size_ch2_index = 0
-            for i in range(len(all_ffttotal_sample_ch2)):
-                size = all_ffttotal_sample_ch2[i].shape[0]
-                if size > max_size_ch2:
-                    max_size_ch2 = size
-                    max_size_ch2_index = i
+                all_xf_sample.append(xf_sample)
+                all_ffttotal_sample.append(np.ravel(ffttotal_sample))
+            max_size = 0
+            max_size_index = 0
+            for i in range(len(all_ffttotal_sample)):
+                size = all_ffttotal_sample[i].shape[0]
+                if size > max_size:
+                    max_size = size
+                    max_size_index = i
 
-            max_all_xf_sample_ch1 = all_xf_sample_ch1[max_size_ch1_index]
-            max_all_xf_sample_ch2 = all_xf_sample_ch2[max_size_ch2_index]
-            resize_all_ffttotal_sample_ch1 = []
-            resize_all_ffttotal_sample_ch2 = []
-            for i in range(len(all_ffttotal_sample_ch1)):
-                sample_ch1 = np.pad(
-                    all_ffttotal_sample_ch1[i],
+            max_all_xf_sample = all_xf_sample[max_size_index]
+            resize_all_ffttotal_sample = []
+            for i in range(len(all_ffttotal_sample)):
+                sample = np.pad(
+                    all_ffttotal_sample[i],
                     (
                         0,
-                        max_all_xf_sample_ch1.shape[0]
-                        - all_ffttotal_sample_ch1[i].shape[0],
+                        max_all_xf_sample.shape[0]
+                        - all_ffttotal_sample[i].shape[0],
                     ),
                 )
-                resize_all_ffttotal_sample_ch1.append(sample_ch1)
-            for i in range(len(all_ffttotal_sample_ch2)):
-                sample_ch2 = np.pad(
-                    all_ffttotal_sample_ch2[i],
-                    (
-                        0,
-                        max_all_xf_sample_ch2.shape[0]
-                        - all_ffttotal_sample_ch2[i].shape[0],
-                    ),
-                )
-                resize_all_ffttotal_sample_ch2.append(sample_ch2)
+                resize_all_ffttotal_sample.append(sample)
 
             data_plot = pd.DataFrame(
                 {
-                    "Frequ_ch1": max_all_xf_sample_ch1,
-                    "Frequ_ch2": max_all_xf_sample_ch2,
-                    "Amplitude_ch1": sum(resize_all_ffttotal_sample_ch1)
-                    / len(resize_all_ffttotal_sample_ch1),
-                    "Amplitude_ch2": sum(resize_all_ffttotal_sample_ch2)
-                    / len(resize_all_ffttotal_sample_ch2),
+                    "Frequ": max_all_xf_sample,
+                    "Amplitude": sum(resize_all_ffttotal_sample)
+                    / len(resize_all_ffttotal_sample),
                 }
             )
-            sns.lineplot(
-                data_plot, x="Frequ_ch1", y="Amplitude_ch1", ax=plot_ax
-            )
-            plot_ax.set_title("FFT Intensity Ch1")
+            sns.lineplot(data_plot, x="Frequ", y="Amplitude", ax=plot_ax)
+            plot_ax.set_title("FFT Intensity")
             plot_ax.set_xlabel("Frequency (1/min)")
             plot_ax.set_ylabel("Amplitude")
 
             fft_plot_class._repeat_after_plot()
             plot_ax = fft_plot_class.plot_ax
             plot_ax.cla()
-
-            sns.lineplot(
-                data_plot, x="Frequ_ch2", y="Amplitude_ch2", ax=plot_ax
-            )
-            plot_ax.set_title("FFT Intensity Ch2")
-            plot_ax.set_xlabel("Frequency (1/min)")
-            plot_ax.set_ylabel("Amplitude")
 
         for layer in list(plugin.viewer.value.layers):
             if (
