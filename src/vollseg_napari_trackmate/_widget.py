@@ -379,7 +379,6 @@ def plugin_wrapper_track():
             name="Track",
             features=features,
         )
-        select_track_nature()
 
     def return_color_tracks(pred):
 
