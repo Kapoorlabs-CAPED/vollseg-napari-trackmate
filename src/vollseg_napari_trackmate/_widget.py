@@ -1,6 +1,5 @@
 """
 VollSeg Napari Track .
-
 Made by Kapoorlabs, 2022
 """
 
@@ -1002,6 +1001,8 @@ def plugin_wrapper_track():
 
         plot_main()
 
+        show_track(None)
+
     def _analyze_tracks(v):
         float_list = list(v.values())
         return float_list
@@ -1067,6 +1068,7 @@ def plugin_wrapper_track():
             unique_tracks_properties = np.concatenate(
                 unique_tracks_properties, axis=0
             )
+            print(unique_tracks_properties)
             pred = unique_tracks, unique_tracks_properties
             _refreshTrackData(pred)
 
