@@ -247,8 +247,6 @@ def plugin_wrapper_track():
 
     def _refreshTrackData(pred):
 
-        nonlocal _to_analyze
-
         unique_tracks, unique_tracks_properties = pred
         features = {
             "time": map(
@@ -280,6 +278,42 @@ def plugin_wrapper_track():
                 np.asarray(unique_tracks_properties, dtype="float64")[:, 6],
             ),
         }
+
+        for layer in list(plugin.viewer.value.layers):
+            if (
+                "Track" == layer.name
+                or "Boxes" == layer.name
+                or "Track_points" == layer.name
+            ):
+                plugin.viewer.value.layers.remove(layer)
+        vertices = unique_tracks[:, 1:]
+        _boxes = []
+        _sizes = []
+        ndim = unique_tracks.shape[1] - 1
+        for i in range(unique_tracks.shape[0]):
+            # TZYX
+            current_tracklet_location = unique_tracks[i][1:]
+            current_tracklet_properties = unique_tracks_properties[i][-2:-1]
+            _boxes.append([location for location in current_tracklet_location])
+            _sizes.append([volume for volume in current_tracklet_properties])
+        plugin.viewer.value.add_points(vertices, size=2, name="Track_points")
+        plugin.viewer.value.add_points(
+            np.array(_boxes),
+            size=np.array(_sizes),
+            name="Boxes",
+            face_color=[0] * 4,
+            edge_color="green",
+            ndim=ndim,
+        )
+        plugin.viewer.value.add_tracks(
+            unique_tracks,
+            name="Track",
+            features=features,
+        )
+
+    def show_fft():
+
+        nonlocal _to_analyze
 
         fft_plot_class._reset_container(fft_plot_class.scroll_layout)
         if _to_analyze is not None:
@@ -347,38 +381,6 @@ def plugin_wrapper_track():
             plot_ax.set_title("FFT Intensity")
             plot_ax.set_xlabel("Frequency (1/min)")
             plot_ax.set_ylabel("Amplitude")
-
-        for layer in list(plugin.viewer.value.layers):
-            if (
-                "Track" == layer.name
-                or "Boxes" == layer.name
-                or "Track_points" == layer.name
-            ):
-                plugin.viewer.value.layers.remove(layer)
-        vertices = unique_tracks[:, 1:]
-        _boxes = []
-        _sizes = []
-        ndim = unique_tracks.shape[1] - 1
-        for i in range(unique_tracks.shape[0]):
-            # TZYX
-            current_tracklet_location = unique_tracks[i][1:]
-            current_tracklet_properties = unique_tracks_properties[i][-2:-1]
-            _boxes.append([location for location in current_tracklet_location])
-            _sizes.append([volume for volume in current_tracklet_properties])
-        plugin.viewer.value.add_points(vertices, size=2, name="Track_points")
-        plugin.viewer.value.add_points(
-            np.array(_boxes),
-            size=np.array(_sizes),
-            name="Boxes",
-            face_color=[0] * 4,
-            edge_color="green",
-            ndim=ndim,
-        )
-        plugin.viewer.value.add_tracks(
-            unique_tracks,
-            name="Track",
-            features=features,
-        )
 
     def return_color_tracks(pred):
 
@@ -1001,9 +1003,7 @@ def plugin_wrapper_track():
         table_tab._set_model()
 
         select_track_nature()
-
         plot_main()
-
         show_track(None)
 
     def _analyze_tracks(v):
@@ -1057,6 +1057,7 @@ def plugin_wrapper_track():
         else:
             _to_analyze = _track_ids_analyze
         if _to_analyze is not None:
+            show_fft()
             for unique_track_id in _to_analyze:
 
                 tracklets = _trackmate_objects.unique_tracks[unique_track_id]
@@ -1096,7 +1097,7 @@ def plugin_wrapper_track():
         plugin.track_model_type.value = value
         select_track_nature()
         plot_main()
-        show_track(None)
+        show_fft()
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
