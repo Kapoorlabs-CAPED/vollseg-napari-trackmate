@@ -571,14 +571,14 @@ def plugin_wrapper_track():
                         if key == track_model_type_dict[0]:
 
                             if (
-                                str(int(trackid))
+                                int(trackid)
                                 in _trackmate_objects.DividingTrackIds
                             ):
 
                                 TrackAttr.append(float(attr))
                         if key == track_model_type_dict[1]:
                             if (
-                                str(int(trackid))
+                                int(trackid)
                                 in _trackmate_objects.NormalTrackIds
                             ):
                                 TrackAttr.append(float(attr))
