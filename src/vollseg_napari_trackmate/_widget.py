@@ -130,6 +130,12 @@ def plugin_wrapper_track():
         ("Both", "Both"),
     ]
 
+    track_model_type_dict = {
+        0: track_model_type_choices[0][0],
+        1: track_model_type_choices[1][0],
+        2: track_model_type_choices[2][0],
+    }
+
     DEFAULTS_MODEL = dict(axes="TZYX", track_model_type="Both")
 
     @magicgui(
@@ -287,24 +293,9 @@ def plugin_wrapper_track():
             ):
                 plugin.viewer.value.layers.remove(layer)
         vertices = unique_tracks[:, 1:]
-        _boxes = []
-        _sizes = []
-        ndim = unique_tracks.shape[1] - 1
-        for i in range(unique_tracks.shape[0]):
-            # TZYX
-            current_tracklet_location = unique_tracks[i][1:]
-            current_tracklet_properties = unique_tracks_properties[i][-2:-1]
-            _boxes.append([location for location in current_tracklet_location])
-            _sizes.append([volume for volume in current_tracklet_properties])
+
         plugin.viewer.value.add_points(vertices, size=2, name="Track_points")
-        plugin.viewer.value.add_points(
-            np.array(_boxes),
-            size=np.array(_sizes),
-            name="Boxes",
-            face_color=[0] * 4,
-            edge_color="green",
-            ndim=ndim,
-        )
+
         plugin.viewer.value.add_tracks(
             unique_tracks,
             name="Track",
@@ -555,7 +546,6 @@ def plugin_wrapper_track():
 
     table_tab = Tabulour()
     table_tab.clicked.connect(table_tab._on_user_click)
-    table_tab.clicked.connect(table_tab._make_boxes)
     tabs.addTab(table_tab, "Table")
 
     plugin.native.layout().addWidget(tabs)
@@ -578,7 +568,7 @@ def plugin_wrapper_track():
                         _trackmate_objects.AllTrackValues[k],
                         _trackmate_objects.AllTrackValues[trackid_key],
                     ):
-                        if key == "Dividing":
+                        if key == track_model_type_dict[0]:
 
                             if (
                                 str(int(trackid))
@@ -586,13 +576,13 @@ def plugin_wrapper_track():
                             ):
 
                                 TrackAttr.append(float(attr))
-                        if key == "Non-Dividing":
+                        if key == track_model_type_dict[1]:
                             if (
                                 str(int(trackid))
                                 in _trackmate_objects.NormalTrackIds
                             ):
                                 TrackAttr.append(float(attr))
-                        else:
+                        if key == track_model_type_dict[2]:
                             TrackAttr.append(float(attr))
 
                     hist_plot_class._repeat_after_plot()
@@ -600,7 +590,7 @@ def plugin_wrapper_track():
                     sns.histplot(TrackAttr, kde=True, ax=hist_ax)
                     hist_ax.set_title(str(k))
 
-            if key == "Dividing":
+            if key == track_model_type_dict[0]:
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
@@ -703,7 +693,7 @@ def plugin_wrapper_track():
                 plot_ax.set_xlabel("Time (min)")
                 plot_ax.set_ylabel("um")
 
-            if key == "Non-Dividing":
+            if key == track_model_type_dict[1]:
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
@@ -806,7 +796,7 @@ def plugin_wrapper_track():
                 plot_ax.set_xlabel("Time (min)")
                 plot_ax.set_ylabel("um")
 
-            if key == "Both":
+            if key == track_model_type_dict[2]:
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
@@ -1020,15 +1010,15 @@ def plugin_wrapper_track():
         key = plugin.track_model_type.value
         nonlocal _trackmate_objects, _track_ids_analyze, _dividing_track_ids_analyze, _normal_track_ids_analyze, _both_track_ids_analyze, _current_choices, _to_analyze
         if _trackmate_objects is not None:
-            if key == "Dividing":
+            if key == track_model_type_dict[0]:
                 plugin.track_id_box.choices = _dividing_choices
                 _track_ids_analyze = _dividing_track_ids_analyze
                 _current_choices = _dividing_choices
-            if key == "Non-Dividing":
+            if key == track_model_type_dict[1]:
                 plugin.track_id_box.choices = _normal_choices
                 _track_ids_analyze = _normal_track_ids_analyze
                 _current_choices = _normal_choices
-            if key == "Both":
+            if key == track_model_type_dict[2]:
                 plugin.track_id_box.choices = _both_choices
                 _track_ids_analyze = _both_track_ids_analyze
                 _current_choices = _both_choices
