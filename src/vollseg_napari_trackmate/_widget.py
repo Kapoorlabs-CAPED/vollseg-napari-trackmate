@@ -1064,6 +1064,7 @@ def plugin_wrapper_track():
             )
             pred = unique_tracks, unique_tracks_properties
             _refreshTrackData(pred)
+            select_track_nature()
 
     @change_handler(plugin.track_id_box, init=False)
     def _track_id_box_change(value):
