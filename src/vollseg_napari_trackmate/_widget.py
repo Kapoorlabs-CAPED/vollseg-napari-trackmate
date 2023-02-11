@@ -5,6 +5,7 @@ Made by Kapoorlabs, 2022
 
 import functools
 import math
+import os
 from pathlib import Path
 from typing import List, Union
 
@@ -12,6 +13,7 @@ import napari
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import torch
 from caped_ai_tabulour._tabulour import Tabulour, pandasModel
 from magicgui import magicgui
 from magicgui import widgets as mw
@@ -151,7 +153,6 @@ def plugin_wrapper_track():
     ]
 
     model_cloud_auto_encoder_configs = dict()
-    model_cluster_configs = dict()
 
     model_selected_cloud_auto_encoder = None
     model_selected_cluster = None
@@ -161,8 +162,8 @@ def plugin_wrapper_track():
         cluster_model_type=DeepEmbeddedClustering,
         model_cloud_auto_encoder=models_cloud_auto_encoder[0][0],
         model_cluster=models_cluster[0][0],
-        model_cloud_auto_encoder_none="NOAUTO",
-        model_cluster_none="NOCLUSTER",
+        model_cloud_auto_encoder_none="No(Encoder)",
+        model_cluster_none="No(Cluster)",
         axes="TZYX",
         track_model_type="Both",
     )
@@ -186,19 +187,26 @@ def plugin_wrapper_track():
         cloud_auto_encoder_model_type, model_cloud_auto_encoder
     ):
         if cloud_auto_encoder_model_type == CUSTOM_MODEL_CLOUD_AUTO_ENCODER:
-            path_star = Path(model_cloud_auto_encoder)
-            path_star.is_dir() or _raise(
-                FileNotFoundError(f"{path_star} is not a directory")
+            path_auto = Path(model_cloud_auto_encoder)
+            path_auto.is_dir() or _raise(
+                FileNotFoundError(f"{path_auto} is not a directory")
             )
             config_cloud_auto_encoder = model_cloud_auto_encoder_configs[
                 (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
             ]
+
             model_class_cloud_auto_encoder = CloudAutoEncoder
-            return model_class_cloud_auto_encoder(
-                config_cloud_auto_encoder,
-                name=path_star.name,
-                basedir=str(path_star.parent),
+            autoencoder = model_class_cloud_auto_encoder(
+                num_features=config_cloud_auto_encoder["num_features"],
+                k=config_cloud_auto_encoder["k_nearest_neighbours"],
+                encoder_type=config_cloud_auto_encoder["encoder_type"],
+                decoder_type=config_cloud_auto_encoder["decoder_type"],
             )
+            checkpoint = torch.load(
+                os.path.join(path_auto.parent, path_auto.stem)
+            )
+            autoencoder.load_state_dict(checkpoint["model_state_dict"])
+            return autoencoder
 
         elif (
             cloud_auto_encoder_model_type
@@ -211,26 +219,56 @@ def plugin_wrapper_track():
             return None
 
     @functools.lru_cache(maxsize=None)
-    def get_model_cluster(cluster_model_type, model_cluster):
+    def get_model_cluster(
+        cloud_auto_encoder_model_type,
+        model_cloud_auto_encoder,
+        cluster_model_type,
+        model_cluster,
+    ):
+
+        autoencoder = get_model_cloud_auto_encoder(
+            cloud_auto_encoder_model_type, model_cloud_auto_encoder
+        )
         if cluster_model_type == CUSTOM_MODEL_CLUSTER:
-            path_star = Path(cluster_model_type)
-            path_star.is_dir() or _raise(
-                FileNotFoundError(f"{path_star} is not a directory")
+            path_cluster = Path(cluster_model_type)
+            path_cluster.is_dir() or _raise(
+                FileNotFoundError(f"{path_cluster} is not a directory")
             )
-            config_cluster = model_cluster_configs[
-                (cluster_model_type, model_cluster)
-            ]
+
+            checkpoint = torch.load(
+                os.path.join(path_cluster.parent, path_cluster.stem)
+            )
+            num_clusters = checkpoint["model_state_dict"][
+                "clustering_layer.weight"
+            ].shape[0]
+
+            model = DeepEmbeddedClustering(
+                autoencoder=autoencoder, num_clusters=num_clusters
+            )
+            model.load_state_dict(checkpoint["model_state_dict"])
             model_class_cluster = DeepEmbeddedClustering
-            return model_class_cluster(
-                config_cluster,
-                name=path_star.name,
-                basedir=str(path_star.parent),
-            )
+            return model_class_cluster
 
         elif cluster_model_type != DEFAULTS_MODEL["model_cluster_none"]:
             return cluster_model_type.local_from_pretrained(model_cluster)
         else:
             return None
+
+    update_cloud_auto_encoder = None  # Updater_Auto_Encoder()
+
+    def select_model_cloud_auto_encoder(key):
+        nonlocal model_selected_cloud_auto_encoder
+        if key is not None:
+            model_selected_cloud_auto_encoder = key
+            # config_cloud_auto_encoder = model_cloud_auto_encoder_configs.get(
+            #    key
+            # )
+            update_cloud_auto_encoder("model_autoencoder")
+        if (
+            plugin.cloud_auto_encoder_model_type.value
+            == DEFAULTS_MODEL["model_cloud_auto_encoder_none"]
+        ):
+            model_selected_cloud_auto_encoder = None
 
     _track_ids_analyze = None
     _to_analyze = None
@@ -611,12 +649,44 @@ def plugin_wrapper_track():
             choices=cloud_auto_encoder_model_type_choices,
             value=DEFAULTS_MODEL["cloud_auto_encoder_model_type"],
         ),
+        cloud_auto_encoder_model=dict(
+            widget_type="ComboBox",
+            visible=False,
+            label="Pre-trained Auto Encoder Models",
+            choices=models_cloud_auto_encoder,
+            value=DEFAULTS_MODEL["model_cloud_auto_encoder"],
+        ),
+        cloud_auto_encoder_model_none=dict(
+            widget_type="Label", visible=False, label="No(Encoder)"
+        ),
+        model_folder_cloud_auto=dict(
+            widget_type="FileEdit",
+            visible=False,
+            label="Custom Auto Encoder",
+            mode="d",
+        ),
         cluster_model_type=dict(
             widget_type="RadioButtons",
             label="Cluster Model Type",
             orientation="horizontal",
             choices=cluster_model_type_choices,
             value=DEFAULTS_MODEL["cluster_model_type"],
+        ),
+        cloud_cluster_model=dict(
+            widget_type="ComboBox",
+            visible=False,
+            label="Pre-trained Clustering Models",
+            choices=models_cluster,
+            value=DEFAULTS_MODEL["model_cluster"],
+        ),
+        cloud_cluster_model_none=dict(
+            widget_type="Label", visible=False, label="No(Cluster)"
+        ),
+        model_folder_cluster=dict(
+            widget_type="FileEdit",
+            visible=False,
+            label="Custom Cluster Model",
+            mode="d",
         ),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
@@ -631,7 +701,13 @@ def plugin_wrapper_track():
         track_id_box,
         track_id_value,
         cloud_auto_encoder_model_type,
+        cloud_auto_encoder_model,
+        cloud_auto_encoder_model_none,
+        model_folder_cloud_auto,
         cluster_model_type,
+        cluster_model,
+        cluster_model_none,
+        model_folder_cluster,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
