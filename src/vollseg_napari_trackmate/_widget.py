@@ -6,6 +6,7 @@ Made by Kapoorlabs, 2022
 import functools
 import math
 import os
+import time
 from pathlib import Path
 from typing import List, Union
 
@@ -17,6 +18,7 @@ import torch
 from caped_ai_tabulour._tabulour import Tabulour, pandasModel
 from magicgui import magicgui
 from magicgui import widgets as mw
+from napari.qt import thread_worker
 from psygnal import Signal
 from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 
@@ -25,13 +27,28 @@ def plugin_wrapper_track():
 
     from cellshape_cloud import CloudAutoEncoder
     from cellshape_cluster import DeepEmbeddedClustering
-    from napatrackmater.pretrained import get_registered_models
+    from napatrackmater import load_json
+    from napatrackmater.pretrained import (
+        get_model_folder,
+        get_registered_models,
+    )
     from napatrackmater.Trackmate import TrackMate
     from skimage.util import map_array
 
     from vollseg_napari_trackmate._temporal_plots import TemporalStatistics
 
     DEBUG = False
+
+    def abspath(root, relpath):
+        root = Path(root)
+        if root.is_dir():
+            path = root / relpath
+        else:
+            path = root.parent / relpath
+        return str(path.absolute())
+
+    kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
+    citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
     # Boxname = "TrackBox"
     AttributeBoxname = "AttributeIDBox"
     TrackAttributeBoxname = "TrackAttributeIDBox"
@@ -99,14 +116,6 @@ def plugin_wrapper_track():
         if debug:
             print("Label image loaded")
         return np.asarray(image).astype(np.uint16)
-
-    def abspath(root, relpath):
-        root = Path(root)
-        if root.is_dir():
-            path = root / relpath
-        else:
-            path = root.parent / relpath
-        return str(path.absolute())
 
     def change_handler(*widgets, init=False, debug=DEBUG):
         def decorator_change_handler(handler):
@@ -182,6 +191,18 @@ def plugin_wrapper_track():
         ("Custom Cluster", CUSTOM_MODEL_CLUSTER),
     ]
 
+    track_model_type_choices = [
+        ("Dividing", "Dividing"),
+        ("Non-Dividing", "Non-Dividing"),
+        ("Both", "Both"),
+    ]
+
+    track_model_type_dict = {
+        0: track_model_type_choices[0][0],
+        1: track_model_type_choices[1][0],
+        2: track_model_type_choices[2][0],
+    }
+
     @functools.lru_cache(maxsize=None)
     def get_model_cloud_auto_encoder(
         cloud_auto_encoder_model_type, model_cloud_auto_encoder
@@ -229,32 +250,202 @@ def plugin_wrapper_track():
         autoencoder = get_model_cloud_auto_encoder(
             cloud_auto_encoder_model_type, model_cloud_auto_encoder
         )
-        if cluster_model_type == CUSTOM_MODEL_CLUSTER:
-            path_cluster = Path(cluster_model_type)
-            path_cluster.is_dir() or _raise(
-                FileNotFoundError(f"{path_cluster} is not a directory")
-            )
 
-            checkpoint = torch.load(
-                os.path.join(path_cluster.parent, path_cluster.stem)
-            )
-            num_clusters = checkpoint["model_state_dict"][
-                "clustering_layer.weight"
-            ].shape[0]
+        if autoencoder is not None:
+            if cluster_model_type == CUSTOM_MODEL_CLUSTER:
+                path_cluster = Path(cluster_model_type)
+                path_cluster.is_dir() or _raise(
+                    FileNotFoundError(f"{path_cluster} is not a directory")
+                )
 
-            model = DeepEmbeddedClustering(
-                autoencoder=autoencoder, num_clusters=num_clusters
-            )
-            model.load_state_dict(checkpoint["model_state_dict"])
-            model_class_cluster = DeepEmbeddedClustering
-            return model_class_cluster
+                checkpoint = torch.load(
+                    os.path.join(path_cluster.parent, path_cluster.stem)
+                )
+                num_clusters = checkpoint["model_state_dict"][
+                    "clustering_layer.weight"
+                ].shape[0]
 
-        elif cluster_model_type != DEFAULTS_MODEL["model_cluster_none"]:
-            return cluster_model_type.local_from_pretrained(model_cluster)
+                model = DeepEmbeddedClustering(
+                    autoencoder=autoencoder, num_clusters=num_clusters
+                )
+                model.load_state_dict(checkpoint["model_state_dict"])
+                model_class_cluster = DeepEmbeddedClustering
+                return model_class_cluster
+
+            elif cluster_model_type != DEFAULTS_MODEL["model_cluster_none"]:
+                return cluster_model_type.local_from_pretrained(model_cluster)
+            else:
+                return None
+
+    @magicgui(
+        label_head=dict(
+            widget_type="Label",
+            label=f'<h1> <img src="{kapoorlogo}"> </h1>',
+            value=f'<h5><a href=" {citation}"> NapaTrackMater: Track Analysis of TrackMate in Napari</a></h5>',
+        ),
+        track_model_type=dict(
+            widget_type="RadioButtons",
+            label="Track Model Type",
+            orientation="horizontal",
+            choices=track_model_type_choices,
+            value=DEFAULTS_MODEL["track_model_type"],
+        ),
+        track_id_value=dict(widget_type="Label", label="Track ID chosen"),
+        track_id_box=dict(
+            widget_type="ComboBox",
+            visible=True,
+            label="Select Track ID to analyze",
+            choices=_current_choices,
+        ),
+        cloud_auto_encoder_model_type=dict(
+            widget_type="RadioButtons",
+            label="Cloud Auto Encoder Model Type",
+            orientation="horizontal",
+            choices=cloud_auto_encoder_model_type_choices,
+            value=DEFAULTS_MODEL["cloud_auto_encoder_model_type"],
+        ),
+        cloud_auto_encoder_model=dict(
+            widget_type="ComboBox",
+            visible=False,
+            label="Pre-trained Auto Encoder Models",
+            choices=models_cloud_auto_encoder,
+            value=DEFAULTS_MODEL["model_cloud_auto_encoder"],
+        ),
+        cloud_auto_encoder_model_none=dict(
+            widget_type="Label", visible=False, label="No(Encoder)"
+        ),
+        model_folder_cloud_auto=dict(
+            widget_type="FileEdit",
+            visible=False,
+            label="Custom Auto Encoder",
+            mode="d",
+        ),
+        cluster_model_type=dict(
+            widget_type="RadioButtons",
+            label="Cluster Model Type",
+            orientation="horizontal",
+            choices=cluster_model_type_choices,
+            value=DEFAULTS_MODEL["cluster_model_type"],
+        ),
+        cluster_model=dict(
+            widget_type="ComboBox",
+            visible=False,
+            label="Pre-trained Clustering Models",
+            choices=models_cluster,
+            value=DEFAULTS_MODEL["model_cluster"],
+        ),
+        cluster_model_none=dict(
+            widget_type="Label", visible=False, label="No(Cluster)"
+        ),
+        model_folder_cluster=dict(
+            widget_type="FileEdit",
+            visible=False,
+            label="Custom Cluster Model",
+            mode="d",
+        ),
+        progress_bar=dict(label=" ", min=0, max=0, visible=False),
+        layout="vertical",
+        persist=True,
+        call_button=False,
+    )
+    def plugin(
+        viewer: napari.Viewer,
+        label_head,
+        axes,
+        track_model_type,
+        track_id_box,
+        track_id_value,
+        cloud_auto_encoder_model_type,
+        cloud_auto_encoder_model,
+        cloud_auto_encoder_model_none,
+        model_folder_cloud_auto,
+        cluster_model_type,
+        cluster_model,
+        cluster_model_none,
+        model_folder_cluster,
+        progress_bar: mw.ProgressBar,
+    ) -> List[napari.types.LayerDataTuple]:
+
+        if model_selected_cloud_auto_encoder is not None:
+            model_cloud_auto_encoder = get_model_cloud_auto_encoder(
+                *model_selected_cloud_auto_encoder
+            )
         else:
-            return None
+            model_cloud_auto_encoder = None
+        if model_selected_cluster is not None:
+            model_cluster = get_model_cluster(
+                *model_selected_cloud_auto_encoder, *model_selected_cluster
+            )
+        else:
+            model_cluster = None
+        print(model_cloud_auto_encoder, model_cluster)
 
-    update_cloud_auto_encoder = None  # Updater_Auto_Encoder()
+    class Updater_Auto_Encoder:
+        def __init__(self, debug=DEBUG):
+            from types import SimpleNamespace
+
+            self.debug = debug
+            self.valid = SimpleNamespace(
+                **{k: False for k in ("model_autoencoder")}
+            )
+            self.args = SimpleNamespace()
+            self.viewer = None
+
+        def __call__(self, k, valid, args=None):
+            assert k in vars(self.valid)
+            setattr(self.valid, k, bool(valid))
+            setattr(self.args, k, args)
+            self._update()
+
+        def help(self, msg):
+            if self.viewer is not None:
+                self.viewer.help = msg
+            elif len(str(msg)) > 0:
+                print(f"HELP: {msg}")
+
+        def _update(self):
+
+            if self.viewer is None:
+
+                if plugin.viewer.value is not None:
+                    self.viewer = plugin.viewer.value
+
+            def _model(valid):
+
+                widgets_valid(
+                    plugin.cloud_auto_encoder_model,
+                    plugin.model_folder_cloud_auto,
+                    valid=valid,
+                )
+
+            def _restore():
+                widgets_valid(
+                    plugin.image, valid=plugin.image.value is not None
+                )
+
+            all_valid = False
+            for layer in list(plugin.viewer.value.layers):
+                if isinstance(layer, napari.layers.Labels):
+                    all_valid = True
+                    break
+            help_msg = ""
+
+            if self.valid.cloud_auto_encoder_model:
+
+                widgets_valid(
+                    plugin.cloud_auto_encoder_model,
+                    plugin.model_folder_cloud_auto.line_edit,
+                    valid=all_valid,
+                )
+
+            else:
+
+                _model(self.valid.cloud_auto_encoder_model)
+
+                _restore()
+            self.help(help_msg)
+
+    update_cloud_auto_encoder = Updater_Auto_Encoder()
 
     def select_model_cloud_auto_encoder(key):
         nonlocal model_selected_cloud_auto_encoder
@@ -270,20 +461,88 @@ def plugin_wrapper_track():
         ):
             model_selected_cloud_auto_encoder = None
 
+    @change_handler(
+        plugin.cloud_auto_encoder_model,
+        plugin.cloud_auto_encoder_model_none,
+        init=False,
+    )
+    def _model_change_cloud_auto_encoder(model_name_cloud_auto_encoder: str):
+
+        if Signal.sender() is not plugin.cloud_auto_encoder_model_none:
+            model_class_cloud_auto_encoder = CloudAutoEncoder
+
+            if model_class_cloud_auto_encoder is not None:
+                if Signal.sender is not None:
+                    model_name = model_name_cloud_auto_encoder
+                elif plugin.cloud_auto_encoder_model.value is not None:
+                    model_name = plugin.cloud_auto_encoder_model.value
+
+                key_cloud_auto_encoder = (
+                    model_class_cloud_auto_encoder,
+                    model_name,
+                )
+                if (
+                    key_cloud_auto_encoder
+                    not in model_cloud_auto_encoder_configs
+                ):
+
+                    @thread_worker
+                    def _get_model_folder():
+                        return get_model_folder(*key_cloud_auto_encoder)
+
+                    def _process_model_folder(path):
+
+                        model_cloud_auto_encoder_configs[
+                            key_cloud_auto_encoder
+                        ] = load_json(str(path / model_name + ".json"))
+
+                        select_model_cloud_auto_encoder(key_cloud_auto_encoder)
+                        plugin.progress_bar.hide()
+
+                    worker = _get_model_folder()
+                    worker.returned.connect(_process_model_folder)
+                    worker.start()
+
+                    # delay showing progress bar -> won't show up if model already downloaded
+                    # TODO: hacky -> better way to do this?
+                    time.sleep(0.1)
+                    plugin.call_button.enabled = False
+                    plugin.progress_bar.label = (
+                        "Downloading Auto Encoder model"
+                    )
+                    plugin.progress_bar.show()
+
+                else:
+                    select_model_cloud_auto_encoder(key_cloud_auto_encoder)
+        else:
+            select_model_cloud_auto_encoder(None)
+            plugin.call_button.enabled = True
+            plugin.model_folder_cloud_auto.line_edit.tooltip = (
+                "Invalid model directory"
+            )
+
+    @change_handler(plugin.model_folder_cloud_auto, init=False)
+    def _model_cloud_auto_folder_change(_path: str):
+        path = Path(_path)
+        key = CUSTOM_MODEL_CLOUD_AUTO_ENCODER, path
+        acceptable_formats = [".pt"]
+        try:
+            if not path.is_dir():
+                return
+            for fname in os.listdir(path):
+                if any(fname.endswith(f) for f in acceptable_formats):
+                    name = os.path.splitext(fname)[0]
+            model_cloud_auto_encoder_configs[key] = load_json(
+                str(path / name + ".json")
+            )
+        except FileNotFoundError:
+            pass
+        finally:
+            select_model_cloud_auto_encoder(key)
+
     _track_ids_analyze = None
     _to_analyze = None
     _trackmate_objects = None
-    track_model_type_choices = [
-        ("Dividing", "Dividing"),
-        ("Non-Dividing", "Non-Dividing"),
-        ("Both", "Both"),
-    ]
-
-    track_model_type_dict = {
-        0: track_model_type_choices[0][0],
-        1: track_model_type_choices[1][0],
-        2: track_model_type_choices[2][0],
-    }
 
     @magicgui(
         image=dict(label="Input Image"),
@@ -394,9 +653,6 @@ def plugin_wrapper_track():
     ) -> List[napari.types.LayerDataTuple]:
 
         _Color_tracks(spot_attributes, track_attributes)
-
-    kapoorlogo = abspath(__file__, "resources/kapoorlogo.png")
-    citation = Path("https://doi.org/10.25080/majora-1b6fd038-014")
 
     def _refreshTrackData(pred):
 
@@ -621,109 +877,6 @@ def plugin_wrapper_track():
             pred = new_seg_image, attribute
             return_color_tracks(pred)
         return pred
-
-    @magicgui(
-        label_head=dict(
-            widget_type="Label",
-            label=f'<h1> <img src="{kapoorlogo}"> </h1>',
-            value=f'<h5><a href=" {citation}"> NapaTrackMater: Track Analysis of TrackMate in Napari</a></h5>',
-        ),
-        track_model_type=dict(
-            widget_type="RadioButtons",
-            label="Track Model Type",
-            orientation="horizontal",
-            choices=track_model_type_choices,
-            value=DEFAULTS_MODEL["track_model_type"],
-        ),
-        track_id_value=dict(widget_type="Label", label="Track ID chosen"),
-        track_id_box=dict(
-            widget_type="ComboBox",
-            visible=True,
-            label="Select Track ID to analyze",
-            choices=_current_choices,
-        ),
-        cloud_auto_encoder_model_type=dict(
-            widget_type="RadioButtons",
-            label="Cloud Auto Encoder Model Type",
-            orientation="horizontal",
-            choices=cloud_auto_encoder_model_type_choices,
-            value=DEFAULTS_MODEL["cloud_auto_encoder_model_type"],
-        ),
-        cloud_auto_encoder_model=dict(
-            widget_type="ComboBox",
-            visible=False,
-            label="Pre-trained Auto Encoder Models",
-            choices=models_cloud_auto_encoder,
-            value=DEFAULTS_MODEL["model_cloud_auto_encoder"],
-        ),
-        cloud_auto_encoder_model_none=dict(
-            widget_type="Label", visible=False, label="No(Encoder)"
-        ),
-        model_folder_cloud_auto=dict(
-            widget_type="FileEdit",
-            visible=False,
-            label="Custom Auto Encoder",
-            mode="d",
-        ),
-        cluster_model_type=dict(
-            widget_type="RadioButtons",
-            label="Cluster Model Type",
-            orientation="horizontal",
-            choices=cluster_model_type_choices,
-            value=DEFAULTS_MODEL["cluster_model_type"],
-        ),
-        cluster_model=dict(
-            widget_type="ComboBox",
-            visible=False,
-            label="Pre-trained Clustering Models",
-            choices=models_cluster,
-            value=DEFAULTS_MODEL["model_cluster"],
-        ),
-        cluster_model_none=dict(
-            widget_type="Label", visible=False, label="No(Cluster)"
-        ),
-        model_folder_cluster=dict(
-            widget_type="FileEdit",
-            visible=False,
-            label="Custom Cluster Model",
-            mode="d",
-        ),
-        progress_bar=dict(label=" ", min=0, max=0, visible=False),
-        layout="vertical",
-        persist=True,
-        call_button=False,
-    )
-    def plugin(
-        viewer: napari.Viewer,
-        label_head,
-        axes,
-        track_model_type,
-        track_id_box,
-        track_id_value,
-        cloud_auto_encoder_model_type,
-        cloud_auto_encoder_model,
-        cloud_auto_encoder_model_none,
-        model_folder_cloud_auto,
-        cluster_model_type,
-        cluster_model,
-        cluster_model_none,
-        model_folder_cluster,
-        progress_bar: mw.ProgressBar,
-    ) -> List[napari.types.LayerDataTuple]:
-
-        if model_selected_cloud_auto_encoder is not None:
-            model_cloud_auto_encoder = get_model_cloud_auto_encoder(
-                *model_selected_cloud_auto_encoder
-            )
-        else:
-            model_cloud_auto_encoder = None
-        if model_selected_cluster is not None:
-            model_cluster = get_model_cluster(
-                *model_selected_cloud_auto_encoder, *model_selected_cluster
-            )
-        else:
-            model_cluster = None
-        print(model_cloud_auto_encoder, model_cluster)
 
     plugin.label_head.value = '<br>Citation <tt><a href="https://doi.org/10.25080/majora-1b6fd038-014" style="color:gray;">NapaTrackMater Scipy</a></tt>'
     plugin.label_head.native.setSizePolicy(
