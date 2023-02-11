@@ -171,14 +171,14 @@ def plugin_wrapper_track():
     CUSTOM_MODEL_CLUSTER = "CUSTOM_MODEL_CLUSTER"
 
     cloud_auto_encoder_model_type_choices = [
-        ("PreTrainedAutoEncoder", CloudAutoEncoder),
-        ("NOAUTO", "NOAUTO"),
-        ("Custom AUTO", CUSTOM_MODEL_CLOUD_AUTO_ENCODER),
+        ("PreTrained(Encoder)", CloudAutoEncoder),
+        ("No(Encoder)", "No(Encoder)"),
+        ("Custom Encoder", CUSTOM_MODEL_CLOUD_AUTO_ENCODER),
     ]
     cluster_model_type_choices = [
-        ("PreTrainedCluster", DeepEmbeddedClustering),
-        ("NOCLUSTER", "NOCLUSTER"),
-        ("Custom CLUSTER", CUSTOM_MODEL_CLUSTER),
+        ("PreTrained(Cluster)", DeepEmbeddedClustering),
+        ("No(Cluster)", "No(Cluster)"),
+        ("Custom Cluster", CUSTOM_MODEL_CLUSTER),
     ]
 
     @functools.lru_cache(maxsize=None)
