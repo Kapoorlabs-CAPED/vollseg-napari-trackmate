@@ -387,7 +387,7 @@ def plugin_wrapper_track():
 
             self.debug = debug
             self.valid = SimpleNamespace(
-                **{k: False for k in ("model_autoencoder")}
+                **{k: False for k in ("model_autoencoder",)}
             )
             self.args = SimpleNamespace()
             self.viewer = None
@@ -431,7 +431,7 @@ def plugin_wrapper_track():
                     break
             help_msg = ""
 
-            if self.valid.cloud_auto_encoder_model:
+            if self.valid.model_autoencoder:
 
                 widgets_valid(
                     plugin.cloud_auto_encoder_model,
@@ -441,12 +441,78 @@ def plugin_wrapper_track():
 
             else:
 
-                _model(self.valid.cloud_auto_encoder_model)
+                _model(self.valid.model_autoencoder)
+
+                _restore()
+            self.help(help_msg)
+
+    class Updater_Cluster:
+        def __init__(self, debug=DEBUG):
+            from types import SimpleNamespace
+
+            self.debug = debug
+            self.valid = SimpleNamespace(
+                **{k: False for k in ("model_autoencoder",)}
+            )
+            self.args = SimpleNamespace()
+            self.viewer = None
+
+        def __call__(self, k, valid, args=None):
+            assert k in vars(self.valid)
+            setattr(self.valid, k, bool(valid))
+            setattr(self.args, k, args)
+            self._update()
+
+        def help(self, msg):
+            if self.viewer is not None:
+                self.viewer.help = msg
+            elif len(str(msg)) > 0:
+                print(f"HELP: {msg}")
+
+        def _update(self):
+
+            if self.viewer is None:
+
+                if plugin.viewer.value is not None:
+                    self.viewer = plugin.viewer.value
+
+            def _model(valid):
+
+                widgets_valid(
+                    plugin.cluster_model,
+                    plugin.model_folder_cluster,
+                    valid=valid,
+                )
+
+            def _restore():
+                widgets_valid(
+                    plugin.image, valid=plugin.image.value is not None
+                )
+
+            all_valid = False
+            for layer in list(plugin.viewer.value.layers):
+                if isinstance(layer, napari.layers.Labels):
+                    all_valid = True
+                    break
+            help_msg = ""
+
+            if self.valid.model_autoencoder:
+
+                widgets_valid(
+                    plugin.cluster_model,
+                    plugin.model_folder_cluster.line_edit,
+                    valid=all_valid,
+                )
+
+            else:
+
+                _model(self.valid.model_autoencoder)
 
                 _restore()
             self.help(help_msg)
 
     update_cloud_auto_encoder = Updater_Auto_Encoder()
+    update_cluster = Updater_Cluster()
 
     def select_model_cloud_auto_encoder(key):
         nonlocal model_selected_cloud_auto_encoder
@@ -455,7 +521,7 @@ def plugin_wrapper_track():
             # config_cloud_auto_encoder = model_cloud_auto_encoder_configs.get(
             #    key
             # )
-            update_cloud_auto_encoder("model_autoencoder")
+            update_cloud_auto_encoder("model_autoencoder", True)
         if (
             plugin.cloud_auto_encoder_model_type.value
             == DEFAULTS_MODEL["model_cloud_auto_encoder_none"]
@@ -469,7 +535,7 @@ def plugin_wrapper_track():
             # config_cloud_auto_encoder = model_cloud_auto_encoder_configs.get(
             #    key
             # )
-            update_cloud_auto_encoder("model_autoencoder")
+            update_cluster("model_autoencoder", True)
         if (
             plugin.cluster_model_type.value
             == DEFAULTS_MODEL["model_cluster_none"]
