@@ -525,7 +525,7 @@ def plugin_wrapper_track():
                     select_model_cluster(key_cluster)
         else:
             select_model_cluster(None)
-            plugin.call_button.enabled = True
+
             plugin.model_folder_cluster.line_edit.tooltip = (
                 "Invalid model directory"
             )
@@ -585,7 +585,7 @@ def plugin_wrapper_track():
                     select_model_cloud_auto_encoder(key_cloud_auto_encoder)
         else:
             select_model_cloud_auto_encoder(None)
-            plugin.call_button.enabled = True
+
             plugin.model_folder_cloud_auto.line_edit.tooltip = (
                 "Invalid model directory"
             )
