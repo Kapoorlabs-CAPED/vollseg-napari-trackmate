@@ -21,6 +21,9 @@ from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 
 def plugin_wrapper_track():
 
+    from cellshape_cloud import CloudAutoEncoder
+    from cellshape_cluster import DeepEmbeddedClustering
+    from napatrackmater.pretrained import get_registered_models
     from napatrackmater.Trackmate import TrackMate
     from skimage.util import map_array
 
@@ -121,6 +124,114 @@ def plugin_wrapper_track():
 
         return decorator_change_handler
 
+    (
+        _models_cloud_auto_encoder,
+        _aliases_cloud_auto_encoder,
+    ) = get_registered_models(CloudAutoEncoder)
+
+    _models_cluster, _aliases_cluster = get_registered_models(
+        DeepEmbeddedClustering
+    )
+
+    models_cloud_auto_encoder = [
+        (
+            (
+                _aliases_cloud_auto_encoder[m][0]
+                if len(_aliases_cloud_auto_encoder[m]) > 0
+                else m
+            ),
+            m,
+        )
+        for m in _models_cloud_auto_encoder
+    ]
+
+    models_cluster = [
+        ((_aliases_cluster[m][0] if len(_aliases_cluster[m]) > 0 else m), m)
+        for m in _models_cluster
+    ]
+
+    model_cloud_auto_encoder_configs = dict()
+    model_cluster_configs = dict()
+
+    model_selected_cloud_auto_encoder = None
+    model_selected_cluster = None
+
+    DEFAULTS_MODEL = dict(
+        cloud_auto_encoder_model_type=CloudAutoEncoder,
+        cluster_model_type=DeepEmbeddedClustering,
+        model_cloud_auto_encoder=models_cloud_auto_encoder[0][0],
+        model_cluster=models_cluster[0][0],
+        model_cloud_auto_encoder_none="NOAUTO",
+        model_cluster_none="NOCLUSTER",
+        axes="TZYX",
+        track_model_type="Both",
+    )
+
+    CUSTOM_MODEL_CLOUD_AUTO_ENCODER = "CUSTOM_MODEL_CLOUD_AUTO_ENCODER"
+    CUSTOM_MODEL_CLUSTER = "CUSTOM_MODEL_CLUSTER"
+
+    cloud_auto_encoder_model_type_choices = [
+        ("PreTrainedAutoEncoder", CloudAutoEncoder),
+        ("NOAUTO", "NOAUTO"),
+        ("Custom AUTO", CUSTOM_MODEL_CLOUD_AUTO_ENCODER),
+    ]
+    cluster_model_type_choices = [
+        ("PreTrainedCluster", DeepEmbeddedClustering),
+        ("NOCLUSTER", "NOCLUSTER"),
+        ("Custom CLUSTER", CUSTOM_MODEL_CLUSTER),
+    ]
+
+    @functools.lru_cache(maxsize=None)
+    def get_model_cloud_auto_encoder(
+        cloud_auto_encoder_model_type, model_cloud_auto_encoder
+    ):
+        if cloud_auto_encoder_model_type == CUSTOM_MODEL_CLOUD_AUTO_ENCODER:
+            path_star = Path(model_cloud_auto_encoder)
+            path_star.is_dir() or _raise(
+                FileNotFoundError(f"{path_star} is not a directory")
+            )
+            config_cloud_auto_encoder = model_cloud_auto_encoder_configs[
+                (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
+            ]
+            model_class_cloud_auto_encoder = CloudAutoEncoder
+            return model_class_cloud_auto_encoder(
+                config_cloud_auto_encoder,
+                name=path_star.name,
+                basedir=str(path_star.parent),
+            )
+
+        elif (
+            cloud_auto_encoder_model_type
+            != DEFAULTS_MODEL["model_cloud_auto_encoder_none"]
+        ):
+            return cloud_auto_encoder_model_type.local_from_pretrained(
+                model_cloud_auto_encoder
+            )
+        else:
+            return None
+
+    @functools.lru_cache(maxsize=None)
+    def get_model_cluster(cluster_model_type, model_cluster):
+        if cluster_model_type == CUSTOM_MODEL_CLUSTER:
+            path_star = Path(cluster_model_type)
+            path_star.is_dir() or _raise(
+                FileNotFoundError(f"{path_star} is not a directory")
+            )
+            config_cluster = model_cluster_configs[
+                (cluster_model_type, model_cluster)
+            ]
+            model_class_cluster = DeepEmbeddedClustering
+            return model_class_cluster(
+                config_cluster,
+                name=path_star.name,
+                basedir=str(path_star.parent),
+            )
+
+        elif cluster_model_type != DEFAULTS_MODEL["model_cluster_none"]:
+            return cluster_model_type.local_from_pretrained(model_cluster)
+        else:
+            return None
+
     _track_ids_analyze = None
     _to_analyze = None
     _trackmate_objects = None
@@ -135,8 +246,6 @@ def plugin_wrapper_track():
         1: track_model_type_choices[1][0],
         2: track_model_type_choices[2][0],
     }
-
-    DEFAULTS_MODEL = dict(axes="TZYX", track_model_type="Both")
 
     @magicgui(
         image=dict(label="Input Image"),
@@ -495,6 +604,20 @@ def plugin_wrapper_track():
             label="Select Track ID to analyze",
             choices=_current_choices,
         ),
+        cloud_auto_encoder_model_type=dict(
+            widget_type="RadioButtons",
+            label="Cloud Auto Encoder Model Type",
+            orientation="horizontal",
+            choices=cloud_auto_encoder_model_type_choices,
+            value=DEFAULTS_MODEL["cloud_auto_encoder_model_type"],
+        ),
+        cluster_model_type=dict(
+            widget_type="RadioButtons",
+            label="Cluster Model Type",
+            orientation="horizontal",
+            choices=cluster_model_type_choices,
+            value=DEFAULTS_MODEL["cluster_model_type"],
+        ),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
         persist=True,
@@ -507,10 +630,22 @@ def plugin_wrapper_track():
         track_model_type,
         track_id_box,
         track_id_value,
+        cloud_auto_encoder_model_type,
+        cluster_model_type,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
-        pass
+        if model_selected_cloud_auto_encoder is not None:
+            model_cloud_auto_encoder = get_model_cloud_auto_encoder(
+                *model_selected_cloud_auto_encoder
+            )
+        else:
+            model_cloud_auto_encoder = None
+        if model_selected_cluster is not None:
+            model_cluster = get_model_cluster(*model_selected_cluster)
+        else:
+            model_cluster = None
+        print(model_cloud_auto_encoder, model_cluster)
 
     plugin.label_head.value = '<br>Citation <tt><a href="https://doi.org/10.25080/majora-1b6fd038-014" style="color:gray;">NapaTrackMater Scipy</a></tt>'
     plugin.label_head.native.setSizePolicy(
