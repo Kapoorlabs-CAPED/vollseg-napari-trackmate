@@ -672,14 +672,14 @@ def plugin_wrapper_track():
             choices=cluster_model_type_choices,
             value=DEFAULTS_MODEL["cluster_model_type"],
         ),
-        cloud_cluster_model=dict(
+        cluster_model=dict(
             widget_type="ComboBox",
             visible=False,
             label="Pre-trained Clustering Models",
             choices=models_cluster,
             value=DEFAULTS_MODEL["model_cluster"],
         ),
-        cloud_cluster_model_none=dict(
+        cluster_model_none=dict(
             widget_type="Label", visible=False, label="No(Cluster)"
         ),
         model_folder_cluster=dict(
@@ -718,7 +718,9 @@ def plugin_wrapper_track():
         else:
             model_cloud_auto_encoder = None
         if model_selected_cluster is not None:
-            model_cluster = get_model_cluster(*model_selected_cluster)
+            model_cluster = get_model_cluster(
+                *model_selected_cloud_auto_encoder, *model_selected_cluster
+            )
         else:
             model_cluster = None
         print(model_cloud_auto_encoder, model_cluster)
@@ -1292,6 +1294,52 @@ def plugin_wrapper_track():
 
             track_id = value
             show_track(track_id)
+
+    widget_for_cloud_auto_encoder_modeltype = {
+        CloudAutoEncoder: plugin.cloud_auto_encoder_model,
+        "No(Encoder)": plugin.cloud_auto_encoder_model_none,
+        CUSTOM_MODEL_CLOUD_AUTO_ENCODER: plugin.model_folder_cloud_auto,
+    }
+
+    @change_handler(plugin.cloud_auto_encoder_model_type, init=False)
+    def _cloud_auto_encoder_model_type_change(
+        cloud_auto_encoder_model_type: Union[str, type]
+    ):
+        selected = widget_for_cloud_auto_encoder_modeltype[
+            cloud_auto_encoder_model_type
+        ]
+        for w in {
+            plugin.cloud_auto_encoder_model,
+            plugin.cloud_auto_encoder_model_none,
+            plugin.model_folder_cloud_auto,
+        } - {selected}:
+            w.hide()
+
+        selected.show()
+
+        # Trigger model change
+        selected.changed(selected.value)
+
+    widget_for_cluster_modeltype = {
+        DeepEmbeddedClustering: plugin.cluster_model,
+        "No(Cluster)": plugin.cluster_model_none,
+        CUSTOM_MODEL_CLUSTER: plugin.model_folder_cluster,
+    }
+
+    @change_handler(plugin.cluster_model_type, init=False)
+    def _cluster_model_type_change(cluster_model_type: Union[str, type]):
+        selected = widget_for_cluster_modeltype[cluster_model_type]
+        for w in {
+            plugin.cluster_model,
+            plugin.cluster_model_none,
+            plugin.model_folder_cluster,
+        } - {selected}:
+            w.hide()
+
+        selected.show()
+
+        # Trigger model change
+        selected.changed(selected.value)
 
     @change_handler(plugin.track_model_type, init=False)
     def _change_track_model_type(value):
