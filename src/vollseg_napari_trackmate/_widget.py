@@ -765,9 +765,15 @@ def plugin_wrapper_track():
 
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
-
-        if len(model_cloud_auto_encoder_configs) > 0:
-            num_points = model_cloud_auto_encoder_configs["num_points"]
+        (
+            cloud_auto_encoder_model_type,
+            model_cloud_auto_encoder,
+        ) = *model_selected_cloud_auto_encoder
+        config = model_cloud_auto_encoder_configs[
+            (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
+        ]
+        if len(config) > 0:
+            num_points = config["num_points"]
         else:
             num_points = 0
 
