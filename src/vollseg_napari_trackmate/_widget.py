@@ -629,7 +629,7 @@ def plugin_wrapper_track():
 
                         model_cloud_auto_encoder_configs[
                             key_cloud_auto_encoder
-                        ] = load_json(str(path / model_name + ".json"))
+                        ] = load_json(str(path / model_name / ".json"))
 
                         select_model_cloud_auto_encoder(key_cloud_auto_encoder)
                         plugin.progress_bar.hide()
@@ -668,7 +668,7 @@ def plugin_wrapper_track():
                 if any(fname.endswith(f) for f in acceptable_formats):
                     name = os.path.splitext(fname)[0]
                     model_cloud_auto_encoder_configs[key] = load_json(
-                        str(path / name + ".json")
+                        str(path / name / ".json")
                     )
         except FileNotFoundError:
             pass
