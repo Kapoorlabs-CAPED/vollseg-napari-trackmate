@@ -529,6 +529,7 @@ def plugin_wrapper_track():
             == DEFAULTS_MODEL["model_cluster_none"]
         ):
             model_selected_cluster = None
+        print("models", model_selected_cluster)
 
     @change_handler(
         plugin.cluster_model,
@@ -762,12 +763,7 @@ def plugin_wrapper_track():
             print(x_channel_seg.shape)
 
         nonlocal _trackmate_objects
-        if model_selected_cloud_auto_encoder is not None:
-            model_cloud_auto_encoder = get_model_cloud_auto_encoder(
-                *model_selected_cloud_auto_encoder
-            )
-        else:
-            model_cloud_auto_encoder = None
+
         if model_selected_cluster is not None:
             model_cluster = get_model_cluster(
                 *model_selected_cloud_auto_encoder,
@@ -775,7 +771,7 @@ def plugin_wrapper_track():
             )
         else:
             model_cluster = None
-        print(model_cloud_auto_encoder, model_cluster)
+
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
 
