@@ -254,7 +254,7 @@ def plugin_wrapper_track():
 
         if autoencoder is not None:
             if cluster_model_type == CUSTOM_MODEL_CLUSTER:
-                path_cluster = Path(cluster_model_type)
+                path_cluster = Path(model_cloud_auto_encoder)
                 path_cluster.is_file() or _raise(
                     FileNotFoundError(f"{path_cluster} is not a file")
                 )
