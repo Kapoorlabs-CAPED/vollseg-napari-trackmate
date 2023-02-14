@@ -225,7 +225,7 @@ def plugin_wrapper_track():
                 decoder_type=config_cloud_auto_encoder["decoder_type"],
             )
             checkpoint = torch.load(
-                os.path.join(path_auto.parent, path_auto.stem)
+                os.path.join(path_auto.parent, path_auto.stem + ".pt")
             )
             autoencoder.load_state_dict(checkpoint["model_state_dict"])
             return autoencoder
@@ -260,7 +260,9 @@ def plugin_wrapper_track():
                 )
 
                 checkpoint = torch.load(
-                    os.path.join(path_cluster.parent, path_cluster.stem)
+                    os.path.join(
+                        path_cluster.parent, path_cluster.stem + ".pt"
+                    )
                 )
                 num_clusters = checkpoint["model_state_dict"][
                     "clustering_layer.weight"
