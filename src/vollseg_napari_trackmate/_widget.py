@@ -734,7 +734,7 @@ def plugin_wrapper_track():
         x_mask = None
 
         if xml_path is not None:
-            save_dir = os.path.join(xml_path.as_posix() + "runs")
+            save_dir = os.path.join(xml_path.parent.as_posix(), "runs")
             Path(save_dir).mkdir(exist_ok=True)
         else:
             save_dir = None
