@@ -785,7 +785,7 @@ def plugin_wrapper_track():
             AttributeBoxname,
             TrackAttributeBoxname,
             TrackidBox,
-            axes.value,
+            axes,
             channel_seg_image=x_channel_seg,
             seg_image=x_seg,
             image=x,
