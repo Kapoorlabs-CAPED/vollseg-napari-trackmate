@@ -272,8 +272,7 @@ def plugin_wrapper_track():
                     autoencoder=autoencoder, num_clusters=num_clusters
                 )
                 model.load_state_dict(checkpoint["model_state_dict"])
-                model_class_cluster = DeepEmbeddedClustering
-                return model_class_cluster
+                return model
 
             elif cluster_model_type != DEFAULTS_MODEL["model_cluster_none"]:
                 return cluster_model_type.local_from_pretrained(model_cluster)
