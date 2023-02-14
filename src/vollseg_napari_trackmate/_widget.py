@@ -354,7 +354,6 @@ def plugin_wrapper_track():
     def plugin(
         viewer: napari.Viewer,
         label_head,
-        axes,
         track_model_type,
         track_id_box,
         track_id_value,
@@ -686,15 +685,6 @@ def plugin_wrapper_track():
     _to_analyze = None
     _trackmate_objects = None
 
-    def get_axes(x):
-        if x.shape == 3:
-            axes = "TYX"
-        if x.shape == 4:
-            axes = "TZYX"
-        else:
-            axes = None
-        return axes
-
     @magicgui(
         image=dict(label="Input Image"),
         seg_image=dict(label="Optional Segmentation Image"),
@@ -744,27 +734,23 @@ def plugin_wrapper_track():
         x_channel_seg = None
         x_mask = None
 
-        axes_image = None
-        axes_seg = None
-        axes_mask = None
-        axes_channel_seg = None
-        save_dir = xml_path
+        if xml_path is not None:
+            save_dir = os.path.join(xml_path + "runs")
+            Path(save_dir).mkdir(exist_ok=True)
+        else:
+            save_dir = None
         if image is not None:
             x = get_data(image)
-            axes_image = get_axes(x)
             print(x.shape)
 
         if seg_image is not None:
             x_seg = get_label_data(seg_image)
-            axes_seg = get_axes(x_seg)
             print(x_seg.shape)
         if mask_image is not None:
             x_mask = get_label_data(mask_image)
-            axes_mask = get_axes(x_mask)
             print(x_mask.shape)
         if channel_seg_image is not None:
             x_channel_seg = get_label_data(channel_seg_image)
-            axes_channel_seg = get_axes(x_channel_seg)
             print(x_channel_seg.shape)
 
         nonlocal _trackmate_objects
@@ -780,9 +766,6 @@ def plugin_wrapper_track():
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
 
-        axes_list = [axes_image, axes_seg, axes_mask, axes_channel_seg]
-        axes_finite_list = [ater for ater in filter(None, axes_list)]
-        axes = max(axes_finite_list)
         if len(model_cloud_auto_encoder_configs) > 0:
             num_points = model_cloud_auto_encoder_configs["num_points"]
         else:
@@ -796,7 +779,7 @@ def plugin_wrapper_track():
             AttributeBoxname,
             TrackAttributeBoxname,
             TrackidBox,
-            axes,
+            axes.value,
             channel_seg_image=x_channel_seg,
             seg_image=x_seg,
             image=x,
