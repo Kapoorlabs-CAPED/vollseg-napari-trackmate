@@ -618,7 +618,14 @@ def plugin_wrapper_track():
 
                         model_cloud_auto_encoder_configs[
                             key_cloud_auto_encoder
-                        ] = load_json(str(path / model_name / ".json"))
+                        ] = load_json(
+                            str(
+                                os.path.join(
+                                    path.parent.as_posix(),
+                                    model_name + ".json",
+                                )
+                            )
+                        )
 
                         select_model_cloud_auto_encoder(key_cloud_auto_encoder)
                         plugin.progress_bar.hide()
@@ -653,7 +660,7 @@ def plugin_wrapper_track():
             if not path.is_file():
                 return
             model_cloud_auto_encoder_configs[key] = load_json(
-                str(path.parent / path.stem / ".json")
+                str(os.path.join(path.parent.as_posix(), path.stem + ".json"))
             )
         except FileNotFoundError:
             print(f"file not found in {path.parent}, {path.stem}]")
