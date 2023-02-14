@@ -1110,6 +1110,31 @@ def plugin_wrapper_track():
                 plot_ax = stat_plot_class.plot_ax
                 plot_ax.cla()
 
+                if model_selected_cloud_auto_encoder is not None:
+
+                    data_columns = ["Time", "Mitotic_Cluster_Class"]
+                    data = []
+                    Time = []
+                    for i in range(
+                        len(_trackmate_objects.mitotic_cluster_class)
+                    ):
+                        time = _trackmate_objects.time[i]
+                        Time.apend(time)
+                        class_array = _trackmate_objects.mitotic_cluster_class[
+                            i
+                        ]
+                        for current_class in class_array.shape[0]:
+                            data = np.vstack((time, current_class))
+                    clusters = pd.DataFrame(data, columns=data_columns)
+                    sns.boxenplot(
+                        x="Time",
+                        y="Mitotic_Cluster_Class",
+                        color="b",
+                        order=Time,
+                        scale="linear",
+                        data=clusters,
+                    )
+
                 plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.mitotic_mean_directional_change,
