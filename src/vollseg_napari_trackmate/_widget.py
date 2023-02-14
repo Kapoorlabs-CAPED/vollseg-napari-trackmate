@@ -759,6 +759,12 @@ def plugin_wrapper_track():
                 *model_selected_cloud_auto_encoder,
                 *model_selected_cluster,
             )
+
+            try:
+                device = torch.device("cuda:0")
+            except ValueError:
+                device = torch.device("cpu")
+            model_cluster.to(device)
         else:
             model_cluster = None
 
