@@ -762,16 +762,16 @@ def plugin_wrapper_track():
             print(x_channel_seg.shape)
 
         nonlocal _trackmate_objects
-        if plugin.model_selected_cloud_auto_encoder is not None:
+        if model_selected_cloud_auto_encoder is not None:
             model_cloud_auto_encoder = get_model_cloud_auto_encoder(
-                *plugin.model_selected_cloud_auto_encoder
+                *model_selected_cloud_auto_encoder
             )
         else:
             model_cloud_auto_encoder = None
-        if plugin.model_selected_cluster is not None:
+        if model_selected_cluster is not None:
             model_cluster = get_model_cluster(
-                *plugin.model_selected_cloud_auto_encoder,
-                *plugin.model_selected_cluster,
+                *model_selected_cloud_auto_encoder,
+                *model_selected_cluster,
             )
         else:
             model_cluster = None
