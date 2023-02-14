@@ -656,7 +656,7 @@ def plugin_wrapper_track():
                 str(path.parent / path.stem / ".json")
             )
         except FileNotFoundError:
-            pass
+            print(f"file not found in {path.parent}, {path.stem}]")
         finally:
             select_model_cloud_auto_encoder(key)
 
