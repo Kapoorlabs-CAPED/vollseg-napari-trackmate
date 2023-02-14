@@ -210,8 +210,8 @@ def plugin_wrapper_track():
     ):
         if cloud_auto_encoder_model_type == CUSTOM_MODEL_CLOUD_AUTO_ENCODER:
             path_auto = Path(model_cloud_auto_encoder)
-            path_auto.is_dir() or _raise(
-                FileNotFoundError(f"{path_auto} is not a directory")
+            path_auto.is_file() or _raise(
+                FileNotFoundError(f"{path_auto} is not a file")
             )
             config_cloud_auto_encoder = model_cloud_auto_encoder_configs[
                 (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
@@ -255,8 +255,8 @@ def plugin_wrapper_track():
         if autoencoder is not None:
             if cluster_model_type == CUSTOM_MODEL_CLUSTER:
                 path_cluster = Path(cluster_model_type)
-                path_cluster.is_dir() or _raise(
-                    FileNotFoundError(f"{path_cluster} is not a directory")
+                path_cluster.is_file() or _raise(
+                    FileNotFoundError(f"{path_cluster} is not a file")
                 )
 
                 checkpoint = torch.load(
@@ -319,7 +319,7 @@ def plugin_wrapper_track():
             widget_type="FileEdit",
             visible=False,
             label="Custom Auto Encoder",
-            mode="d",
+            mode="r",
         ),
         cluster_model_type=dict(
             widget_type="RadioButtons",
@@ -342,7 +342,7 @@ def plugin_wrapper_track():
             widget_type="FileEdit",
             visible=False,
             label="Custom Cluster Model",
-            mode="d",
+            mode="r",
         ),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
@@ -582,7 +582,7 @@ def plugin_wrapper_track():
             select_model_cluster(None)
 
             plugin.model_folder_cluster.line_edit.tooltip = (
-                "Invalid model directory"
+                "Invalid model file"
             )
 
     @change_handler(
@@ -649,16 +649,12 @@ def plugin_wrapper_track():
     def _model_cloud_auto_folder_change(_path: str):
         path = Path(_path)
         key = CUSTOM_MODEL_CLOUD_AUTO_ENCODER, path
-        acceptable_formats = [".pt"]
         try:
-            if not path.is_dir():
+            if not path.is_file():
                 return
-            for fname in os.listdir(path):
-                if any(fname.endswith(f) for f in acceptable_formats):
-                    name = os.path.splitext(fname)[0]
-                    model_cloud_auto_encoder_configs[key] = load_json(
-                        str(path / name / ".json")
-                    )
+            model_cloud_auto_encoder_configs[key] = load_json(
+                str(path.parent / path.stem / ".json")
+            )
         except FileNotFoundError:
             pass
         finally:
@@ -669,7 +665,7 @@ def plugin_wrapper_track():
         path = Path(_path)
         key = CUSTOM_MODEL_CLUSTER, path
         try:
-            if not path.is_dir():
+            if not path.is_file():
                 return
 
         except FileNotFoundError:
