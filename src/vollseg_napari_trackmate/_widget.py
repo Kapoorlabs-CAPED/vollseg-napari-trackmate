@@ -1183,6 +1183,8 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
+                    _ = plot_ax.x_ticks(rotation=45, ha="right")
+                    sns.despine(left=True)
 
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
@@ -1316,6 +1318,8 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
+                    _ = plot_ax.x_ticks(rotation=45, ha="right")
+                    sns.despine(left=True)
 
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
@@ -1448,6 +1452,8 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
+                    _ = plot_ax.x_ticks(rotation=45, ha="right")
+                    sns.despine(left=True)
 
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
@@ -1628,6 +1634,7 @@ def plugin_wrapper_track():
             dtype=object,
         )
         df = df_column_switch(df, columns[0], columns[colindex])
+        print(df)
         print("Making pandas Model")
         table_tab.data = pandasModel(df)
         table_tab.viewer = plugin.viewer.value
