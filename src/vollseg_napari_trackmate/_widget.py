@@ -177,6 +177,7 @@ def plugin_wrapper_track():
         axes="TZYX",
         track_model_type="Both",
     )
+    DEFAULTS_PARAMETERS = dict(batch_size=8)
 
     CUSTOM_MODEL_CLOUD_AUTO_ENCODER = "CUSTOM_MODEL_CLOUD_AUTO_ENCODER"
     CUSTOM_MODEL_CLUSTER = "CUSTOM_MODEL_CLUSTER"
@@ -712,6 +713,14 @@ def plugin_wrapper_track():
             label="Image Axes",
             value=DEFAULTS_MODEL["axes"],
         ),
+        batch_size=dict(
+            widget_type="SpinBox",
+            label="Batch size (clustering model)",
+            min=1,
+            max=10000000,
+            step=1,
+            value=DEFAULTS_PARAMETERS["batch_size"],
+        ),
         layout="vertical",
         persist=True,
         call_button=True,
@@ -726,6 +735,7 @@ def plugin_wrapper_track():
         spot_csv_path,
         edges_csv_path,
         axes,
+        batch_size,
     ) -> List[napari.types.LayerDataTuple]:
 
         x = None
@@ -799,6 +809,7 @@ def plugin_wrapper_track():
             num_points=num_points,
             progress_bar=plugin.progress_bar,
             save_dir=save_dir,
+            batch_size=batch_size,
         )
 
         _refreshStatPlotData()
