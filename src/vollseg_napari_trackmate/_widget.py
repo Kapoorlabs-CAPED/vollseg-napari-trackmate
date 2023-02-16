@@ -177,7 +177,7 @@ def plugin_wrapper_track():
         axes="TZYX",
         track_model_type="Both",
     )
-    DEFAULTS_PARAMETERS = dict(batch_size=8)
+    DEFAULTS_PARAMETERS = dict(batch_size=8, step_size=10)
 
     CUSTOM_MODEL_CLOUD_AUTO_ENCODER = "CUSTOM_MODEL_CLOUD_AUTO_ENCODER"
     CUSTOM_MODEL_CLUSTER = "CUSTOM_MODEL_CLUSTER"
@@ -721,6 +721,14 @@ def plugin_wrapper_track():
             step=1,
             value=DEFAULTS_PARAMETERS["batch_size"],
         ),
+        plot_step_size=dict(
+            widget_type="SpinBox",
+            label="Cluster class time step",
+            min=1,
+            max=10000000,
+            step=1,
+            value=DEFAULTS_PARAMETERS["step_size"],
+        ),
         layout="vertical",
         persist=True,
         call_button=True,
@@ -736,9 +744,9 @@ def plugin_wrapper_track():
         edges_csv_path,
         axes,
         batch_size,
+        plot_step_size,
     ) -> List[napari.types.LayerDataTuple]:
 
-        print(batch_size)
         x = None
         x_seg = None
         x_channel_seg = None
@@ -1156,7 +1164,9 @@ def plugin_wrapper_track():
                     data = []
 
                     for i in range(
-                        len(_trackmate_objects.mitotic_cluster_class)
+                        0,
+                        len(_trackmate_objects.mitotic_cluster_class),
+                        plugin_data.plot_step_size,
                     ):
                         time = _trackmate_objects.time[i]
 
@@ -1288,7 +1298,9 @@ def plugin_wrapper_track():
                     data = []
 
                     for i in range(
-                        len(_trackmate_objects.non_mitotic_cluster_class)
+                        0,
+                        len(_trackmate_objects.non_mitotic_cluster_class),
+                        plugin_data.plot_step_size,
                     ):
                         time = _trackmate_objects.time[i]
 
@@ -1419,7 +1431,11 @@ def plugin_wrapper_track():
                     data_columns = ["Time", "All_CellType_Cluster_Class"]
                     data = []
 
-                    for i in range(len(_trackmate_objects.all_cluster_class)):
+                    for i in range(
+                        0,
+                        len(_trackmate_objects.all_cluster_class),
+                        plugin_data.plot_step_size,
+                    ):
                         time = _trackmate_objects.time[i]
 
                         class_array = _trackmate_objects.all_cluster_class[i]
@@ -1706,6 +1722,11 @@ def plugin_wrapper_track():
     def _batch_size_change(value: int):
 
         plugin_data.batch_size.value = value
+
+    @change_handler(plugin_data.plot_step_size)
+    def _plot_step_size_change(value: int):
+
+        plugin_data.plot_step_size.value = value
 
     @change_handler(plugin.track_id_box, init=False)
     def _track_id_box_change(value):
