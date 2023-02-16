@@ -1159,7 +1159,7 @@ def plugin_wrapper_track():
                         len(_trackmate_objects.mitotic_cluster_class)
                     ):
                         time = _trackmate_objects.time[i]
-                        Time.apend(time)
+                        Time.append(time)
                         class_array = _trackmate_objects.mitotic_cluster_class[
                             i
                         ]
@@ -1292,7 +1292,7 @@ def plugin_wrapper_track():
                         len(_trackmate_objects.non_mitotic_cluster_class)
                     ):
                         time = _trackmate_objects.time[i]
-                        Time.apend(time)
+                        Time.append(time)
                         class_array = (
                             _trackmate_objects.non_mitotic_cluster_class[i]
                         )
@@ -1424,7 +1424,7 @@ def plugin_wrapper_track():
                     Time = []
                     for i in range(len(_trackmate_objects.all_cluster_class)):
                         time = _trackmate_objects.time[i]
-                        Time.apend(time)
+                        Time.append(time)
                         class_array = _trackmate_objects.all_cluster_class[i]
                         for current_class in class_array.shape[0]:
                             data = np.vstack((time, current_class))
