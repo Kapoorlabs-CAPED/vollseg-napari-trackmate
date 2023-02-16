@@ -1187,7 +1187,7 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    _ = plot_ax.set_xticks(rotation=45, ha="right")
+                    stat_plot_class.stat_canvas.xticks(rotation=45, ha="right")
                     sns.despine(left=True)
 
                     plot_ax.set_xlabel("Time (min)")
@@ -1322,7 +1322,7 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    _ = plot_ax.set_xticks(rotation=45, ha="right")
+                    stat_plot_class.stat_canvas.xticks(rotation=45, ha="right")
                     sns.despine(left=True)
 
                     plot_ax.set_xlabel("Time (min)")
@@ -1456,7 +1456,7 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    _ = plot_ax.set_xticks(rotation=45, ha="right")
+                    stat_plot_class.stat_canvas.xticks(rotation=45, ha="right")
                     sns.despine(left=True)
 
                     plot_ax.set_xlabel("Time (min)")
