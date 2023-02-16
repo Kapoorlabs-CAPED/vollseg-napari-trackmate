@@ -945,19 +945,10 @@ def plugin_wrapper_track():
                 all_intensity.append(intensity)
                 all_xf_sample.append(xf_sample)
                 all_ffttotal_sample.append(np.ravel(ffttotal_sample))
-            max_size = 0
-            max_size_index = 0
-            for i in range(len(all_ffttotal_sample)):
-                size = all_ffttotal_sample[i].shape[0]
-                if size > max_size:
-                    max_size = size
-                    max_size_index = i
-
-            max_all_xf_sample = all_xf_sample[max_size_index]
 
             data_plot = pd.DataFrame(
                 {
-                    "Frequ": max_all_xf_sample,
+                    "Frequ": all_xf_sample,
                     "Intensity": all_intensity,
                     "Amplitude": sum(all_ffttotal_sample),
                 }
@@ -1181,19 +1172,19 @@ def plugin_wrapper_track():
                             data.append([time, class_array[i]])
                     clusters = pd.DataFrame(data, columns=data_columns)
 
-                    ds = sns.violinplot(
+                    sns.violinplot(
                         x="Time",
                         y="Mitotic_Cluster_Class",
                         data=clusters,
                         ax=plot_ax,
                     )
 
-                    ds.set(
+                    plot_ax.set(
                         xticks=(
                             [
-                                clusters["Time"][0],
-                                clusters["Time"][len(data) // 2],
-                                clusters["Time"][len(data) - 1],
+                                0,
+                                len(data) // 2,
+                                len(data) - 1,
                             ]
                         )
                     )
@@ -1323,19 +1314,19 @@ def plugin_wrapper_track():
                         for i in range(class_array.shape[0]):
                             data.append([time, class_array[i]])
                     clusters = pd.DataFrame(data, columns=data_columns)
-                    ds = sns.violinplot(
+                    sns.violinplot(
                         x="Time",
                         y="Non_Mitotic_Cluster_Class",
                         data=clusters,
                         ax=plot_ax,
                     )
 
-                    ds.set(
+                    plot_ax.set(
                         xticks=(
                             [
-                                clusters["Time"][0],
-                                clusters["Time"][len(data) // 2],
-                                clusters["Time"][len(data) - 1],
+                                0,
+                                len(data) // 2,
+                                len(data) - 1,
                             ]
                         )
                     )
@@ -1464,18 +1455,18 @@ def plugin_wrapper_track():
                         for i in range(class_array.shape[0]):
                             data.append([time, class_array[i]])
                     clusters = pd.DataFrame(data, columns=data_columns)
-                    ds = sns.violinplot(
+                    sns.violinplot(
                         x="Time",
                         y="All_CellType_Cluster_Class",
                         data=clusters,
                         ax=plot_ax,
                     )
-                    ds.set(
+                    plot_ax.set(
                         xticks=(
                             [
-                                clusters["Time"][0],
-                                clusters["Time"][len(data) // 2],
-                                clusters["Time"][len(data) - 1],
+                                0,
+                                len(data) // 2,
+                                len(data) - 1,
                             ]
                         )
                     )
