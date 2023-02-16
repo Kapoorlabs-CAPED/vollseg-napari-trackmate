@@ -1175,6 +1175,12 @@ def plugin_wrapper_track():
                         data=clusters,
                     )
 
+                    plot_ax.set_xlabel("Time (min)")
+                    plot_ax.set_ylabel("Class")
+
+                    stat_plot_class._repeat_after_plot()
+                    plot_ax = stat_plot_class.plot_ax
+
                 plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.mitotic_mean_directional_change,
@@ -1190,7 +1196,6 @@ def plugin_wrapper_track():
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
-                plot_ax.cla()
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
@@ -1277,6 +1282,37 @@ def plugin_wrapper_track():
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
                 plot_ax.cla()
+
+                if model_selected_cloud_auto_encoder is not None:
+
+                    data_columns = ["Time", "Non_Mitotic_Cluster_Class"]
+                    data = []
+                    Time = []
+                    for i in range(
+                        len(_trackmate_objects.non_mitotic_cluster_class)
+                    ):
+                        time = _trackmate_objects.time[i]
+                        Time.apend(time)
+                        class_array = (
+                            _trackmate_objects.non_mitotic_cluster_class[i]
+                        )
+                        for current_class in class_array.shape[0]:
+                            data = np.vstack((time, current_class))
+                    clusters = pd.DataFrame(data, columns=data_columns)
+                    sns.boxenplot(
+                        x="Time",
+                        y="Non_Mitotic_Cluster_Class",
+                        color="b",
+                        order=Time,
+                        scale="linear",
+                        data=clusters,
+                    )
+
+                    plot_ax.set_xlabel("Time (min)")
+                    plot_ax.set_ylabel("Class")
+
+                    stat_plot_class._repeat_after_plot()
+                    plot_ax = stat_plot_class.plot_ax
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
@@ -1380,6 +1416,33 @@ def plugin_wrapper_track():
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
                 plot_ax.cla()
+
+                if model_selected_cloud_auto_encoder is not None:
+
+                    data_columns = ["Time", "All_Cluster_Class"]
+                    data = []
+                    Time = []
+                    for i in range(len(_trackmate_objects.all_cluster_class)):
+                        time = _trackmate_objects.time[i]
+                        Time.apend(time)
+                        class_array = _trackmate_objects.all_cluster_class[i]
+                        for current_class in class_array.shape[0]:
+                            data = np.vstack((time, current_class))
+                    clusters = pd.DataFrame(data, columns=data_columns)
+                    sns.boxenplot(
+                        x="Time",
+                        y="All_CellType_Cluster_Class",
+                        color="b",
+                        order=Time,
+                        scale="linear",
+                        data=clusters,
+                    )
+
+                    plot_ax.set_xlabel("Time (min)")
+                    plot_ax.set_ylabel("Class")
+
+                    stat_plot_class._repeat_after_plot()
+                    plot_ax = stat_plot_class.plot_ax
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
@@ -1573,6 +1636,7 @@ def plugin_wrapper_track():
 
         select_track_nature()
         plot_main()
+        show_track(None)
 
     def _analyze_tracks(v):
         float_list = list(v.values())
@@ -1603,7 +1667,6 @@ def plugin_wrapper_track():
                 _current_choices = _both_choices
 
             _track_ids_analyze = list(map(int, _track_ids_analyze))
-            _to_analyze = _track_ids_analyze
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
@@ -1718,7 +1781,7 @@ def plugin_wrapper_track():
         plugin.track_model_type.value = value
         select_track_nature()
         plot_main()
-        show_fft()
+        show_track(None)
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
