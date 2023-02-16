@@ -1163,7 +1163,7 @@ def plugin_wrapper_track():
                         class_array = _trackmate_objects.mitotic_cluster_class[
                             i
                         ]
-                        for current_class in class_array.shape[0]:
+                        for current_class in range(class_array.shape[0]):
                             data = np.vstack((time, current_class))
                     clusters = pd.DataFrame(data, columns=data_columns)
                     sns.boxenplot(
@@ -1296,7 +1296,7 @@ def plugin_wrapper_track():
                         class_array = (
                             _trackmate_objects.non_mitotic_cluster_class[i]
                         )
-                        for current_class in class_array.shape[0]:
+                        for current_class in range(class_array.shape[0]):
                             data = np.vstack((time, current_class))
                     clusters = pd.DataFrame(data, columns=data_columns)
                     sns.boxenplot(
@@ -1426,7 +1426,7 @@ def plugin_wrapper_track():
                         time = _trackmate_objects.time[i]
                         Time.append(time)
                         class_array = _trackmate_objects.all_cluster_class[i]
-                        for current_class in class_array.shape[0]:
+                        for current_class in range(class_array.shape[0]):
                             data = np.vstack((time, current_class))
                     clusters = pd.DataFrame(data, columns=data_columns)
                     sns.boxenplot(
