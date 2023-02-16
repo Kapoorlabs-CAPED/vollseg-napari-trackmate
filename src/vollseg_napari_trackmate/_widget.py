@@ -1827,6 +1827,7 @@ def plugin_wrapper_track():
         plugin.track_model_type.value = value
         select_track_nature()
         plot_main()
+        show_track(None)
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
