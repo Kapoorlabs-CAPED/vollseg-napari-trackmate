@@ -1419,7 +1419,7 @@ def plugin_wrapper_track():
 
                 if model_selected_cloud_auto_encoder is not None:
 
-                    data_columns = ["Time", "All_Cluster_Class"]
+                    data_columns = ["Time", "All_CellType_Cluster_Class"]
                     data = []
                     Time = []
                     for i in range(len(_trackmate_objects.all_cluster_class)):
