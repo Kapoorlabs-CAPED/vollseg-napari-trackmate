@@ -1166,6 +1166,7 @@ def plugin_wrapper_track():
                         for current_class in range(class_array.shape[0]):
                             data.append([time, current_class])
                     clusters = pd.DataFrame(data, columns=data_columns)
+
                     sns.boxenplot(
                         x="Time",
                         y="Mitotic_Cluster_Class",
@@ -1173,6 +1174,7 @@ def plugin_wrapper_track():
                         order=Time,
                         scale="linear",
                         data=clusters,
+                        ax=plot_ax,
                     )
 
                     plot_ax.set_xlabel("Time (min)")
@@ -1306,6 +1308,7 @@ def plugin_wrapper_track():
                         order=Time,
                         scale="linear",
                         data=clusters,
+                        ax=plot_ax,
                     )
 
                     plot_ax.set_xlabel("Time (min)")
@@ -1436,6 +1439,7 @@ def plugin_wrapper_track():
                         order=Time,
                         scale="linear",
                         data=clusters,
+                        ax=plot_ax,
                     )
 
                     plot_ax.set_xlabel("Time (min)")
