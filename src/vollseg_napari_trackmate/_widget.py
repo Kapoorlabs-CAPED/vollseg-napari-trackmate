@@ -1192,8 +1192,8 @@ def plugin_wrapper_track():
                         xticks=(
                             [
                                 clusters["Time"][0],
-                                clusters["Time"][len(clusters) // 2],
-                                clusters["Time"][len(clusters) - 1],
+                                clusters["Time"][len(data) // 2],
+                                clusters["Time"][len(data) - 1],
                             ]
                         )
                     )
@@ -1334,8 +1334,8 @@ def plugin_wrapper_track():
                         xticks=(
                             [
                                 clusters["Time"][0],
-                                clusters["Time"][len(clusters) // 2],
-                                clusters["Time"][len(clusters) - 1],
+                                clusters["Time"][len(data) // 2],
+                                clusters["Time"][len(data) - 1],
                             ]
                         )
                     )
@@ -1474,8 +1474,8 @@ def plugin_wrapper_track():
                         xticks=(
                             [
                                 clusters["Time"][0],
-                                clusters["Time"][len(clusters) // 2],
-                                clusters["Time"][len(clusters) - 1],
+                                clusters["Time"][len(data) // 2],
+                                clusters["Time"][len(data) - 1],
                             ]
                         )
                     )
