@@ -1166,7 +1166,7 @@ def plugin_wrapper_track():
                     for i in range(
                         0,
                         len(_trackmate_objects.mitotic_cluster_class),
-                        plugin_data.plot_step_size,
+                        plugin_data.plot_step_size.value,
                     ):
                         time = _trackmate_objects.time[i]
 
@@ -1300,7 +1300,7 @@ def plugin_wrapper_track():
                     for i in range(
                         0,
                         len(_trackmate_objects.non_mitotic_cluster_class),
-                        plugin_data.plot_step_size,
+                        plugin_data.plot_step_size.value,
                     ):
                         time = _trackmate_objects.time[i]
 
@@ -1434,7 +1434,7 @@ def plugin_wrapper_track():
                     for i in range(
                         0,
                         len(_trackmate_objects.all_cluster_class),
-                        plugin_data.plot_step_size,
+                        plugin_data.plot_step_size.value,
                     ):
                         time = _trackmate_objects.time[i]
 
