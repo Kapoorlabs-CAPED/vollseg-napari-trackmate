@@ -912,12 +912,14 @@ def plugin_wrapper_track():
             for unique_track_id in _to_analyze:
                 (
                     time,
+                    intensity,
                     xf_sample,
                     ffttotal_sample,
                 ) = _trackmate_objects.unique_fft_properties[unique_track_id]
                 unique_fft_properties.append(
                     [
                         time,
+                        intensity,
                         xf_sample,
                         ffttotal_sample,
                     ]
@@ -927,17 +929,20 @@ def plugin_wrapper_track():
             plot_ax.cla()
 
             all_time = []
+            all_intensity = []
             all_xf_sample = []
             all_ffttotal_sample = []
 
             for unique_property in unique_fft_properties:
                 (
                     time,
+                    intensity,
                     xf_sample,
                     ffttotal_sample,
                 ) = unique_property
 
                 all_time.append(time)
+                all_intensity.append(intensity)
                 all_xf_sample.append(xf_sample)
                 all_ffttotal_sample.append(np.ravel(ffttotal_sample))
             max_size = 0
@@ -949,24 +954,23 @@ def plugin_wrapper_track():
                     max_size_index = i
 
             max_all_xf_sample = all_xf_sample[max_size_index]
-            resize_all_ffttotal_sample = []
-            for i in range(len(all_ffttotal_sample)):
-                sample = np.pad(
-                    all_ffttotal_sample[i],
-                    (
-                        0,
-                        max_all_xf_sample.shape[0]
-                        - all_ffttotal_sample[i].shape[0],
-                    ),
-                )
-                resize_all_ffttotal_sample.append(sample)
 
             data_plot = pd.DataFrame(
                 {
                     "Frequ": max_all_xf_sample,
-                    "Amplitude": sum(resize_all_ffttotal_sample),
+                    "Intensity": all_intensity,
+                    "Amplitude": sum(all_ffttotal_sample),
                 }
             )
+
+            sns.lineplot(data_plot, x="Frequ", y="Intensity", ax=plot_ax)
+            plot_ax.set_title("Cell Intensity")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Amplitude")
+
+            fft_plot_class._repeat_after_plot()
+            plot_ax = fft_plot_class.plot_ax
+
             sns.lineplot(data_plot, x="Frequ", y="Amplitude", ax=plot_ax)
             plot_ax.set_title("FFT Intensity")
             plot_ax.set_xlabel("Frequency (1/min)")
@@ -1183,7 +1187,7 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    _ = plot_ax.x_ticks(rotation=45, ha="right")
+                    _ = plot_ax.set_xticks(rotation=45, ha="right")
                     sns.despine(left=True)
 
                     plot_ax.set_xlabel("Time (min)")
@@ -1318,7 +1322,7 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    _ = plot_ax.x_ticks(rotation=45, ha="right")
+                    _ = plot_ax.set_xticks(rotation=45, ha="right")
                     sns.despine(left=True)
 
                     plot_ax.set_xlabel("Time (min)")
@@ -1452,7 +1456,7 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    _ = plot_ax.x_ticks(rotation=45, ha="right")
+                    _ = plot_ax.set_xticks(rotation=45, ha="right")
                     sns.despine(left=True)
 
                     plot_ax.set_xlabel("Time (min)")
