@@ -1154,12 +1154,12 @@ def plugin_wrapper_track():
 
                     data_columns = ["Time", "Mitotic_Cluster_Class"]
                     data = []
-                    Time = []
+
                     for i in range(
                         len(_trackmate_objects.mitotic_cluster_class)
                     ):
                         time = _trackmate_objects.time[i]
-                        Time.append(time)
+
                         class_array = _trackmate_objects.mitotic_cluster_class[
                             i
                         ]
@@ -1170,9 +1170,6 @@ def plugin_wrapper_track():
                     sns.boxenplot(
                         x="Time",
                         y="Mitotic_Cluster_Class",
-                        color="b",
-                        order=Time,
-                        scale="linear",
                         data=clusters,
                         ax=plot_ax,
                     )
@@ -1289,12 +1286,12 @@ def plugin_wrapper_track():
 
                     data_columns = ["Time", "Non_Mitotic_Cluster_Class"]
                     data = []
-                    Time = []
+
                     for i in range(
                         len(_trackmate_objects.non_mitotic_cluster_class)
                     ):
                         time = _trackmate_objects.time[i]
-                        Time.append(time)
+
                         class_array = (
                             _trackmate_objects.non_mitotic_cluster_class[i]
                         )
@@ -1304,9 +1301,6 @@ def plugin_wrapper_track():
                     sns.boxenplot(
                         x="Time",
                         y="Non_Mitotic_Cluster_Class",
-                        color="b",
-                        order=Time,
-                        scale="linear",
                         data=clusters,
                         ax=plot_ax,
                     )
@@ -1424,10 +1418,10 @@ def plugin_wrapper_track():
 
                     data_columns = ["Time", "All_CellType_Cluster_Class"]
                     data = []
-                    Time = []
+
                     for i in range(len(_trackmate_objects.all_cluster_class)):
                         time = _trackmate_objects.time[i]
-                        Time.append(time)
+
                         class_array = _trackmate_objects.all_cluster_class[i]
                         for i in range(class_array.shape[0]):
                             data.append([time, class_array[i]])
@@ -1435,9 +1429,6 @@ def plugin_wrapper_track():
                     sns.boxenplot(
                         x="Time",
                         y="All_CellType_Cluster_Class",
-                        color="b",
-                        order=Time,
-                        scale="linear",
                         data=clusters,
                         ax=plot_ax,
                     )
