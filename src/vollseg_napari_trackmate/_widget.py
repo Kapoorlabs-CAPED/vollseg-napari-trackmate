@@ -1177,7 +1177,7 @@ def plugin_wrapper_track():
                             data.append([time, class_array[i]])
                     clusters = pd.DataFrame(data, columns=data_columns)
 
-                    sns.boxenplot(
+                    sns.violinplot(
                         x="Time",
                         y="Mitotic_Cluster_Class",
                         data=clusters,
@@ -1310,7 +1310,7 @@ def plugin_wrapper_track():
                         for i in range(class_array.shape[0]):
                             data.append([time, class_array[i]])
                     clusters = pd.DataFrame(data, columns=data_columns)
-                    sns.boxenplot(
+                    sns.violinplot(
                         x="Time",
                         y="Non_Mitotic_Cluster_Class",
                         data=clusters,
@@ -1442,7 +1442,7 @@ def plugin_wrapper_track():
                         for i in range(class_array.shape[0]):
                             data.append([time, class_array[i]])
                     clusters = pd.DataFrame(data, columns=data_columns)
-                    sns.boxenplot(
+                    sns.violinplot(
                         x="Time",
                         y="All_CellType_Cluster_Class",
                         data=clusters,
