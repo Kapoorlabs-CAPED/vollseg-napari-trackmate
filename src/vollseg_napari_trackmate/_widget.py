@@ -1644,6 +1644,11 @@ def plugin_wrapper_track():
             _refreshTrackData(pred)
             select_track_nature()
 
+    @change_handler(plugin_data.batch_size)
+    def _batch_size_change(value: int):
+
+        plugin_data.batch_size.value = value
+
     @change_handler(plugin.track_id_box, init=False)
     def _track_id_box_change(value):
 
