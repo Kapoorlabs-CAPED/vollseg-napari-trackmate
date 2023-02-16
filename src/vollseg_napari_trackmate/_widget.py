@@ -738,6 +738,7 @@ def plugin_wrapper_track():
         batch_size,
     ) -> List[napari.types.LayerDataTuple]:
 
+        print(batch_size)
         x = None
         x_seg = None
         x_channel_seg = None
