@@ -1178,7 +1178,7 @@ def plugin_wrapper_track():
                             i
                         ]
                         for i in range(class_array.shape[0]):
-                            data.append([time, class_array[i]])
+                            data.append([int(time / 60), class_array[i]])
                     clusters = pd.DataFrame(data, columns=data_columns)
 
                     sns.violinplot(
@@ -1187,10 +1187,8 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    stat_plot_class.stat_canvas.xticks(rotation=45, ha="right")
-                    sns.despine(left=True)
 
-                    plot_ax.set_xlabel("Time (min)")
+                    plot_ax.set_xlabel("Time (hours)")
                     plot_ax.set_ylabel("Class")
 
                     stat_plot_class._repeat_after_plot()
@@ -1314,7 +1312,7 @@ def plugin_wrapper_track():
                             _trackmate_objects.non_mitotic_cluster_class[i]
                         )
                         for i in range(class_array.shape[0]):
-                            data.append([time, class_array[i]])
+                            data.append([int(time / 60), class_array[i]])
                     clusters = pd.DataFrame(data, columns=data_columns)
                     sns.violinplot(
                         x="Time",
@@ -1322,10 +1320,8 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    stat_plot_class.stat_canvas.xticks(rotation=45, ha="right")
-                    sns.despine(left=True)
 
-                    plot_ax.set_xlabel("Time (min)")
+                    plot_ax.set_xlabel("Time (hours)")
                     plot_ax.set_ylabel("Class")
 
                     stat_plot_class._repeat_after_plot()
@@ -1448,7 +1444,7 @@ def plugin_wrapper_track():
 
                         class_array = _trackmate_objects.all_cluster_class[i]
                         for i in range(class_array.shape[0]):
-                            data.append([time, class_array[i]])
+                            data.append([int(time / 60), class_array[i]])
                     clusters = pd.DataFrame(data, columns=data_columns)
                     sns.violinplot(
                         x="Time",
@@ -1456,10 +1452,8 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    stat_plot_class.stat_canvas.xticks(rotation=45, ha="right")
-                    sns.despine(left=True)
 
-                    plot_ax.set_xlabel("Time (min)")
+                    plot_ax.set_xlabel("Time (hours)")
                     plot_ax.set_ylabel("Class")
 
                     stat_plot_class._repeat_after_plot()
