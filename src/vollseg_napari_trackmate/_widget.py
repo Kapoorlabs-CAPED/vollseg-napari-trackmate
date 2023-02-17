@@ -1189,7 +1189,7 @@ def plugin_wrapper_track():
                         ax=plot_ax,
                     )
 
-                    plot_ax.set_xticks(rotation=65)
+                    plot_ax.set_xticks(plot_ax.get_xticks(), rotation=65)
 
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
@@ -1324,7 +1324,7 @@ def plugin_wrapper_track():
                         ax=plot_ax,
                     )
 
-                    plot_ax.set_xticks(rotation=65)
+                    plot_ax.set_xticks(plot_ax.get_xticks(), rotation=65)
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
 
@@ -1456,7 +1456,7 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    plot_ax.set_xticks(rotation=65)
+                    plot_ax.set_xticks(plot_ax.get_xticks(), rotation=65)
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
 
