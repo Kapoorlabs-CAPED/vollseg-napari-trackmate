@@ -901,14 +901,17 @@ def plugin_wrapper_track():
             features=features,
         )
 
-    def show_fft():
+    def show_phenotype():
 
         nonlocal _to_analyze
 
-        fft_plot_class._reset_container(fft_plot_class.scroll_layout)
+        phenotype_plot_class._reset_container(
+            phenotype_plot_class.scroll_layout
+        )
         if _to_analyze is not None:
 
             unique_fft_properties = []
+            unique_cluster_properties = []
             for unique_track_id in _to_analyze:
                 (
                     time,
@@ -916,6 +919,23 @@ def plugin_wrapper_track():
                     xf_sample,
                     ffttotal_sample,
                 ) = _trackmate_objects.unique_fft_properties[unique_track_id]
+
+                (
+                    time,
+                    cluster_class,
+                    cluster_class_score,
+                ) = _trackmate_objects.unique_cluster_properties[
+                    unique_track_id
+                ]
+
+                unique_cluster_properties.append(
+                    [
+                        time,
+                        cluster_class,
+                        cluster_class_score,
+                    ]
+                )
+
                 unique_fft_properties.append(
                     [
                         time,
@@ -924,14 +944,28 @@ def plugin_wrapper_track():
                         ffttotal_sample,
                     ]
                 )
-            fft_plot_class._repeat_after_plot()
-            plot_ax = fft_plot_class.plot_ax
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
             plot_ax.cla()
 
             all_time = []
             all_intensity = []
             all_xf_sample = []
             all_ffttotal_sample = []
+
+            all_cluster_time = []
+            all_cluster_class = []
+            all_cluster_class_score = []
+
+            for unique_cluster_property in unique_cluster_properties:
+                (
+                    time,
+                    cluster_class,
+                    cluster_class_score,
+                ) = unique_cluster_property
+                all_cluster_time.append(time)
+                all_cluster_class.append(cluster_class)
+                all_cluster_class_score.append(cluster_class_score)
 
             for unique_property in unique_fft_properties:
                 (
@@ -955,13 +989,6 @@ def plugin_wrapper_track():
 
             max_all_xf_sample = all_xf_sample[max_size_index]
 
-            data_time_plot = pd.DataFrame(
-                {
-                    "Time": all_time[0],
-                    "Intensity": sum(all_intensity),
-                }
-            )
-
             data_fft_plot = pd.DataFrame(
                 {
                     "Frequ": max_all_xf_sample,
@@ -969,13 +996,41 @@ def plugin_wrapper_track():
                 }
             )
 
-            sns.lineplot(data_time_plot, x="Time", y="Intensity", ax=plot_ax)
+            for i in range(len(all_time)):
+                data_time_plot = pd.DataFrame(
+                    {
+                        "Time": all_time[i],
+                        "Intensity": all_intensity[i],
+                    }
+                )
+                sns.lineplot(
+                    data_time_plot, x="Time", y="Intensity", ax=plot_ax
+                )
             plot_ax.set_title("Cell Intensity")
             plot_ax.set_xlabel("Time (min)")
             plot_ax.set_ylabel("Amplitude")
 
-            fft_plot_class._repeat_after_plot()
-            plot_ax = fft_plot_class.plot_ax
+            for i in range(len(all_time)):
+                data_cluster_plot = pd.DataFrame(
+                    {
+                        "Time": all_cluster_time[i],
+                        "Class": all_cluster_class[i],
+                        "Class_Score": all_cluster_class_score[i],
+                    }
+                )
+                sns.lineplot(
+                    data_cluster_plot,
+                    x="Time",
+                    y="Class",
+                    hue="Class_Score",
+                    ax=plot_ax,
+                )
+            plot_ax.set_title("Cluster class")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Class")
+
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
 
             sns.lineplot(data_fft_plot, x="Frequ", y="Amplitude", ax=plot_ax)
             plot_ax.set_title("FFT Intensity")
@@ -1112,8 +1167,8 @@ def plugin_wrapper_track():
     plot_tab = stat_plot_class.plot_tab
     tabs.addTab(plot_tab, "Temporal Statistics")
 
-    fft_plot_class = TemporalStatistics(tabs)
-    fft_plot_tab = fft_plot_class.plot_tab
+    phenotype_plot_class = TemporalStatistics(tabs)
+    fft_plot_tab = phenotype_plot_class.plot_tab
     tabs.addTab(fft_plot_tab, "Phenotype analysis")
 
     table_tab = Tabulour()
@@ -1715,7 +1770,7 @@ def plugin_wrapper_track():
         else:
             _to_analyze = _track_ids_analyze
         if _to_analyze is not None:
-            show_fft()
+            show_phenotype()
             for unique_track_id in _to_analyze:
 
                 tracklets = _trackmate_objects.unique_tracks[unique_track_id]
@@ -1812,7 +1867,7 @@ def plugin_wrapper_track():
         plugin.track_model_type.value = value
         select_track_nature()
         plot_main()
-        show_fft()
+        show_phenotype()
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
