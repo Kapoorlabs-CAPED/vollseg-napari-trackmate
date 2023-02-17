@@ -921,7 +921,7 @@ def plugin_wrapper_track():
                 ) = _trackmate_objects.unique_fft_properties[unique_track_id]
 
                 (
-                    time,
+                    cluster_time,
                     cluster_class,
                     cluster_class_score,
                 ) = _trackmate_objects.unique_cluster_properties[
@@ -930,7 +930,7 @@ def plugin_wrapper_track():
 
                 unique_cluster_properties.append(
                     [
-                        time,
+                        cluster_time,
                         cluster_class,
                         cluster_class_score,
                     ]
