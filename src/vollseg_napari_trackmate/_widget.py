@@ -1012,7 +1012,7 @@ def plugin_wrapper_track():
                         "Class_Score": all_cluster_class_score[i],
                     }
                 )
-                print(all_cluster_class[i])
+                print("test", all_cluster_class[i], all_cluster_class_score[i])
                 sns.lineplot(
                     data_cluster_plot,
                     x="Time",
