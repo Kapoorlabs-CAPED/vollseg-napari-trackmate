@@ -1002,32 +1002,34 @@ def plugin_wrapper_track():
                     "Intensity": sum(all_intensity),
                 }
             )
-            sns.lineplot(data_time_plot, x="Time", y="Intensity", ax=plot_ax)
-            plot_ax.set_title("Cell Intensity")
+
+            for i in range(len(all_time)):
+
+                data_cluster_plot = pd.DataFrame(
+                    {
+                        "Time": all_cluster_time[i],
+                        "Class": all_cluster_class[i],
+                        "Class_Score": all_cluster_class_score[i],
+                    }
+                )
+                print(all_cluster_class[i])
+                sns.lineplot(
+                    data_cluster_plot,
+                    x="Time",
+                    y="Class",
+                    ax=plot_ax,
+                )
+            plot_ax.set_title("Cluster class")
             plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Amplitude")
+            plot_ax.set_ylabel("Class")
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
 
-            for i in range(len(all_time)):
-                if any(all_cluster_class_score[i]) > 0:
-                    data_cluster_plot = pd.DataFrame(
-                        {
-                            "Time": all_cluster_time[i],
-                            "Class": all_cluster_class[i],
-                            "Class_Score": all_cluster_class_score[i],
-                        }
-                    )
-                    sns.lineplot(
-                        data_cluster_plot,
-                        x="Time",
-                        y="Class",
-                        ax=plot_ax,
-                    )
-            plot_ax.set_title("Cluster class")
+            sns.lineplot(data_time_plot, x="Time", y="Intensity", ax=plot_ax)
+            plot_ax.set_title("Cell Intensity")
             plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Class")
+            plot_ax.set_ylabel("Amplitude")
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
