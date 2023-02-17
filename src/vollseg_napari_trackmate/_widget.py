@@ -1691,6 +1691,8 @@ def plugin_wrapper_track():
                 _current_choices = _both_choices
 
             _track_ids_analyze = list(map(int, _track_ids_analyze))
+            if _to_analyze is None:
+                _to_analyze = _track_ids_analyze
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
@@ -1810,6 +1812,7 @@ def plugin_wrapper_track():
         plugin.track_model_type.value = value
         select_track_nature()
         plot_main()
+        show_fft()
 
     @change_handler(
         plugin_color_parameters.spot_attributes,
