@@ -996,16 +996,13 @@ def plugin_wrapper_track():
                 }
             )
 
-            for i in range(len(all_time)):
-                data_time_plot = pd.DataFrame(
-                    {
-                        "Time": all_time[i],
-                        "Intensity": all_intensity[i],
-                    }
-                )
-                sns.lineplot(
-                    data_time_plot, x="Time", y="Intensity", ax=plot_ax
-                )
+            data_time_plot = pd.DataFrame(
+                {
+                    "Time": all_time[0],
+                    "Intensity": sum(all_intensity),
+                }
+            )
+            sns.lineplot(data_time_plot, x="Time", y="Intensity", ax=plot_ax)
             plot_ax.set_title("Cell Intensity")
             plot_ax.set_xlabel("Time (min)")
             plot_ax.set_ylabel("Amplitude")
@@ -1014,7 +1011,7 @@ def plugin_wrapper_track():
             plot_ax = phenotype_plot_class.plot_ax
 
             for i in range(len(all_time)):
-                if all_cluster_class_score[i] > 0:
+                if any(all_cluster_class_score[i]) > 0:
                     data_cluster_plot = pd.DataFrame(
                         {
                             "Time": all_cluster_time[i],
