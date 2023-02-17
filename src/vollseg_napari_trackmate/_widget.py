@@ -958,7 +958,7 @@ def plugin_wrapper_track():
             data_time_plot = pd.DataFrame(
                 {
                     "Time": all_time[0],
-                    "Intensity": all_intensity,
+                    "Intensity": sum(all_intensity),
                 }
             )
 
@@ -1194,7 +1194,7 @@ def plugin_wrapper_track():
                         ax=plot_ax,
                     )
 
-                    plot_ax.set_xticks(plot_ax.get_xticks(), rotatioin=45)
+                    plot_ax.set_xticklabels(plot_ax.get_xticks(), rotation=45)
 
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
@@ -1329,7 +1329,7 @@ def plugin_wrapper_track():
                         ax=plot_ax,
                     )
 
-                    plot_ax.set_xticks(plot_ax.get_xticks(), rotatioin=45)
+                    plot_ax.set_xticklabels(plot_ax.get_xticks(), rotation=45)
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
 
@@ -1461,7 +1461,7 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    plot_ax.set_xticks(plot_ax.get_xticks(), rotatioin=45)
+                    plot_ax.set_xticklabels(plot_ax.get_xticks(), rotation=45)
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
 
