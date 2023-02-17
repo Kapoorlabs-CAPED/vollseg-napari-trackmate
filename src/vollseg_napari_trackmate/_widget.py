@@ -955,16 +955,21 @@ def plugin_wrapper_track():
 
             max_all_xf_sample = all_xf_sample[max_size_index]
 
-            data_plot = pd.DataFrame(
+            data_time_plot = pd.DataFrame(
                 {
                     "Time": all_time[0],
-                    "Frequ": max_all_xf_sample,
                     "Intensity": all_intensity,
+                }
+            )
+
+            data_fft_plot = pd.DataFrame(
+                {
+                    "Frequ": max_all_xf_sample,
                     "Amplitude": sum(all_ffttotal_sample),
                 }
             )
 
-            sns.lineplot(data_plot, x="Time", y="Intensity", ax=plot_ax)
+            sns.lineplot(data_time_plot, x="Time", y="Intensity", ax=plot_ax)
             plot_ax.set_title("Cell Intensity")
             plot_ax.set_xlabel("Time (min)")
             plot_ax.set_ylabel("Amplitude")
@@ -972,7 +977,7 @@ def plugin_wrapper_track():
             fft_plot_class._repeat_after_plot()
             plot_ax = fft_plot_class.plot_ax
 
-            sns.lineplot(data_plot, x="Frequ", y="Amplitude", ax=plot_ax)
+            sns.lineplot(data_fft_plot, x="Frequ", y="Amplitude", ax=plot_ax)
             plot_ax.set_title("FFT Intensity")
             plot_ax.set_xlabel("Frequency (1/min)")
             plot_ax.set_ylabel("Amplitude")
@@ -1189,7 +1194,7 @@ def plugin_wrapper_track():
                         ax=plot_ax,
                     )
 
-                    plot_ax.set_xticks(plot_ax.get_xticks(), rotation=65)
+                    plot_ax.set_xticks(plot_ax.get_xticks(), rotatioin=45)
 
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
@@ -1324,7 +1329,7 @@ def plugin_wrapper_track():
                         ax=plot_ax,
                     )
 
-                    plot_ax.set_xticks(plot_ax.get_xticks(), rotation=65)
+                    plot_ax.set_xticks(plot_ax.get_xticks(), rotatioin=45)
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
 
@@ -1456,7 +1461,7 @@ def plugin_wrapper_track():
                         data=clusters,
                         ax=plot_ax,
                     )
-                    plot_ax.set_xticks(plot_ax.get_xticks(), rotation=65)
+                    plot_ax.set_xticks(plot_ax.get_xticks(), rotatioin=45)
                     plot_ax.set_xlabel("Time (min)")
                     plot_ax.set_ylabel("Class")
 
