@@ -860,27 +860,35 @@ def plugin_wrapper_track():
             ),
             "generation": map(
                 int,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 1],
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 2],
             ),
             "speed": map(
                 float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 2],
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 3],
             ),
             "directional_change_rate": map(
                 float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 3],
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 4],
             ),
             "total-intensity": map(
                 float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 4],
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 5],
             ),
             "volume_pixels": map(
                 float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 5],
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 6],
             ),
             "acceleration": map(
                 float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 6],
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 7],
+            ),
+            "cluster_class": map(
+                float,
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 8],
+            ),
+            "cluster_score": map(
+                float,
+                np.asarray(unique_tracks_properties, dtype="float64")[:, 9],
             ),
         }
 
@@ -911,61 +919,73 @@ def plugin_wrapper_track():
         if _to_analyze is not None:
 
             unique_fft_properties = []
-            unique_cluster_properties = []
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+            plot_ax.cla()
+
             for unique_track_id in _to_analyze:
-                (
-                    time,
-                    intensity,
-                    xf_sample,
-                    ffttotal_sample,
-                ) = _trackmate_objects.unique_fft_properties[unique_track_id]
 
-                (
-                    cluster_time,
-                    cluster_class,
-                    cluster_class_score,
-                ) = _trackmate_objects.unique_cluster_properties[
+                for k in _trackmate_objects.unique_fft_properties[
                     unique_track_id
-                ]
+                ].keys():
 
-                unique_cluster_properties.append(
-                    [
-                        cluster_time,
-                        cluster_class,
-                        cluster_class_score,
-                    ]
-                )
-
-                unique_fft_properties.append(
-                    [
+                    unique_fft_properties_tracklet = (
+                        _trackmate_objects.unique_fft_properties[
+                            unique_track_id
+                        ][k]
+                    )
+                    unique_cluster_properties_tracklet = (
+                        _trackmate_objects.unique_cluster_properties[
+                            unique_track_id
+                        ][k]
+                    )
+                    (
                         time,
                         intensity,
                         xf_sample,
                         ffttotal_sample,
-                    ]
-                )
-            phenotype_plot_class._repeat_after_plot()
-            plot_ax = phenotype_plot_class.plot_ax
-            plot_ax.cla()
+                    ) = unique_fft_properties_tracklet
+
+                    (
+                        cluster_time,
+                        cluster_class,
+                        cluster_class_score,
+                    ) = unique_cluster_properties_tracklet
+
+                    unique_fft_properties.append(
+                        [
+                            time,
+                            intensity,
+                            xf_sample,
+                            ffttotal_sample,
+                        ]
+                    )
+
+                    data_cluster_plot = pd.DataFrame(
+                        {
+                            "Time": cluster_time,
+                            "Class": cluster_class,
+                            "Class_Score": cluster_class_score,
+                        }
+                    )
+                    sns.scatterplot(
+                        data_cluster_plot,
+                        x="Time",
+                        y="Class",
+                        ax=plot_ax,
+                    )
+
+            plot_ax.set_title("Cluster class")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Class")
 
             all_time = []
             all_intensity = []
             all_xf_sample = []
             all_ffttotal_sample = []
 
-            all_cluster_time = []
-            all_cluster_class = []
-            all_cluster_class_score = []
-
-            for unique_cluster_property in unique_cluster_properties:
-                (
-                    time,
-                    cluster_class,
-                    cluster_class_score,
-                ) = unique_cluster_property
-                all_cluster_time.append(time)
-                all_cluster_class.append(cluster_class)
-                all_cluster_class_score.append(cluster_class_score)
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
 
             for unique_property in unique_fft_properties:
                 (
@@ -1002,25 +1022,6 @@ def plugin_wrapper_track():
                     "Intensity": sum(all_intensity),
                 }
             )
-
-            for i in range(len(all_time)):
-
-                data_cluster_plot = pd.DataFrame(
-                    {
-                        "Time": all_cluster_time[i],
-                        "Class": all_cluster_class[i],
-                        "Class_Score": all_cluster_class_score[i],
-                    }
-                )
-                sns.lineplot(
-                    data_cluster_plot,
-                    x="Time",
-                    y="Class",
-                    ax=plot_ax,
-                )
-            plot_ax.set_title("Cluster class")
-            plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Class")
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
