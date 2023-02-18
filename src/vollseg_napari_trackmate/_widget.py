@@ -919,7 +919,6 @@ def plugin_wrapper_track():
         phenotype_plot_class._reset_container(
             phenotype_plot_class.scroll_layout
         )
-        print(_to_analyze)
         if _to_analyze is not None:
 
             unique_fft_properties = []
@@ -1861,7 +1860,6 @@ def plugin_wrapper_track():
     @change_handler(plugin.track_model_type, init=False)
     def _change_track_model_type(value):
 
-        print("invoking trigger")
         plugin.track_model_type.value = value
         select_track_nature()
         plot_main()
