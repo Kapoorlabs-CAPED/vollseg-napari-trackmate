@@ -912,7 +912,6 @@ def plugin_wrapper_track():
     def show_phenotype():
 
         nonlocal _to_analyze
-        print(_to_analyze)
 
         phenotype_plot_class._reset_container(
             phenotype_plot_class.scroll_layout
@@ -1619,7 +1618,7 @@ def plugin_wrapper_track():
                 plot_ax.set_title("Displacement in X")
                 plot_ax.set_xlabel("Time (min)")
                 plot_ax.set_ylabel("um")
-            select_track_nature()
+
             for layer in list(plugin.viewer.value.layers):
                 if isinstance(layer, napari.layers.Tracks):
                     table_tab.layer = layer
@@ -1748,6 +1747,7 @@ def plugin_wrapper_track():
             _track_ids_analyze = list(map(int, _track_ids_analyze))
             if _to_analyze is None:
                 _to_analyze = _track_ids_analyze
+        print("test", _to_analyze, "sec test", _track_ids_analyze)
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
