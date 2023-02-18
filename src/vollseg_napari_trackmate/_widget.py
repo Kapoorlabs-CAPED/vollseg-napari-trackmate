@@ -530,7 +530,6 @@ def plugin_wrapper_track():
             == DEFAULTS_MODEL["model_cluster_none"]
         ):
             model_selected_cluster = None
-        print("models", model_selected_cluster)
 
     @change_handler(
         plugin.cluster_model,
@@ -1745,9 +1744,7 @@ def plugin_wrapper_track():
                 _current_choices = _both_choices
 
             _track_ids_analyze = list(map(int, _track_ids_analyze))
-            if _to_analyze is None:
-                _to_analyze = _track_ids_analyze
-        print("test", _to_analyze, "sec test", _track_ids_analyze)
+            _to_analyze = _track_ids_analyze
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
