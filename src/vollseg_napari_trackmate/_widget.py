@@ -984,9 +984,6 @@ def plugin_wrapper_track():
             all_xf_sample = []
             all_ffttotal_sample = []
 
-            phenotype_plot_class._repeat_after_plot()
-            plot_ax = phenotype_plot_class.plot_ax
-
             for unique_property in unique_fft_properties:
                 (
                     time,
@@ -1717,6 +1714,7 @@ def plugin_wrapper_track():
 
         select_track_nature()
         plot_main()
+        show_phenotype()
 
     def _analyze_tracks(v):
         float_list = list(v.values())
