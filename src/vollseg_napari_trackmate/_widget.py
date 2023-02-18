@@ -910,6 +910,7 @@ def plugin_wrapper_track():
         )
         _to_analyze = [int(track_id)]
         show_phenotype()
+        select_track_nature()
 
     def show_phenotype():
 
@@ -1782,7 +1783,7 @@ def plugin_wrapper_track():
             unique_tracks_properties, axis=0
         )
         pred = unique_tracks, unique_tracks_properties, track_id
-        select_track_nature()
+
         _refreshTrackData(pred)
 
     @change_handler(plugin_data.batch_size)
