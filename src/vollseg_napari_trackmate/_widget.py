@@ -851,7 +851,8 @@ def plugin_wrapper_track():
 
     def _refreshTrackData(pred):
 
-        unique_tracks, unique_tracks_properties = pred
+        nonlocal _to_analyze
+        unique_tracks, unique_tracks_properties, track_id = pred
         features = {
             "time": map(
                 int,
@@ -907,6 +908,8 @@ def plugin_wrapper_track():
             name="Track",
             features=features,
         )
+        _to_analyze = [int(track_id)]
+        show_phenotype()
 
     def show_phenotype():
 
@@ -1763,7 +1766,7 @@ def plugin_wrapper_track():
         unique_tracks = []
         unique_tracks_properties = []
         _to_analyze = [int(track_id)]
-        show_phenotype()
+
         for unique_track_id in _to_analyze:
 
             tracklets = _trackmate_objects.unique_tracks[unique_track_id]
@@ -1778,7 +1781,7 @@ def plugin_wrapper_track():
         unique_tracks_properties = np.concatenate(
             unique_tracks_properties, axis=0
         )
-        pred = unique_tracks, unique_tracks_properties
+        pred = unique_tracks, unique_tracks_properties, track_id
         select_track_nature()
         _refreshTrackData(pred)
 
