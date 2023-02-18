@@ -1781,7 +1781,6 @@ def plugin_wrapper_track():
         pred = unique_tracks, unique_tracks_properties
         select_track_nature()
         _refreshTrackData(pred)
-        _to_analyze = None
 
     @change_handler(plugin_data.batch_size)
     def _batch_size_change(value: int):
@@ -1858,6 +1857,7 @@ def plugin_wrapper_track():
     @change_handler(plugin.track_model_type, init=False)
     def _change_track_model_type(value):
 
+        print("invoking trigger")
         plugin.track_model_type.value = value
         select_track_nature()
         plot_main()
