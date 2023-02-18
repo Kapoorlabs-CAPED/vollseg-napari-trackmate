@@ -695,6 +695,12 @@ def plugin_wrapper_track():
             label="TrackMate xml",
             mode="r",
         ),
+        master_xml_path=dict(
+            widget_type="FileEdit",
+            visible=True,
+            label="NapaTrackMater Master xml",
+            mode="r",
+        ),
         track_csv_path=dict(
             widget_type="FileEdit", visible=True, label="Track csv", mode="r"
         ),
@@ -738,6 +744,7 @@ def plugin_wrapper_track():
         channel_seg_image: Union[napari.layers.Labels, None],
         mask_image: Union[napari.layers.Labels, None],
         xml_path,
+        master_xml_path,
         track_csv_path,
         spot_csv_path,
         edges_csv_path,
@@ -809,6 +816,7 @@ def plugin_wrapper_track():
             TrackAttributeBoxname,
             TrackidBox,
             axes,
+            master_xml_path=master_xml_path,
             channel_seg_image=x_channel_seg,
             seg_image=x_seg,
             image=x,
