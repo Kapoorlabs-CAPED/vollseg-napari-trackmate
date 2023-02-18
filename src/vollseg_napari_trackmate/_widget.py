@@ -1779,8 +1779,9 @@ def plugin_wrapper_track():
             unique_tracks_properties, axis=0
         )
         pred = unique_tracks, unique_tracks_properties
-        _refreshTrackData(pred)
         select_track_nature()
+        _refreshTrackData(pred)
+        _to_analyze = None
 
     @change_handler(plugin_data.batch_size)
     def _batch_size_change(value: int):
