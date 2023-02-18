@@ -912,6 +912,7 @@ def plugin_wrapper_track():
     def show_phenotype():
 
         nonlocal _to_analyze
+        print(_to_analyze)
 
         phenotype_plot_class._reset_container(
             phenotype_plot_class.scroll_layout
