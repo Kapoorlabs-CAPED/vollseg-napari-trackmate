@@ -1762,10 +1762,8 @@ def plugin_wrapper_track():
         unique_tracks = []
         unique_tracks_properties = []
 
-        if str(track_id) not in TrackidBox and track_id is not None:
-            _to_analyze = [int(track_id)]
-        else:
-            _to_analyze = _track_ids_analyze
+        _to_analyze = [int(track_id)]
+
         if _to_analyze is not None:
             show_phenotype()
             for unique_track_id in _to_analyze:
