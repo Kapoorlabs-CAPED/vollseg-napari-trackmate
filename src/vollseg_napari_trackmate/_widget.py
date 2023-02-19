@@ -1810,7 +1810,7 @@ def plugin_wrapper_track():
 
         nonlocal _trackmate_objects
 
-        if plugin_data.model_selected_cluster.value is not None:
+        if model_selected_cluster is not None:
             model_cluster = get_model_cluster(
                 *model_selected_cloud_auto_encoder,
                 *model_selected_cluster,
