@@ -734,9 +734,10 @@ def plugin_wrapper_track():
             step=1,
             value=DEFAULTS_PARAMETERS["step_size"],
         ),
+        compute_button=dict(widget_type="PushButton", text="Compute"),
         layout="vertical",
         persist=False,
-        call_button=True,
+        call_button=False,
     )
     def plugin_data(
         image: Union[napari.layers.Image, None],
@@ -751,84 +752,10 @@ def plugin_wrapper_track():
         axes,
         batch_size,
         plot_step_size,
+        compute_button,
     ) -> List[napari.types.LayerDataTuple]:
 
-        x = None
-        x_seg = None
-        x_channel_seg = None
-        x_mask = None
-
-        if xml_path is not None:
-            save_dir = os.path.join(xml_path.parent.as_posix(), "runs")
-            Path(save_dir).mkdir(exist_ok=True)
-        else:
-            save_dir = None
-        if image is not None:
-            x = get_data(image)
-            print(x.shape)
-
-        if seg_image is not None:
-            x_seg = get_label_data(seg_image)
-            print(x_seg.shape)
-        if mask_image is not None:
-            x_mask = get_label_data(mask_image)
-            print(x_mask.shape)
-        if channel_seg_image is not None:
-            x_channel_seg = get_label_data(channel_seg_image)
-            print(x_channel_seg.shape)
-
-        nonlocal _trackmate_objects
-
-        if model_selected_cluster is not None:
-            model_cluster = get_model_cluster(
-                *model_selected_cloud_auto_encoder,
-                *model_selected_cluster,
-            )
-
-            try:
-                device = torch.device("cuda:0")
-            except ValueError:
-                device = torch.device("cpu")
-            model_cluster.to(device)
-        else:
-            model_cluster = None
-
-        plugin.progress_bar.value = 0
-        plugin.progress_bar.show()
-        (
-            cloud_auto_encoder_model_type,
-            model_cloud_auto_encoder,
-        ) = model_selected_cloud_auto_encoder
-        config = model_cloud_auto_encoder_configs[
-            (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
-        ]
-        if len(config) > 0:
-            num_points = config["num_points"]
-        else:
-            num_points = 0
-
-        _trackmate_objects = TrackMate(
-            xml_path,
-            spot_csv_path,
-            track_csv_path,
-            edges_csv_path,
-            AttributeBoxname,
-            TrackAttributeBoxname,
-            TrackidBox,
-            axes,
-            master_xml_path=master_xml_path,
-            channel_seg_image=x_channel_seg,
-            seg_image=x_seg,
-            image=x,
-            mask=x_mask,
-            cluster_model=model_cluster,
-            num_points=num_points,
-            progress_bar=plugin.progress_bar,
-            save_dir=save_dir,
-            batch_size=batch_size,
-        )
-
-        _refreshStatPlotData()
+        pass
 
     @magicgui(
         spot_attributes=dict(
@@ -1846,6 +1773,93 @@ def plugin_wrapper_track():
         "No(Cluster)": plugin.cluster_model_none,
         CUSTOM_MODEL_CLUSTER: plugin.model_folder_cluster,
     }
+
+    plugin_data.compute_button.native.setStyleSheet("background-color: orange")
+
+    @change_handler(plugin_data.compute_button)
+    def _compute():
+
+        _actual_computer()
+
+    def _actual_computer():
+        x = None
+        x_seg = None
+        x_channel_seg = None
+        x_mask = None
+
+        if plugin_data.xml_path.value is not None:
+            save_dir = os.path.join(
+                plugin_data.xml_path.value.as_posix(), "runs"
+            )
+            Path(save_dir).mkdir(exist_ok=True)
+        else:
+            save_dir = None
+        if plugin_data.image.value is not None:
+            x = get_data(plugin_data.image.value)
+            print(x.shape)
+
+        if plugin_data.seg_image.value is not None:
+            x_seg = get_label_data(plugin_data.seg_image.value)
+            print(x_seg.shape)
+        if plugin_data.mask_image.value is not None:
+            x_mask = get_label_data(plugin_data.mask_image.value)
+            print(x_mask.shape)
+        if plugin_data.channel_seg_image.value is not None:
+            x_channel_seg = get_label_data(plugin_data.channel_seg_image.value)
+            print(x_channel_seg.shape)
+
+        nonlocal _trackmate_objects
+
+        if plugin_data.model_selected_cluster.value is not None:
+            model_cluster = get_model_cluster(
+                *model_selected_cloud_auto_encoder,
+                *model_selected_cluster,
+            )
+
+            try:
+                device = torch.device("cuda:0")
+            except ValueError:
+                device = torch.device("cpu")
+            model_cluster.to(device)
+        else:
+            model_cluster = None
+
+        plugin.progress_bar.value = 0
+        plugin.progress_bar.show()
+        (
+            cloud_auto_encoder_model_type,
+            model_cloud_auto_encoder,
+        ) = model_selected_cloud_auto_encoder
+        config = model_cloud_auto_encoder_configs[
+            (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
+        ]
+        if len(config) > 0:
+            num_points = config["num_points"]
+        else:
+            num_points = 0
+
+        _trackmate_objects = TrackMate(
+            plugin_data.xml_path.value,
+            plugin_data.spot_csv_path.value,
+            plugin_data.track_csv_path.value,
+            plugin_data.edges_csv_path.value,
+            AttributeBoxname,
+            TrackAttributeBoxname,
+            TrackidBox,
+            plugin_data.axes.value,
+            master_xml_path=plugin_data.master_xml_path.value,
+            channel_seg_image=x_channel_seg,
+            seg_image=x_seg,
+            image=x,
+            mask=x_mask,
+            cluster_model=model_cluster,
+            num_points=num_points,
+            progress_bar=plugin.progress_bar,
+            save_dir=save_dir,
+            batch_size=plugin_data.batch_size.value,
+        )
+
+        _refreshStatPlotData()
 
     @change_handler(plugin.cluster_model_type, init=False)
     def _cluster_model_type_change(cluster_model_type: Union[str, type]):
