@@ -735,7 +735,7 @@ def plugin_wrapper_track():
             value=DEFAULTS_PARAMETERS["step_size"],
         ),
         layout="vertical",
-        persist=True,
+        persist=False,
         call_button=True,
     )
     def plugin_data(
