@@ -1745,15 +1745,12 @@ def plugin_wrapper_track():
             if key == track_model_type_dict[0]:
                 plugin.track_id_box.choices = _dividing_choices
                 _track_ids_analyze = _dividing_track_ids_analyze
-                _current_choices = _dividing_choices
             if key == track_model_type_dict[1]:
                 plugin.track_id_box.choices = _normal_choices
                 _track_ids_analyze = _normal_track_ids_analyze
-                _current_choices = _normal_choices
             if key == track_model_type_dict[2]:
                 plugin.track_id_box.choices = _both_choices
                 _track_ids_analyze = _both_track_ids_analyze
-                _current_choices = _both_choices
 
             _track_ids_analyze = list(map(int, _track_ids_analyze))
             _to_analyze = _track_ids_analyze
