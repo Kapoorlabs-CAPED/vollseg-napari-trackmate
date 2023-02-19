@@ -1742,7 +1742,6 @@ def plugin_wrapper_track():
             and value is not None
         ):
 
-            plugin_data.compute_button.enabled = True
             track_id = value
             show_track(track_id)
 
@@ -1887,7 +1886,6 @@ def plugin_wrapper_track():
     def _change_track_model_type(value):
 
         plugin.track_model_type.value = value
-        plugin_data.compute_button.enabled = True
         select_track_nature()
         plot_main()
         show_phenotype()
