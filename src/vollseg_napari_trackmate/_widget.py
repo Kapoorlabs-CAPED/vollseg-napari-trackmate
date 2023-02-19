@@ -1826,17 +1826,18 @@ def plugin_wrapper_track():
 
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
-        (
-            cloud_auto_encoder_model_type,
-            model_cloud_auto_encoder,
-        ) = model_selected_cloud_auto_encoder
-        config = model_cloud_auto_encoder_configs[
-            (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
-        ]
-        if len(config) > 0:
-            num_points = config["num_points"]
-        else:
-            num_points = 0
+        if model_selected_cloud_auto_encoder is not None:
+            (
+                cloud_auto_encoder_model_type,
+                model_cloud_auto_encoder,
+            ) = model_selected_cloud_auto_encoder
+            config = model_cloud_auto_encoder_configs[
+                (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
+            ]
+            if len(config) > 0:
+                num_points = config["num_points"]
+            else:
+                num_points = 0
 
         _trackmate_objects = TrackMate(
             plugin_data.xml_path.value,
@@ -1860,6 +1861,7 @@ def plugin_wrapper_track():
         )
 
         _refreshStatPlotData()
+        plugin_data.compute_button.enabled = False
 
     @change_handler(plugin.cluster_model_type, init=False)
     def _cluster_model_type_change(cluster_model_type: Union[str, type]):
