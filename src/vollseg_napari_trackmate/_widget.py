@@ -1720,11 +1720,13 @@ def plugin_wrapper_track():
     @change_handler(plugin_data.batch_size)
     def _batch_size_change(value: int):
 
+        plugin_data.compute_button.enabled = True
         plugin_data.batch_size.value = value
 
     @change_handler(plugin_data.plot_step_size)
     def _plot_step_size_change(value: int):
 
+        plugin_data.compute_button.enabled = True
         plugin_data.plot_step_size.value = value
 
     @change_handler(plugin.track_id_box, init=False)
@@ -1740,6 +1742,7 @@ def plugin_wrapper_track():
             and value is not None
         ):
 
+            plugin_data.compute_button.enabled = True
             track_id = value
             show_track(track_id)
 
@@ -1753,6 +1756,7 @@ def plugin_wrapper_track():
     def _cloud_auto_encoder_model_type_change(
         cloud_auto_encoder_model_type: Union[str, type]
     ):
+        plugin_data.compute_button.enabled = True
         selected = widget_for_cloud_auto_encoder_modeltype[
             cloud_auto_encoder_model_type
         ]
@@ -1875,7 +1879,7 @@ def plugin_wrapper_track():
             w.hide()
 
         selected.show()
-
+        plugin_data.compute_button.enabled = True
         # Trigger model change
         selected.changed(selected.value)
 
@@ -1883,6 +1887,7 @@ def plugin_wrapper_track():
     def _change_track_model_type(value):
 
         plugin.track_model_type.value = value
+        plugin_data.compute_button.enabled = True
         select_track_nature()
         plot_main()
         show_phenotype()
@@ -1910,7 +1915,7 @@ def plugin_wrapper_track():
         )
 
         # dimensionality of selected model: 2, 3, or None (unknown)
-
+        plugin_data.compute_button.enabled = True
         ndim = get_data(image).ndim
         if ndim == 4:
             axes = "TZYX"
@@ -1929,6 +1934,7 @@ def plugin_wrapper_track():
     # -> triggered by _image_change
     @change_handler(plugin_data.axes, init=False)
     def _axes_change():
+        plugin_data.compute_button.enabled = True
         value = plugin_data.axes.value
         print(f"axes is {value}")
 
