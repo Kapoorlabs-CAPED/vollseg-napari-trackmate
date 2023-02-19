@@ -1826,6 +1826,7 @@ def plugin_wrapper_track():
 
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
+        num_points = 0
         if model_selected_cloud_auto_encoder is not None:
             (
                 cloud_auto_encoder_model_type,
