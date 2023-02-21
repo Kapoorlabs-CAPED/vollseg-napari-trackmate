@@ -381,7 +381,7 @@ def plugin_wrapper_track():
         if track_centroid_list is not None:
             if len(track_centroid_list) > 0:
                 dist, index = track_centroid_tree.query(clicked_location)
-                nearest_track_location = track_centroid_list[index]
+                nearest_track_location = track_centroid_list[index, :]
                 nearest_track_id = _trackmate_objects.unique_track_centroid[
                     nearest_track_location
                 ]
@@ -1884,7 +1884,7 @@ def plugin_wrapper_track():
         track_centroid_list = [
             k for k in _trackmate_objects.unique_track_centroid.keys()
         ]
-        track_centroid_tree = spatial.cKDTree(track_centroid_list)
+        track_centroid_tree = spatial.cKDTree(np.asarray(track_centroid_list))
         _refreshStatPlotData()
         plugin_data.compute_button.enabled = False
 
