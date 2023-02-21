@@ -21,6 +21,7 @@ from magicgui import widgets as mw
 from napari.qt import thread_worker
 from psygnal import Signal
 from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
+from scipy import spatial
 
 
 def plugin_wrapper_track():
@@ -60,6 +61,9 @@ def plugin_wrapper_track():
     _dividing_track_ids_analyze = ()
     _normal_track_ids_analyze = ()
     _both_track_ids_analyze = ()
+    clicked_location = None
+    track_centroid_tree = None
+    track_centroid_list = None
 
     def _raise(e):
         if isinstance(e, BaseException):
@@ -372,7 +376,16 @@ def plugin_wrapper_track():
 
     @plugin.viewer.value.mouse_double_click_callbacks.append
     def get_event(viewer, event):
-        print("hi", event.position)
+        nonlocal clicked_location
+        clicked_location = event.position
+        if track_centroid_list is not None:
+            if len(track_centroid_list) > 0:
+                dist, index = track_centroid_tree.query(clicked_location)
+                nearest_track_location = track_centroid_list[index]
+                nearest_track_id = _trackmate_objects.unique_track_centroid[
+                    nearest_track_location
+                ]
+                show_track(nearest_track_id)
 
     class Updater_Auto_Encoder:
         def __init__(self, debug=DEBUG):
@@ -1867,7 +1880,11 @@ def plugin_wrapper_track():
             save_dir=save_dir,
             batch_size=plugin_data.batch_size.value,
         )
-
+        nonlocal track_centroid_tree, track_centroid_list
+        track_centroid_list = list(
+            _trackmate_objects.unique_track_centroid.keys()
+        )
+        track_centroid_tree = spatial.cKDTree(track_centroid_list)
         _refreshStatPlotData()
         plugin_data.compute_button.enabled = False
 
