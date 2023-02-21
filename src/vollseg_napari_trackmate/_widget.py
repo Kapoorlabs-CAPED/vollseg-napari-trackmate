@@ -1881,9 +1881,9 @@ def plugin_wrapper_track():
             batch_size=plugin_data.batch_size.value,
         )
         nonlocal track_centroid_tree, track_centroid_list
-        track_centroid_list = list(
-            _trackmate_objects.unique_track_centroid.keys()
-        )
+        track_centroid_list = [
+            k for k in _trackmate_objects.unique_track_centroid.keys()
+        ]
         track_centroid_tree = spatial.cKDTree(track_centroid_list)
         _refreshStatPlotData()
         plugin_data.compute_button.enabled = False
