@@ -370,7 +370,7 @@ def plugin_wrapper_track():
 
         pass
 
-    @plugin.viewer.mouse_double_click_callbacks.append
+    @plugin.viewer.value.mouse_double_click_callbacks.append
     def get_event(viewer, event):
         print("hi", event.position)
 
