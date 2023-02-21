@@ -370,6 +370,10 @@ def plugin_wrapper_track():
 
         pass
 
+    @plugin.viewer.mouse_double_click_callbacks.append
+    def get_event(viewer, event):
+        print("hi", event.position)
+
     class Updater_Auto_Encoder:
         def __init__(self, debug=DEBUG):
             from types import SimpleNamespace
