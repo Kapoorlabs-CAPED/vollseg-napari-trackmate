@@ -378,6 +378,7 @@ def plugin_wrapper_track():
     def get_event(viewer, event):
         nonlocal clicked_location
         clicked_location = event.position
+        print("Location clicked", clicked_location)
         if track_centroid_list is not None:
             if len(track_centroid_list) > 0:
                 dist, index = track_centroid_tree.query(clicked_location)
@@ -385,6 +386,11 @@ def plugin_wrapper_track():
                 nearest_track_id = _trackmate_objects.unique_track_centroid[
                     nearest_track_location
                 ]
+                print(
+                    "nearest track id found",
+                    nearest_track_id,
+                    "showing display",
+                )
                 show_track(nearest_track_id)
 
     class Updater_Auto_Encoder:
