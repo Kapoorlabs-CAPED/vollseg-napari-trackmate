@@ -1402,6 +1402,22 @@ def plugin_wrapper_track():
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_acc,
+                    _trackmate_objects.mitotic_var_acc,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Acceleration")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um/min")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_radius,
                     _trackmate_objects.non_mitotic_var_radius,
                     linestyle="None",
@@ -1526,6 +1542,22 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous  Speed")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um/min")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_acc,
+                    _trackmate_objects.mitotic_var_acc,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Acceleration")
                 plot_ax.set_xlabel("Time (min)")
                 plot_ax.set_ylabel("um/min")
 
