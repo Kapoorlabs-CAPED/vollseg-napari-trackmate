@@ -857,9 +857,7 @@ def plugin_wrapper_track():
                 or "Track_points" == layer.name
             ):
                 plugin.viewer.value.layers.remove(layer)
-        vertices = unique_tracks[:, 1:]
-
-        plugin.viewer.value.add_points(vertices, size=1, name="Track_points")
+        # vertices = unique_tracks[:, 1:]
 
         print("Added vertices")
         plugin.viewer.value.add_tracks(
