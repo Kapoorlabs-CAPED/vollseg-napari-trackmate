@@ -849,7 +849,7 @@ def plugin_wrapper_track():
                 np.asarray(unique_tracks_properties, dtype="float64")[:, 9],
             ),
         }
-
+        print("Refreshing track data")
         for layer in list(plugin.viewer.value.layers):
             if (
                 "Track" == layer.name
@@ -866,6 +866,7 @@ def plugin_wrapper_track():
             name="Track",
             features=features,
         )
+        print("Track data refreshed")
         _to_analyze = [int(track_id)]
         show_phenotype()
         select_track_nature()
