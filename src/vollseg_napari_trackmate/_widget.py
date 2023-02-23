@@ -1942,6 +1942,36 @@ def plugin_wrapper_track():
         _refreshStatPlotData()
         plugin_data.compute_button.enabled = False
 
+    @change_handler(plugin_data.track_csv_path, init=True)
+    def _track_csv_path_change(value):
+
+        plugin_data.track_csv_path = value
+        plugin_data.compute_button.enabled = True
+
+    @change_handler(plugin_data.spot_csv_path, init=True)
+    def _spot_csv_path_change(value):
+
+        plugin_data.spot_csv_path = value
+        plugin_data.compute_button.enabled = True
+
+    @change_handler(plugin_data.edges_csv_path, init=True)
+    def _edges_csv_path_change(value):
+
+        plugin_data.edges_csv_path = value
+        plugin_data.compute_button.enabled = True
+
+    @change_handler(plugin_data.master_xml_path, init=True)
+    def _master_xml_path_change(value):
+
+        plugin_data.master_xml_path = value
+        plugin_data.compute_button.enabled = True
+
+    @change_handler(plugin_data.xml_path, init=True)
+    def _xml_path_change(value):
+
+        plugin_data.xml_path = value
+        plugin_data.compute_button.enabled = True
+
     @change_handler(plugin.cluster_model_type, init=False)
     def _cluster_model_type_change(cluster_model_type: Union[str, type]):
         selected = widget_for_cluster_modeltype[cluster_model_type]
@@ -1981,7 +2011,7 @@ def plugin_wrapper_track():
 
         plugin_color_parameters.track_attributes.value = value
 
-    @change_handler(plugin_data.image, init=False)
+    @change_handler(plugin_data.image, init=True)
     def _image_change(image: napari.layers.Image):
         plugin_data.image.tooltip = (
             f"Shape: {get_data(image).shape, str(image.name)}"
@@ -2005,7 +2035,7 @@ def plugin_wrapper_track():
             plugin_data.axes.value = axes
 
     # -> triggered by _image_change
-    @change_handler(plugin_data.axes, init=False)
+    @change_handler(plugin_data.axes, init=True)
     def _axes_change():
         plugin_data.compute_button.enabled = True
         value = plugin_data.axes.value
