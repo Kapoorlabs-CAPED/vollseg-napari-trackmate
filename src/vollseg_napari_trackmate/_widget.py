@@ -26,9 +26,11 @@ from scipy import spatial
 
 def plugin_wrapper_track():
 
-    from cellshape_cloud import CloudAutoEncoder
-    from cellshape_cluster import DeepEmbeddedClustering
-    from napatrackmater import load_json
+    from napatrackmater import (
+        CloudAutoEncoder,
+        DeepEmbeddedClustering,
+        load_json,
+    )
     from napatrackmater.pretrained import (
         get_model_folder,
         get_registered_models,
