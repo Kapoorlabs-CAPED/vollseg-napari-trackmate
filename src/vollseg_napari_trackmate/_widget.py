@@ -1944,31 +1944,31 @@ def plugin_wrapper_track():
         _refreshStatPlotData()
         plugin_data.compute_button.enabled = False
 
-    @change_handler(plugin_data.track_csv_path, init=True)
+    @change_handler(plugin_data.track_csv_path, init=False)
     def _track_csv_path_change(value):
 
         plugin_data.track_csv_path = value
         plugin_data.compute_button.enabled = True
 
-    @change_handler(plugin_data.spot_csv_path, init=True)
+    @change_handler(plugin_data.spot_csv_path, init=False)
     def _spot_csv_path_change(value):
 
         plugin_data.spot_csv_path = value
         plugin_data.compute_button.enabled = True
 
-    @change_handler(plugin_data.edges_csv_path, init=True)
+    @change_handler(plugin_data.edges_csv_path, init=False)
     def _edges_csv_path_change(value):
 
         plugin_data.edges_csv_path = value
         plugin_data.compute_button.enabled = True
 
-    @change_handler(plugin_data.master_xml_path, init=True)
+    @change_handler(plugin_data.master_xml_path, init=False)
     def _master_xml_path_change(value):
 
         plugin_data.master_xml_path = value
         plugin_data.compute_button.enabled = True
 
-    @change_handler(plugin_data.xml_path, init=True)
+    @change_handler(plugin_data.xml_path, init=False)
     def _xml_path_change(value):
 
         plugin_data.xml_path = value
