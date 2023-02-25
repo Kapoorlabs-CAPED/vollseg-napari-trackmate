@@ -2013,7 +2013,7 @@ def plugin_wrapper_track():
 
         plugin_color_parameters.track_attributes.value = value
 
-    @change_handler(plugin_data.image, init=True)
+    @change_handler(plugin_data.image, init=False)
     def _image_change(image: napari.layers.Image):
         plugin_data.image.tooltip = (
             f"Shape: {get_data(image).shape, str(image.name)}"
@@ -2037,7 +2037,7 @@ def plugin_wrapper_track():
             plugin_data.axes.value = axes
 
     # -> triggered by _image_change
-    @change_handler(plugin_data.axes, init=True)
+    @change_handler(plugin_data.axes, init=False)
     def _axes_change():
         plugin_data.compute_button.enabled = True
         value = plugin_data.axes.value
