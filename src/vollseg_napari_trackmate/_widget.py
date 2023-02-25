@@ -1954,7 +1954,6 @@ def plugin_wrapper_track():
     @change_handler(plugin_data.spot_csv_path, init=False)
     def _spot_csv_path_change(value):
 
-        plugin_data.spot_csv_path = value
         plugin_data.compute_button.enabled = True
 
     @change_handler(plugin_data.edges_csv_path, init=False)
