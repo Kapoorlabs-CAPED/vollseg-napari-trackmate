@@ -596,7 +596,6 @@ def plugin_wrapper_track():
                     # delay showing progress bar -> won't show up if model already downloaded
                     # TODO: hacky -> better way to do this?
                     time.sleep(0.1)
-                    plugin.call_button.enabled = False
                     plugin.progress_bar.label = (
                         "Downloading Auto Encoder model"
                     )
@@ -666,7 +665,6 @@ def plugin_wrapper_track():
                     # delay showing progress bar -> won't show up if model already downloaded
                     # TODO: hacky -> better way to do this?
                     time.sleep(0.1)
-                    plugin.call_button.enabled = False
                     plugin.progress_bar.label = (
                         "Downloading Auto Encoder model"
                     )
@@ -1951,7 +1949,6 @@ def plugin_wrapper_track():
     @change_handler(plugin_data.track_csv_path, init=False)
     def _track_csv_path_change(value):
 
-        plugin_data.track_csv_path = value
         plugin_data.compute_button.enabled = True
 
     @change_handler(plugin_data.spot_csv_path, init=False)
@@ -1963,19 +1960,16 @@ def plugin_wrapper_track():
     @change_handler(plugin_data.edges_csv_path, init=False)
     def _edges_csv_path_change(value):
 
-        plugin_data.edges_csv_path = value
         plugin_data.compute_button.enabled = True
 
     @change_handler(plugin_data.master_xml_path, init=False)
     def _master_xml_path_change(value):
 
-        plugin_data.master_xml_path = value
         plugin_data.compute_button.enabled = True
 
     @change_handler(plugin_data.xml_path, init=False)
     def _xml_path_change(value):
 
-        plugin_data.xml_path = value
         plugin_data.compute_button.enabled = True
 
     @change_handler(plugin.cluster_model_type, init=False)
