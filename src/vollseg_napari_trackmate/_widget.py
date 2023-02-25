@@ -280,7 +280,9 @@ def plugin_wrapper_track():
                 return model
 
             elif cluster_model_type != DEFAULTS_MODEL["model_cluster_none"]:
-                return cluster_model_type.local_from_pretrained(model_cluster)
+                return cluster_model_type.local_from_pretrained(
+                    model_cluster, autoencoder
+                )
             else:
                 return None
 
