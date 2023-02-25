@@ -649,7 +649,10 @@ def plugin_wrapper_track():
                             str(
                                 os.path.join(
                                     path.parent.as_posix(),
-                                    model_name + ".json",
+                                    path.name.as_posix()
+                                    + "/"
+                                    + model_name
+                                    + ".json",
                                 )
                             )
                         )
