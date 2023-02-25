@@ -582,8 +582,9 @@ def plugin_wrapper_track():
                     def _get_model_folder():
                         return get_model_folder(*key_cluster)
 
-                    def _process_model_folder(path):
+                    def _process_model_folder(rpath):
 
+                        path = rpath[0]
                         model_cluster_configs[key_cluster] = str(path)
                         select_model_cluster(key_cluster)
                         plugin.progress_bar.hide()
@@ -639,8 +640,9 @@ def plugin_wrapper_track():
                     def _get_model_folder():
                         return get_model_folder(*key_cloud_auto_encoder)
 
-                    def _process_model_folder(path):
+                    def _process_model_folder(rpath):
 
+                        path = rpath[0]
                         model_cloud_auto_encoder_configs[
                             key_cloud_auto_encoder
                         ] = load_json(
