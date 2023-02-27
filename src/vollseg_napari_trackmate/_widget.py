@@ -872,7 +872,7 @@ def plugin_wrapper_track():
             features=features,
         )
         print("Track data refreshed")
-        _to_analyze = [int(track_id)]
+
         show_phenotype()
         select_track_nature()
 
