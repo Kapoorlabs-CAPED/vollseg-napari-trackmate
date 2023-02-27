@@ -863,8 +863,8 @@ def plugin_wrapper_track():
                 or "Track_points" == layer.name
             ):
                 plugin.viewer.value.layers.remove(layer)
-        # vertices = unique_tracks[:, 1:]
-
+        vertices = unique_tracks[:, 1:]
+        plugin.viewer.value.add_points(vertices, name="Track_points")
         print("Added vertices")
         plugin.viewer.value.add_tracks(
             unique_tracks,
@@ -872,7 +872,8 @@ def plugin_wrapper_track():
             features=features,
         )
         print("Track data refreshed")
-
+        if str(track_id) not in TrackidBox and track_id is not None:
+            _to_analyze = [int(track_id)]
         show_phenotype()
         select_track_nature()
 
@@ -1778,6 +1779,7 @@ def plugin_wrapper_track():
             _to_analyze = [int(track_id)]
         else:
             _to_analyze = _track_ids_analyze
+
         if _to_analyze is not None:
 
             for unique_track_id in _to_analyze:
