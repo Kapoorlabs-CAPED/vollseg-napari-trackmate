@@ -1782,22 +1782,18 @@ def plugin_wrapper_track():
 
         if _to_analyze is not None:
 
-            for unique_track_id in _to_analyze:
-
-                unique_tracks = np.concatenate(
-                    [
-                        unique_tracks,
-                        _trackmate_objects.unique_tracks[unique_track_id],
-                    ]
-                )
-                unique_tracks_properties = np.concatenate(
-                    [
-                        unique_tracks_properties,
-                        _trackmate_objects.unique_track_properties[
-                            unique_track_id
-                        ],
-                    ]
-                )
+            unique_tracks = np.concatenate(
+                [
+                    _trackmate_objects.unique_tracks[unique_track_id]
+                    for unique_track_id in _to_analyze
+                ]
+            )
+            unique_tracks_properties = np.concatenate(
+                [
+                    _trackmate_objects.unique_track_properties[unique_track_id]
+                    for unique_track_id in _to_analyze
+                ]
+            )
 
             pred = unique_tracks, unique_tracks_properties, track_id
 
