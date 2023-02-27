@@ -864,7 +864,7 @@ def plugin_wrapper_track():
             ):
                 plugin.viewer.value.layers.remove(layer)
         vertices = unique_tracks[:, 1:]
-        plugin.viewer.value.add_points(vertices, name="Track_points")
+        plugin.viewer.value.add_points(vertices, name="Track_points", size=1)
         print("Added vertices")
         plugin.viewer.value.add_tracks(
             unique_tracks,
@@ -1784,18 +1784,21 @@ def plugin_wrapper_track():
 
             for unique_track_id in _to_analyze:
 
-                tracklets = _trackmate_objects.unique_tracks[unique_track_id]
-                tracklets_properties = (
-                    _trackmate_objects.unique_track_properties[unique_track_id]
+                unique_tracks = np.concatenate(
+                    [
+                        unique_tracks,
+                        _trackmate_objects.unique_tracks[unique_track_id],
+                    ]
+                )
+                unique_tracks_properties = np.concatenate(
+                    [
+                        unique_tracks_properties,
+                        _trackmate_objects.unique_track_properties[
+                            unique_track_id
+                        ],
+                    ]
                 )
 
-                unique_tracks.append(tracklets)
-                unique_tracks_properties.append(tracklets_properties)
-
-            unique_tracks = np.concatenate(unique_tracks, axis=0)
-            unique_tracks_properties = np.concatenate(
-                unique_tracks_properties, axis=0
-            )
             pred = unique_tracks, unique_tracks_properties, track_id
 
             _refreshTrackData(pred)
