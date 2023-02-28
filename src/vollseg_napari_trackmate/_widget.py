@@ -902,13 +902,11 @@ def plugin_wrapper_track():
                             unique_track_id
                         ][k]
                     )
-
                     unique_cluster_properties_tracklet = (
                         _trackmate_objects.unique_cluster_properties[
                             unique_track_id
                         ][k]
                     )
-
                     (
                         time,
                         intensity,
@@ -931,19 +929,19 @@ def plugin_wrapper_track():
                         ]
                     )
 
-                data_cluster_plot = pd.DataFrame(
-                    {
-                        "Time": cluster_time,
-                        "Class": cluster_class,
-                        "Class_Score": cluster_class_score,
-                    }
-                )
-                sns.scatterplot(
-                    data_cluster_plot,
-                    x="Time",
-                    y="Class",
-                    ax=plot_ax,
-                )
+                    data_cluster_plot = pd.DataFrame(
+                        {
+                            "Time": cluster_time,
+                            "Class": cluster_class,
+                            "Class_Score": cluster_class_score,
+                        }
+                    )
+                    sns.scatterplot(
+                        data_cluster_plot,
+                        x="Time",
+                        y="Class",
+                        ax=plot_ax,
+                    )
 
             plot_ax.set_title("Cluster class")
             plot_ax.set_xlabel("Time (min)")
