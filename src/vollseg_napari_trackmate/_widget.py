@@ -1356,7 +1356,6 @@ def plugin_wrapper_track():
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
-                plot_ax.cla()
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
@@ -1504,7 +1503,6 @@ def plugin_wrapper_track():
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
-                plot_ax.cla()
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
