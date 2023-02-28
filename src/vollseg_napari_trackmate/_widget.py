@@ -893,35 +893,43 @@ def plugin_wrapper_track():
 
             for unique_track_id in _to_analyze:
 
-                unique_fft_properties_tracklet = (
-                    _trackmate_objects.unique_fft_properties[unique_track_id]
-                )
-                unique_cluster_properties_tracklet = (
-                    _trackmate_objects.unique_cluster_properties[
-                        unique_track_id
-                    ]
-                )
-                (
-                    time,
-                    intensity,
-                    xf_sample,
-                    ffttotal_sample,
-                ) = unique_fft_properties_tracklet
+                for k in _trackmate_objects.unique_fft_properties[
+                    unique_track_id
+                ].keys():
 
-                (
-                    cluster_time,
-                    cluster_class,
-                    cluster_class_score,
-                ) = unique_cluster_properties_tracklet
+                    unique_fft_properties_tracklet = (
+                        _trackmate_objects.unique_fft_properties[
+                            unique_track_id
+                        ][k]
+                    )
 
-                unique_fft_properties.append(
-                    [
+                    unique_cluster_properties_tracklet = (
+                        _trackmate_objects.unique_cluster_properties[
+                            unique_track_id
+                        ][k]
+                    )
+
+                    (
                         time,
                         intensity,
                         xf_sample,
                         ffttotal_sample,
-                    ]
-                )
+                    ) = unique_fft_properties_tracklet
+
+                    (
+                        cluster_time,
+                        cluster_class,
+                        cluster_class_score,
+                    ) = unique_cluster_properties_tracklet
+
+                    unique_fft_properties.append(
+                        [
+                            time,
+                            intensity,
+                            xf_sample,
+                            ffttotal_sample,
+                        ]
+                    )
 
                 data_cluster_plot = pd.DataFrame(
                     {
