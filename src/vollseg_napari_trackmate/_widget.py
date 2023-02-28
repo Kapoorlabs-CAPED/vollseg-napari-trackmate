@@ -893,98 +893,65 @@ def plugin_wrapper_track():
 
             for unique_track_id in _to_analyze:
 
-                for k in _trackmate_objects.unique_fft_properties[
-                    unique_track_id
-                ].keys():
-
-                    unique_fft_properties_tracklet = (
-                        _trackmate_objects.unique_fft_properties[
-                            unique_track_id
-                        ][k]
-                    )
-                    unique_cluster_properties_tracklet = (
-                        _trackmate_objects.unique_cluster_properties[
-                            unique_track_id
-                        ][k]
-                    )
-                    (
-                        time,
-                        intensity,
-                        xf_sample,
-                        ffttotal_sample,
-                    ) = unique_fft_properties_tracklet
-
-                    (
-                        cluster_time,
-                        cluster_class,
-                        cluster_class_score,
-                    ) = unique_cluster_properties_tracklet
-
-                    unique_fft_properties.append(
-                        [
-                            time,
-                            intensity,
-                            xf_sample,
-                            ffttotal_sample,
-                        ]
-                    )
-
-                    data_cluster_plot = pd.DataFrame(
-                        {
-                            "Time": cluster_time,
-                            "Class": cluster_class,
-                            "Class_Score": cluster_class_score,
-                        }
-                    )
-                    sns.scatterplot(
-                        data_cluster_plot,
-                        x="Time",
-                        y="Class",
-                        ax=plot_ax,
-                    )
-
-            plot_ax.set_title("Cluster class")
-            plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Class")
-
-            all_time = []
-            all_intensity = []
-            all_xf_sample = []
-            all_ffttotal_sample = []
-
-            for unique_property in unique_fft_properties:
+                unique_fft_properties_tracklet = (
+                    _trackmate_objects.unique_fft_properties[unique_track_id]
+                )
+                unique_cluster_properties_tracklet = (
+                    _trackmate_objects.unique_cluster_properties[
+                        unique_track_id
+                    ]
+                )
                 (
                     time,
                     intensity,
                     xf_sample,
                     ffttotal_sample,
-                ) = unique_property
+                ) = unique_fft_properties_tracklet
 
-                all_time.append(time)
-                all_intensity.append(intensity)
-                all_xf_sample.append(xf_sample)
-                all_ffttotal_sample.append(np.ravel(ffttotal_sample))
-            max_size = 0
-            max_size_index = 0
-            for i in range(len(all_ffttotal_sample)):
-                size = all_ffttotal_sample[i].shape[0]
-                if size > max_size:
-                    max_size = size
-                    max_size_index = i
+                (
+                    cluster_time,
+                    cluster_class,
+                    cluster_class_score,
+                ) = unique_cluster_properties_tracklet
 
-            max_all_xf_sample = all_xf_sample[max_size_index]
+                unique_fft_properties.append(
+                    [
+                        time,
+                        intensity,
+                        xf_sample,
+                        ffttotal_sample,
+                    ]
+                )
+
+                data_cluster_plot = pd.DataFrame(
+                    {
+                        "Time": cluster_time,
+                        "Class": cluster_class,
+                        "Class_Score": cluster_class_score,
+                    }
+                )
+                sns.scatterplot(
+                    data_cluster_plot,
+                    x="Time",
+                    y="Class",
+                    ax=plot_ax,
+                )
+
+            plot_ax.set_title("Cluster class")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Class")
 
             data_fft_plot = pd.DataFrame(
                 {
-                    "Frequ": max_all_xf_sample,
-                    "Amplitude": sum(all_ffttotal_sample),
+                    "Frequ": unique_fft_properties[0][2],
+                    "Amplitude": np.sum(unique_fft_properties, axis=0)[3],
                 }
             )
 
             data_time_plot = pd.DataFrame(
                 {
-                    "Time": all_time[0],
-                    "Intensity": sum(all_intensity),
+                    "Time": unique_fft_properties[0][0],
+                    "Intensity": np.sum(unique_fft_properties, axis=0)[1],
                 }
             )
 
