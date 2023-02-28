@@ -960,7 +960,6 @@ def plugin_wrapper_track():
                     "Intensity": np.sum(unique_fft_properties, axis=0)[1],
                 }
             )
-            print(unique_fft_properties)
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
 
