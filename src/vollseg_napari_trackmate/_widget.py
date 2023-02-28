@@ -930,7 +930,7 @@ def plugin_wrapper_track():
                             ffttotal_sample,
                         ]
                     )
-                print(unique_fft_properties)
+
                 data_cluster_plot = pd.DataFrame(
                     {
                         "Time": cluster_time,
@@ -945,7 +945,7 @@ def plugin_wrapper_track():
                     hue="Class_Score",
                     ax=plot_ax,
                 )
-                print(data_cluster_plot)
+
             plot_ax.set_title("Cluster class")
             plot_ax.set_xlabel("Time (min)")
             plot_ax.set_ylabel("Class")
