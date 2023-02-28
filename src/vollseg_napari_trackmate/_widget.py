@@ -942,7 +942,6 @@ def plugin_wrapper_track():
                     data_cluster_plot,
                     x="Time",
                     y="Class",
-                    hue="Class_Score",
                     ax=plot_ax,
                 )
 
