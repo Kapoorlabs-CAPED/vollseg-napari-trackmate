@@ -1773,8 +1773,7 @@ def plugin_wrapper_track():
     def show_track(track_id):
 
         nonlocal _track_ids_analyze, _to_analyze
-        unique_tracks = []
-        unique_tracks_properties = []
+
         if str(track_id) not in TrackidBox and track_id is not None:
             _to_analyze = [int(track_id)]
         else:
