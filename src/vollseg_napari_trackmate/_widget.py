@@ -936,7 +936,7 @@ def plugin_wrapper_track():
                             "Class_Score": cluster_class_score,
                         }
                     )
-                    sns.scatterplot(
+                    sns.lineplot(
                         data_cluster_plot,
                         x="Time",
                         y="Class",
