@@ -964,6 +964,7 @@ def plugin_wrapper_track():
                                 "Class_Name": cluster_class_name,
                             }
                         )
+                        data_cluster_plot.sort_values(by=["Class_Name"])
 
                     if size_catagories_json is None:
                         sns.lineplot(
