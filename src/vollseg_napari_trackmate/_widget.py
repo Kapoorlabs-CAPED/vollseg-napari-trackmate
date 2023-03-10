@@ -928,8 +928,8 @@ def plugin_wrapper_track():
                         cluster_class_score,
                     ) = unique_cluster_properties_tracklet
                     cluster_class_name = [
-                        size_catagories_json[str(name)]
-                        for name in cluster_class
+                        size_catagories_json[str(cluster_class[i])]
+                        for i in range(cluster_class.shape[0])
                     ]
                     unique_fft_properties.append(
                         [
