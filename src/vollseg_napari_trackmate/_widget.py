@@ -172,6 +172,7 @@ def plugin_wrapper_track():
 
     model_selected_cloud_auto_encoder = None
     model_selected_cluster = None
+    size_catagories_json = None
 
     DEFAULTS_MODEL = dict(
         cloud_auto_encoder_model_type=CloudAutoEncoder,
@@ -742,6 +743,12 @@ def plugin_wrapper_track():
             label="Edges/Links csv",
             mode="r",
         ),
+        size_catagories=dict(
+            widget_type="FileEdit",
+            visible=True,
+            label="Sentinal size catagories json",
+            mode="r",
+        ),
         axes=dict(
             widget_type="LineEdit",
             label="Image Axes",
@@ -778,6 +785,7 @@ def plugin_wrapper_track():
         track_csv_path,
         spot_csv_path,
         edges_csv_path,
+        size_catagories,
         axes,
         batch_size,
         plot_step_size,
@@ -879,7 +887,7 @@ def plugin_wrapper_track():
 
     def show_phenotype():
 
-        nonlocal _to_analyze
+        nonlocal _to_analyze, size_catagories_json
 
         phenotype_plot_class._reset_container(
             phenotype_plot_class.scroll_layout
@@ -928,20 +936,41 @@ def plugin_wrapper_track():
                             ffttotal_sample,
                         ]
                     )
+                    if size_catagories_json is None:
+                        data_cluster_plot = pd.DataFrame(
+                            {
+                                "Time": cluster_time,
+                                "Class": cluster_class,
+                                "Class_Score": cluster_class_score,
+                            }
+                        )
+                    if size_catagories_json is not None:
 
-                    data_cluster_plot = pd.DataFrame(
-                        {
-                            "Time": cluster_time,
-                            "Class": cluster_class,
-                            "Class_Score": cluster_class_score,
-                        }
-                    )
-                    sns.lineplot(
-                        data_cluster_plot,
-                        x="Time",
-                        y="Class",
-                        ax=plot_ax,
-                    )
+                        data_cluster_plot = pd.DataFrame(
+                            {
+                                "Time": cluster_time,
+                                "Class": cluster_class,
+                                "Class_Score": cluster_class_score,
+                                "Class_Name": size_catagories_json[
+                                    int(cluster_class)
+                                ],
+                            }
+                        )
+
+                    if size_catagories_json is None:
+                        sns.lineplot(
+                            data_cluster_plot,
+                            x="Time",
+                            y="Class",
+                            ax=plot_ax,
+                        )
+                    if size_catagories_json is not None:
+                        sns.lineplot(
+                            data_cluster_plot,
+                            x="Time",
+                            y="Class_Name",
+                            ax=plot_ax,
+                        )
 
             plot_ax.set_title("Cluster class")
             plot_ax.set_xlabel("Time (min)")
@@ -1841,6 +1870,12 @@ def plugin_wrapper_track():
         x_channel_seg = None
         x_mask = None
 
+        nonlocal size_catagories_json
+
+        if plugin_data.size_catagories is not None:
+
+            size_catagories_json = load_json(plugin_data.size_catagories)
+
         if plugin_data.xml_path.value is not None:
             save_dir = os.path.join(
                 plugin_data.xml_path.value.parent.as_posix(), "runs"
@@ -1934,6 +1969,11 @@ def plugin_wrapper_track():
 
     @change_handler(plugin_data.edges_csv_path, init=False)
     def _edges_csv_path_change(value):
+
+        plugin_data.compute_button.enabled = True
+
+    @change_handler(plugin_data.size_catagories, init=False)
+    def _size_catagories_change(value):
 
         plugin_data.compute_button.enabled = True
 
