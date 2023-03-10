@@ -935,6 +935,8 @@ def plugin_wrapper_track():
                                     str(int(cluster_class[i]))
                                 ]
                             )
+                        else:
+                            cluster_class_name.append(None)
 
                     unique_fft_properties.append(
                         [
