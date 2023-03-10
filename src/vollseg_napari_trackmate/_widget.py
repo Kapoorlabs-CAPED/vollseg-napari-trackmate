@@ -927,10 +927,15 @@ def plugin_wrapper_track():
                         cluster_class,
                         cluster_class_score,
                     ) = unique_cluster_properties_tracklet
-                    cluster_class_name = [
-                        size_catagories_json[str(int(cluster_class[i]))]
-                        for i in range(cluster_class.shape[0])
-                    ]
+                    cluster_class_name = []
+                    for i in range(cluster_class.shape[0]):
+                        if cluster_class[i] is not None:
+                            cluster_class_name.append(
+                                size_catagories_json[
+                                    str(int(cluster_class[i]))
+                                ]
+                            )
+
                     unique_fft_properties.append(
                         [
                             time,
