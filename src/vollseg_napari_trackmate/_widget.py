@@ -965,7 +965,9 @@ def plugin_wrapper_track():
                             }
                         )
 
-                    data_cluster_plot.dropna()
+                    data_cluster_plot.mask(
+                        data_cluster_plot.astype(object).eq("None")
+                    ).dropna()
 
                     if size_catagories_json is None:
                         sns.stripplot(
