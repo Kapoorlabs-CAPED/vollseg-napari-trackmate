@@ -986,6 +986,7 @@ def plugin_wrapper_track():
                             data_cluster_plot,
                             x="Time",
                             y="Class",
+                            dodge=True,
                             ax=plot_ax,
                         )
                     if size_catagories_json is not None:
@@ -993,6 +994,7 @@ def plugin_wrapper_track():
                             data_cluster_plot,
                             x="Time",
                             y="Class_Name",
+                            dodge=True,
                             ax=plot_ax,
                         )
 
