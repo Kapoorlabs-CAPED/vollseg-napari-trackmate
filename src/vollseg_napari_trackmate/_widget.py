@@ -19,6 +19,7 @@ from caped_ai_tabulour._tabulour import Tabulour, pandasModel
 from magicgui import magicgui
 from magicgui import widgets as mw
 from napari.qt import thread_worker
+from natsort import index_natsorted
 from psygnal import Signal
 from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 from scipy import spatial
@@ -966,13 +967,17 @@ def plugin_wrapper_track():
                         )
 
                         data_cluster_plot.sort_values(
-                            by=["Class_Name"],
+                            by="Class_Name",
                             inplace=True,
-                            key=lambda x: x.str.lower(),
+                            key=lambda x: np.argsort(
+                                index_natsorted(
+                                    data_cluster_plot["Class_Name"]
+                                )
+                            ),
                         )
 
                         data_cluster_plot.sort_values(
-                            by=["Time"],
+                            by="Time",
                             inplace=True,
                         )
 
