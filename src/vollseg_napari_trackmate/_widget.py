@@ -1884,7 +1884,10 @@ def plugin_wrapper_track():
 
         nonlocal size_catagories_json
 
-        if plugin_data.size_catagories is not None:
+        if (
+            plugin_data.size_catagories is not None
+            and plugin_data.size_catagories.value.is_file()
+        ):
 
             size_catagories_json = load_json(plugin_data.size_catagories.value)
 
