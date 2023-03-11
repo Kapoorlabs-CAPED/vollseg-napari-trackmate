@@ -965,7 +965,7 @@ def plugin_wrapper_track():
                             }
                         )
 
-                    data_cluster_plot.mask(
+                    data_cluster_plot = data_cluster_plot.mask(
                         data_cluster_plot.astype(object).eq("None")
                     ).dropna()
 
