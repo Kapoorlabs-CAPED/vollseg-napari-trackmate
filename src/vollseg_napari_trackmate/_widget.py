@@ -993,7 +993,6 @@ def plugin_wrapper_track():
                             data_cluster_plot,
                             x="Time",
                             y="Class_Name",
-                            sort=False,
                             ax=plot_ax,
                         )
 
