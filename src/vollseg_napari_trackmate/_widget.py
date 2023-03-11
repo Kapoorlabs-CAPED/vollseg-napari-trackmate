@@ -982,14 +982,14 @@ def plugin_wrapper_track():
                         )
 
                     if size_catagories_json is None:
-                        sns.lmplot(
+                        sns.stripplot(
                             data_cluster_plot,
                             x="Time",
                             y="Class",
                             ax=plot_ax,
                         )
                     if size_catagories_json is not None:
-                        sns.lmplot(
+                        sns.stripplot(
                             data_cluster_plot,
                             x="Time",
                             y="Class_Name",
