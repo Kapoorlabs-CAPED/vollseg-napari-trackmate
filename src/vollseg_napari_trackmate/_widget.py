@@ -968,6 +968,10 @@ def plugin_wrapper_track():
                             by=["Class_Name"],
                             inplace=True,
                         )
+                        data_cluster_plot.sort_values(
+                            by=["Time"],
+                            inplace=True,
+                        )
 
                     if size_catagories_json is None:
                         sns.lineplot(
@@ -981,6 +985,7 @@ def plugin_wrapper_track():
                             data_cluster_plot,
                             x="Time",
                             y="Class_Name",
+                            sort=False,
                             ax=plot_ax,
                         )
 
