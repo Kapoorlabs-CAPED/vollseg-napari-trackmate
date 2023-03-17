@@ -1963,7 +1963,6 @@ def plugin_wrapper_track():
             cluster_model=model_cluster,
             num_points=num_points,
             progress_bar=plugin.progress_bar,
-            save_dir=save_dir,
             batch_size=plugin_data.batch_size.value,
         )
         nonlocal track_centroid_tree, track_centroid_list
