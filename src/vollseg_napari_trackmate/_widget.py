@@ -826,42 +826,33 @@ def plugin_wrapper_track():
         nonlocal _to_analyze
         unique_tracks, unique_tracks_properties, track_id = pred
         features = {
-            "time": map(
-                int,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 0],
-            ),
-            "generation": map(
-                int,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 2],
-            ),
-            "speed": map(
-                float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 3],
-            ),
-            "directional_change_rate": map(
-                float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 4],
-            ),
-            "total-intensity": map(
-                float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 5],
-            ),
-            "volume_pixels": map(
-                float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 6],
-            ),
-            "acceleration": map(
-                float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 7],
-            ),
-            "cluster_class": map(
-                float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 8],
-            ),
-            "cluster_score": map(
-                float,
-                np.asarray(unique_tracks_properties, dtype="float64")[:, 9],
-            ),
+            "time": np.asarray(unique_tracks_properties, dtype="float64")[
+                :, 0
+            ],
+            "generation": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 2],
+            "speed": np.asarray(unique_tracks_properties, dtype="float64")[
+                :, 3
+            ],
+            "directional_change_rate": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 4],
+            "total-intensity": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 5],
+            "volume_pixels": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 6],
+            "acceleration": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 7],
+            "cluster_class": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 8],
+            "cluster_score": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 9],
         }
         print("Refreshing track data")
         for layer in list(plugin.viewer.value.layers):
