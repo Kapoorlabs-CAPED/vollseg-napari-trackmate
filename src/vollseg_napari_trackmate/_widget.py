@@ -1025,20 +1025,7 @@ def plugin_wrapper_track():
                 data_cluster_plot = data_cluster_plot.mask(
                     data_cluster_plot.astype(object).eq("None")
                 ).dropna()
-                if size_catagories_json is None:
-                    sns.lineplot(
-                        data_cluster_plot,
-                        x="Time",
-                        y="Class",
-                        ax=plot_ax,
-                    )
-                if size_catagories_json is not None:
-                    sns.lineplot(
-                        data_cluster_plot,
-                        x="Time",
-                        y="Class_Name",
-                        ax=plot_ax,
-                    )
+
                 if len(global_data_cluster_plot) == 0:
                     global_data_cluster_plot = data_cluster_plot
                 else:
@@ -1047,6 +1034,22 @@ def plugin_wrapper_track():
                         ignore_index=False,
                     )
 
+            if size_catagories_json is None:
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Class",
+                    hue=list(global_data_cluster_plot.index.values),
+                    ax=plot_ax,
+                )
+            if size_catagories_json is not None:
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Class_Name",
+                    hue=list(global_data_cluster_plot.index.values),
+                    ax=plot_ax,
+                )
             plot_ax.set_title("Cluster class")
             plot_ax.set_xlabel("Time (min)")
 
@@ -1054,7 +1057,11 @@ def plugin_wrapper_track():
             plot_ax = phenotype_plot_class.plot_ax
 
             sns.lineplot(
-                global_data_cluster_plot, x="Time", y="Radius", ax=plot_ax
+                global_data_cluster_plot,
+                x="Time",
+                y="Radius",
+                hue=list(global_data_cluster_plot.index.values),
+                ax=plot_ax,
             )
             plot_ax.set_title("Radius")
             plot_ax.set_xlabel("Time (min)")
@@ -1063,7 +1070,11 @@ def plugin_wrapper_track():
             plot_ax = phenotype_plot_class.plot_ax
 
             sns.lineplot(
-                global_data_cluster_plot, x="Time", y="Volume", ax=plot_ax
+                global_data_cluster_plot,
+                x="Time",
+                y="Volume",
+                hue=list(global_data_cluster_plot.index.values),
+                ax=plot_ax,
             )
             plot_ax.set_title("Volume")
             plot_ax.set_xlabel("Time (min)")
@@ -1075,6 +1086,7 @@ def plugin_wrapper_track():
                 global_data_cluster_plot,
                 x="Time",
                 y="Surface_Area",
+                hue=list(global_data_cluster_plot.index.values),
                 ax=plot_ax,
             )
             plot_ax.set_title("Surface_Area")
@@ -1087,6 +1099,7 @@ def plugin_wrapper_track():
                 global_data_cluster_plot,
                 x="Time",
                 y="Eccentricity_X",
+                hue=list(global_data_cluster_plot.index.values),
                 ax=plot_ax,
             )
             plot_ax.set_title("Eccentricity X")
@@ -1099,6 +1112,7 @@ def plugin_wrapper_track():
                 global_data_cluster_plot,
                 x="Time",
                 y="Eccentricity_Y",
+                hue=list(global_data_cluster_plot.index.values),
                 ax=plot_ax,
             )
             plot_ax.set_title("Eccentricity Y")
@@ -1111,6 +1125,7 @@ def plugin_wrapper_track():
                 global_data_cluster_plot,
                 x="Time",
                 y="Eccentricity_Z",
+                hue=list(global_data_cluster_plot.index.values),
                 ax=plot_ax,
             )
             plot_ax.set_title("Eccentricity Z")
