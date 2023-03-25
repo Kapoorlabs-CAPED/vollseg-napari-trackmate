@@ -1023,10 +1023,8 @@ def plugin_wrapper_track():
                             "Class_Score": cluster_class_score,
                         }
                     )
-
-                index_array.append(
-                    [np.ones(np.asarray(cluster_time).shape) * i]
-                )
+                current_index = np.ones(np.asarray(cluster_time).shape) * i
+                index_array.append(index for index in current_index)
 
                 data_cluster_plot = data_cluster_plot.mask(
                     data_cluster_plot.astype(object).eq("None")
@@ -1037,12 +1035,10 @@ def plugin_wrapper_track():
                 else:
                     global_data_cluster_plot = pd.concat(
                         [global_data_cluster_plot, data_cluster_plot],
-                        ignore_index=False,
+                        ignore_index=True,
                     )
-            index_array_list = [
-                item for sublist in index_array for item in sublist
-            ]
-            global_data_cluster_plot.set_index(index_array_list)
+
+            global_data_cluster_plot.set_index(index_array)
             if size_catagories_json is None:
                 sns.lineplot(
                     global_data_cluster_plot,
