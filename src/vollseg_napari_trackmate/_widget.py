@@ -1037,7 +1037,7 @@ def plugin_wrapper_track():
                         [global_data_cluster_plot, data_cluster_plot],
                         ignore_index=False,
                     )
-            global_data_cluster_plot.set_index(index_array)
+            # global_data_cluster_plot.set_index(index_array)
             print(print(global_data_cluster_plot.index), index_array)
             if size_catagories_json is None:
                 sns.lineplot(
