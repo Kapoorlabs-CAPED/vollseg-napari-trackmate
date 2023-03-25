@@ -1005,7 +1005,8 @@ def plugin_wrapper_track():
                             "Class": cluster_class,
                             "Class_Score": cluster_class_score,
                             "Class_Name": cluster_class_name,
-                        }
+                        },
+                        index=i,
                     )
                 else:
                     data_cluster_plot = pd.DataFrame(
@@ -1019,7 +1020,8 @@ def plugin_wrapper_track():
                             "Surface_Area": cluster_surface_area,
                             "Class": cluster_class,
                             "Class_Score": cluster_class_score,
-                        }
+                        },
+                        index=i,
                     )
 
                 data_cluster_plot = data_cluster_plot.mask(
