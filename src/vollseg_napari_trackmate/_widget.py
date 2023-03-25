@@ -980,6 +980,8 @@ def plugin_wrapper_track():
 
             global_data_cluster_plot = []
             for i in range(len(unique_shape_properties)):
+
+                print("in", i)
                 current_unique_shape_properties = unique_shape_properties[i]
                 cluster_time = current_unique_shape_properties[0]
                 cluster_radius = current_unique_shape_properties[1]
@@ -1035,7 +1037,7 @@ def plugin_wrapper_track():
                         [global_data_cluster_plot, data_cluster_plot],
                         ignore_index=False,
                     )
-            print(global_data_cluster_plot)
+            print(print(global_data_cluster_plot.index))
             if size_catagories_json is None:
                 sns.lineplot(
                     global_data_cluster_plot,
