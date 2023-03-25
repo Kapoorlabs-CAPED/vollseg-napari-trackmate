@@ -1074,6 +1074,18 @@ def plugin_wrapper_track():
             sns.lineplot(
                 global_data_cluster_plot,
                 x="Time",
+                y="Surface_Area",
+                ax=plot_ax,
+            )
+            plot_ax.set_title("Surface_Area")
+            plot_ax.set_xlabel("Time (min)")
+
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+
+            sns.lineplot(
+                global_data_cluster_plot,
+                x="Time",
                 y="Eccentricity_X",
                 ax=plot_ax,
             )
@@ -1102,18 +1114,6 @@ def plugin_wrapper_track():
                 ax=plot_ax,
             )
             plot_ax.set_title("Eccentricity Z")
-            plot_ax.set_xlabel("Time (min)")
-
-            phenotype_plot_class._repeat_after_plot()
-            plot_ax = phenotype_plot_class.plot_ax
-
-            sns.lineplot(
-                global_data_cluster_plot,
-                x="Time",
-                y="Surface_Area",
-                ax=plot_ax,
-            )
-            plot_ax.set_title("Surface_Area")
             plot_ax.set_xlabel("Time (min)")
 
             data_fft_plot = pd.DataFrame(
