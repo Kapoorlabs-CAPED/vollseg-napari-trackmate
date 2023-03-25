@@ -1035,13 +1035,12 @@ def plugin_wrapper_track():
                         [global_data_cluster_plot, data_cluster_plot],
                         ignore_index=False,
                     )
-
+            print(global_data_cluster_plot)
             if size_catagories_json is None:
                 sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Class",
-                    hue=list(global_data_cluster_plot.index.values),
                     ax=plot_ax,
                 )
             if size_catagories_json is not None:
@@ -1049,7 +1048,6 @@ def plugin_wrapper_track():
                     global_data_cluster_plot,
                     x="Time",
                     y="Class_Name",
-                    hue=list(global_data_cluster_plot.index.values),
                     ax=plot_ax,
                 )
             plot_ax.set_title("Cluster class")
@@ -1062,7 +1060,6 @@ def plugin_wrapper_track():
                 global_data_cluster_plot,
                 x="Time",
                 y="Radius",
-                hue=list(global_data_cluster_plot.index.values),
                 ax=plot_ax,
             )
             plot_ax.set_title("Radius")
@@ -1075,7 +1072,6 @@ def plugin_wrapper_track():
                 global_data_cluster_plot,
                 x="Time",
                 y="Volume",
-                hue=list(global_data_cluster_plot.index.values),
                 ax=plot_ax,
             )
             plot_ax.set_title("Volume")
@@ -1088,7 +1084,6 @@ def plugin_wrapper_track():
                 global_data_cluster_plot,
                 x="Time",
                 y="Surface_Area",
-                hue=list(global_data_cluster_plot.index.values),
                 ax=plot_ax,
             )
             plot_ax.set_title("Surface_Area")
@@ -1101,7 +1096,6 @@ def plugin_wrapper_track():
                 global_data_cluster_plot,
                 x="Time",
                 y="Eccentricity_X",
-                hue=list(global_data_cluster_plot.index.values),
                 ax=plot_ax,
             )
             plot_ax.set_title("Eccentricity X")
@@ -1114,7 +1108,6 @@ def plugin_wrapper_track():
                 global_data_cluster_plot,
                 x="Time",
                 y="Eccentricity_Y",
-                hue=list(global_data_cluster_plot.index.values),
                 ax=plot_ax,
             )
             plot_ax.set_title("Eccentricity Y")
@@ -1127,7 +1120,6 @@ def plugin_wrapper_track():
                 global_data_cluster_plot,
                 x="Time",
                 y="Eccentricity_Z",
-                hue=list(global_data_cluster_plot.index.values),
                 ax=plot_ax,
             )
             plot_ax.set_title("Eccentricity Z")
