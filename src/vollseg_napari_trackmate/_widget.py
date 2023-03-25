@@ -1002,7 +1002,7 @@ def plugin_wrapper_track():
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
-
+            print(data_cluster_plot)
             sns.lineplot(data_cluster_plot, x="Time", y="Radius", ax=plot_ax)
             plot_ax.set_title("Radius")
             plot_ax.set_xlabel("Time (min)")
@@ -1022,9 +1022,8 @@ def plugin_wrapper_track():
             sns.lineplot(
                 data_cluster_plot, x="Time", y="Eccentricity_X", ax=plot_ax
             )
-            plot_ax.set_title("Eccentricity_X")
+            plot_ax.set_title("Eccentricity X")
             plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Eccentricity_X")
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
@@ -1032,29 +1031,14 @@ def plugin_wrapper_track():
             sns.lineplot(
                 data_cluster_plot, x="Time", y="Eccentricity_Y", ax=plot_ax
             )
-            plot_ax.set_title("Eccentricity_Y")
+            plot_ax.set_title("Eccentricity Y")
             plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Eccentricity_Y")
-
-            phenotype_plot_class._repeat_after_plot()
-            plot_ax = phenotype_plot_class.plot_ax
-
-            sns.lineplot(
-                data_cluster_plot, x="Time", y="Eccentricity_Y", ax=plot_ax
-            )
-            plot_ax.set_title("Eccentricity_Y")
-            plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Eccentricity_Y")
-
-            phenotype_plot_class._repeat_after_plot()
-            plot_ax = phenotype_plot_class.plot_ax
 
             sns.lineplot(
                 data_cluster_plot, x="Time", y="Eccentricity_Z", ax=plot_ax
             )
-            plot_ax.set_title("Eccentricity_Z")
+            plot_ax.set_title("Eccentricity Z")
             plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Eccentricity_Z")
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
