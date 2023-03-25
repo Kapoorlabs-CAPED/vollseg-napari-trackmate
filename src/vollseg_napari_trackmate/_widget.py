@@ -1044,7 +1044,7 @@ def plugin_wrapper_track():
                 else:
                     global_data_cluster_plot = pd.concat(
                         [global_data_cluster_plot, data_cluster_plot],
-                        ignore_index=True,
+                        ignore_index=False,
                     )
 
             plot_ax.set_title("Cluster class")
