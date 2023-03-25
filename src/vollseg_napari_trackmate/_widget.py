@@ -1025,6 +1025,20 @@ def plugin_wrapper_track():
                 data_cluster_plot = data_cluster_plot.mask(
                     data_cluster_plot.astype(object).eq("None")
                 ).dropna()
+                if size_catagories_json is None:
+                    sns.lineplot(
+                        data_cluster_plot,
+                        x="Time",
+                        y="Class",
+                        ax=plot_ax,
+                    )
+                if size_catagories_json is not None:
+                    sns.lineplot(
+                        data_cluster_plot,
+                        x="Time",
+                        y="Class_Name",
+                        ax=plot_ax,
+                    )
                 if len(global_data_cluster_plot) == 0:
                     global_data_cluster_plot = data_cluster_plot
                 else:
@@ -1033,20 +1047,6 @@ def plugin_wrapper_track():
                         ignore_index=True,
                     )
 
-            if size_catagories_json is None:
-                sns.stripplot(
-                    global_data_cluster_plot,
-                    x="Time",
-                    y="Class",
-                    ax=plot_ax,
-                )
-            if size_catagories_json is not None:
-                sns.stripplot(
-                    global_data_cluster_plot,
-                    x="Time",
-                    y="Class_Name",
-                    ax=plot_ax,
-                )
             plot_ax.set_title("Cluster class")
             plot_ax.set_xlabel("Time (min)")
 
