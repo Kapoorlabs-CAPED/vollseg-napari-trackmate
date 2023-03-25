@@ -886,7 +886,7 @@ def plugin_wrapper_track():
         if _to_analyze is not None:
 
             unique_fft_properties = []
-            global_data_cluster_plot = []
+            unique_shape_properties = []
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
             plot_ax.cla()
@@ -947,39 +947,84 @@ def plugin_wrapper_track():
                     )
                     if size_catagories_json is None:
 
-                        data_cluster_plot = pd.DataFrame(
-                            {
-                                "Time": cluster_time,
-                                "Radius": cluster_radius,
-                                "Volume": cluster_volume,
-                                "Eccentricity_X": cluster_eccentricity_x,
-                                "Eccentricity_Y": cluster_eccentricity_y,
-                                "Eccentricity_Z": cluster_eccentricity_z,
-                                "Surface_Area": cluster_surface_area,
-                                "Class": cluster_class,
-                                "Class_Score": cluster_class_score,
-                            }
+                        unique_shape_properties.append(
+                            [
+                                cluster_time,
+                                cluster_radius,
+                                cluster_volume,
+                                cluster_eccentricity_x,
+                                cluster_eccentricity_y,
+                                cluster_eccentricity_z,
+                                cluster_surface_area,
+                                cluster_class,
+                                cluster_class_score,
+                            ]
                         )
 
                     if size_catagories_json is not None:
-                        data_cluster_plot = pd.DataFrame(
-                            {
-                                "Time": cluster_time,
-                                "Radius": cluster_radius,
-                                "Volume": cluster_volume,
-                                "Eccentricity_X": cluster_eccentricity_x,
-                                "Eccentricity_Y": cluster_eccentricity_y,
-                                "Eccentricity_Z": cluster_eccentricity_z,
-                                "Surface_Area": cluster_surface_area,
-                                "Class": cluster_class,
-                                "Class_Score": cluster_class_score,
-                                "Class_Name": cluster_class_name,
-                            }
+
+                        unique_shape_properties.append(
+                            [
+                                cluster_time,
+                                cluster_radius,
+                                cluster_volume,
+                                cluster_eccentricity_x,
+                                cluster_eccentricity_y,
+                                cluster_eccentricity_z,
+                                cluster_surface_area,
+                                cluster_class,
+                                cluster_class_score,
+                                cluster_class_name,
+                            ]
                         )
 
-                    data_cluster_plot = data_cluster_plot.mask(
-                        data_cluster_plot.astype(object).eq("None")
-                    ).dropna()
+            global_data_cluster_plot = []
+            for i in range(len(unique_shape_properties)):
+                current_unique_shape_properties = unique_shape_properties[i]
+                cluster_time = current_unique_shape_properties[0]
+                cluster_radius = current_unique_shape_properties[1]
+                cluster_volume = current_unique_shape_properties[2]
+                cluster_eccentricity_x = current_unique_shape_properties[3]
+                cluster_eccentricity_y = current_unique_shape_properties[4]
+                cluster_eccentricity_z = current_unique_shape_properties[5]
+                cluster_surface_area = current_unique_shape_properties[6]
+                cluster_class = current_unique_shape_properties[7]
+                cluster_class_score = current_unique_shape_properties[8]
+                if size_catagories_json is not None:
+
+                    cluster_class_name = current_unique_shape_properties[9]
+                    data_cluster_plot = pd.DataFrame(
+                        {
+                            "Time": cluster_time,
+                            "Radius": cluster_radius,
+                            "Volume": cluster_volume,
+                            "Eccentricity_X": cluster_eccentricity_x,
+                            "Eccentricity_Y": cluster_eccentricity_y,
+                            "Eccentricity_Z": cluster_eccentricity_z,
+                            "Surface_Area": cluster_surface_area,
+                            "Class": cluster_class,
+                            "Class_Score": cluster_class_score,
+                            "Class_Name": cluster_class_name,
+                        }
+                    )
+                else:
+                    data_cluster_plot = pd.DataFrame(
+                        {
+                            "Time": cluster_time,
+                            "Radius": cluster_radius,
+                            "Volume": cluster_volume,
+                            "Eccentricity_X": cluster_eccentricity_x,
+                            "Eccentricity_Y": cluster_eccentricity_y,
+                            "Eccentricity_Z": cluster_eccentricity_z,
+                            "Surface_Area": cluster_surface_area,
+                            "Class": cluster_class,
+                            "Class_Score": cluster_class_score,
+                        }
+                    )
+
+                data_cluster_plot = data_cluster_plot.mask(
+                    data_cluster_plot.astype(object).eq("None")
+                ).dropna()
                 if len(global_data_cluster_plot) == 0:
                     global_data_cluster_plot = data_cluster_plot
                 else:
@@ -989,23 +1034,22 @@ def plugin_wrapper_track():
                     )
 
             if size_catagories_json is None:
-                sns.stripplot(
+                sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Class",
-                    dodge=True,
                     ax=plot_ax,
                 )
             if size_catagories_json is not None:
-                sns.stripplot(
+                sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Class_Name",
-                    dodge=True,
                     ax=plot_ax,
                 )
             plot_ax.set_title("Cluster class")
             plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Class")
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
@@ -1015,6 +1059,7 @@ def plugin_wrapper_track():
             )
             plot_ax.set_title("Radius")
             plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Radius")
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
@@ -1024,6 +1069,7 @@ def plugin_wrapper_track():
             )
             plot_ax.set_title("Volume")
             plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Volume")
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
@@ -1069,6 +1115,7 @@ def plugin_wrapper_track():
             )
             plot_ax.set_title("Surface_Area")
             plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Surface_Area")
 
             data_fft_plot = pd.DataFrame(
                 {
