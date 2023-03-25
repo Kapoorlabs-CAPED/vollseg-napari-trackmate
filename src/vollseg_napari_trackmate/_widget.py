@@ -979,9 +979,9 @@ def plugin_wrapper_track():
                         )
 
             global_data_cluster_plot = []
+            index_array = []
             for i in range(len(unique_shape_properties)):
 
-                print("in", i)
                 current_unique_shape_properties = unique_shape_properties[i]
                 cluster_time = current_unique_shape_properties[0]
                 cluster_radius = current_unique_shape_properties[1]
@@ -1023,9 +1023,9 @@ def plugin_wrapper_track():
                             "Class_Score": cluster_class_score,
                         }
                     )
-                data_cluster_plot.set_index(
-                    np.ones(np.asarray(cluster_time).shape) * i
-                )
+
+                index_array.append(np.ones(np.asarray(cluster_time).shape) * i)
+
                 data_cluster_plot = data_cluster_plot.mask(
                     data_cluster_plot.astype(object).eq("None")
                 ).dropna()
@@ -1037,7 +1037,8 @@ def plugin_wrapper_track():
                         [global_data_cluster_plot, data_cluster_plot],
                         ignore_index=False,
                     )
-            print(print(global_data_cluster_plot.index))
+            global_data_cluster_plot.set_index(index_array)
+            print(print(global_data_cluster_plot.index), index_array)
             if size_catagories_json is None:
                 sns.lineplot(
                     global_data_cluster_plot,
@@ -1908,7 +1909,6 @@ def plugin_wrapper_track():
                 _track_ids_analyze = _both_track_ids_analyze
 
             _track_ids_analyze = list(map(int, _track_ids_analyze))
-            _to_analyze = _track_ids_analyze
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
