@@ -1021,7 +1021,9 @@ def plugin_wrapper_track():
                             "Class_Score": cluster_class_score,
                         }
                     )
-                data_cluster_plot.set_index(np.ones(cluster_time) * i)
+                data_cluster_plot.set_index(
+                    np.ones(np.asarray(cluster_time).shape) * i
+                )
                 data_cluster_plot = data_cluster_plot.mask(
                     data_cluster_plot.astype(object).eq("None")
                 ).dropna()
