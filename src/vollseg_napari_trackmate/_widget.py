@@ -1092,6 +1092,9 @@ def plugin_wrapper_track():
             plot_ax.set_title("Eccentricity Y")
             plot_ax.set_xlabel("Time (min)")
 
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+
             sns.lineplot(
                 global_data_cluster_plot,
                 x="Time",
