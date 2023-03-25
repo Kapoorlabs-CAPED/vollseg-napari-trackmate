@@ -901,8 +901,8 @@ def plugin_wrapper_track():
                             unique_track_id
                         ][k]
                     )
-                    unique_cluster_properties_tracklet = (
-                        _trackmate_objects.unique_cluster_properties[
+                    unique_shape_properties_tracklet = (
+                        _trackmate_objects.unique_shape_properties[
                             unique_track_id
                         ][k]
                     )
@@ -915,19 +915,26 @@ def plugin_wrapper_track():
 
                     (
                         cluster_time,
+                        cluster_radius,
+                        cluster_volume,
+                        cluster_eccentricity_x,
+                        cluster_eccentricity_y,
+                        cluster_eccentricity_z,
+                        cluster_surface_area,
                         cluster_class,
                         cluster_class_score,
-                    ) = unique_cluster_properties_tracklet
+                    ) = unique_shape_properties_tracklet
                     cluster_class_name = []
-                    for i in range(cluster_class.shape[0]):
-                        if cluster_class[i] is not None:
-                            cluster_class_name.append(
-                                size_catagories_json[
-                                    str(int(cluster_class[i]))
-                                ]
-                            )
-                        else:
-                            cluster_class_name.append(None)
+                    if size_catagories_json is not None:
+                        for i in range(cluster_class.shape[0]):
+                            if cluster_class[i] is not None:
+                                cluster_class_name.append(
+                                    size_catagories_json[
+                                        str(int(cluster_class[i]))
+                                    ]
+                                )
+                            else:
+                                cluster_class_name.append(None)
 
                     unique_fft_properties.append(
                         [
@@ -941,6 +948,12 @@ def plugin_wrapper_track():
                         data_cluster_plot = pd.DataFrame(
                             {
                                 "Time": cluster_time,
+                                "Radius": cluster_radius,
+                                "Volume": cluster_volume,
+                                "Eccentricity_X": cluster_eccentricity_x,
+                                "Eccentricity_Y": cluster_eccentricity_y,
+                                "Eccentricity_Z": cluster_eccentricity_z,
+                                "Surface_Area": cluster_surface_area,
                                 "Class": cluster_class,
                                 "Class_Score": cluster_class_score,
                             }
@@ -950,6 +963,12 @@ def plugin_wrapper_track():
                         data_cluster_plot = pd.DataFrame(
                             {
                                 "Time": cluster_time,
+                                "Radius": cluster_radius,
+                                "Volume": cluster_volume,
+                                "Eccentricity_X": cluster_eccentricity_x,
+                                "Eccentricity_Y": cluster_eccentricity_y,
+                                "Eccentricity_Z": cluster_eccentricity_z,
+                                "Surface_Area": cluster_surface_area,
                                 "Class": cluster_class,
                                 "Class_Score": cluster_class_score,
                                 "Class_Name": cluster_class_name,
@@ -980,6 +999,72 @@ def plugin_wrapper_track():
             plot_ax.set_title("Cluster class")
             plot_ax.set_xlabel("Time (min)")
             plot_ax.set_ylabel("Class")
+
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+
+            sns.lineplot(data_cluster_plot, x="Time", y="Radius", ax=plot_ax)
+            plot_ax.set_title("Radius")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Radius")
+
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+
+            sns.lineplot(data_cluster_plot, x="Time", y="Volume", ax=plot_ax)
+            plot_ax.set_title("Volume")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Volume")
+
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+
+            sns.lineplot(
+                data_cluster_plot, x="Time", y="Eccentricity_X", ax=plot_ax
+            )
+            plot_ax.set_title("Eccentricity_X")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Eccentricity_X")
+
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+
+            sns.lineplot(
+                data_cluster_plot, x="Time", y="Eccentricity_Y", ax=plot_ax
+            )
+            plot_ax.set_title("Eccentricity_Y")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Eccentricity_Y")
+
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+
+            sns.lineplot(
+                data_cluster_plot, x="Time", y="Eccentricity_Y", ax=plot_ax
+            )
+            plot_ax.set_title("Eccentricity_Y")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Eccentricity_Y")
+
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+
+            sns.lineplot(
+                data_cluster_plot, x="Time", y="Eccentricity_Z", ax=plot_ax
+            )
+            plot_ax.set_title("Eccentricity_Z")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Eccentricity_Z")
+
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+
+            sns.lineplot(
+                data_cluster_plot, x="Time", y="Surface_Area", ax=plot_ax
+            )
+            plot_ax.set_title("Surface_Area")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Surface_Area")
 
             data_fft_plot = pd.DataFrame(
                 {
