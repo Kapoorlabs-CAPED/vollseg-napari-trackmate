@@ -1049,7 +1049,6 @@ def plugin_wrapper_track():
                 )
             plot_ax.set_title("Cluster class")
             plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Class")
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
@@ -1059,7 +1058,6 @@ def plugin_wrapper_track():
             )
             plot_ax.set_title("Radius")
             plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Radius")
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
@@ -1069,7 +1067,6 @@ def plugin_wrapper_track():
             )
             plot_ax.set_title("Volume")
             plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Volume")
 
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
@@ -1115,7 +1112,6 @@ def plugin_wrapper_track():
             )
             plot_ax.set_title("Surface_Area")
             plot_ax.set_xlabel("Time (min)")
-            plot_ax.set_ylabel("Surface_Area")
 
             data_fft_plot = pd.DataFrame(
                 {
