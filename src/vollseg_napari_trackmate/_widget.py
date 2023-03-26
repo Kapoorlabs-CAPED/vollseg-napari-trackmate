@@ -1177,6 +1177,9 @@ def plugin_wrapper_track():
                         plot_ax.set_title("Eccentricity Z")
                         plot_ax.set_xlabel("Time (min)")
 
+                        phenotype_plot_class._repeat_after_plot()
+                        plot_ax = phenotype_plot_class.plot_ax
+
             data_fft_plot = pd.DataFrame(
                 {
                     "Frequ": unique_fft_properties[0][2],
@@ -1190,8 +1193,6 @@ def plugin_wrapper_track():
                     "Intensity": np.sum(unique_fft_properties, axis=0)[1],
                 }
             )
-            phenotype_plot_class._repeat_after_plot()
-            plot_ax = phenotype_plot_class.plot_ax
 
             sns.lineplot(data_time_plot, x="Time", y="Intensity", ax=plot_ax)
             plot_ax.set_title("Cell Intensity")
