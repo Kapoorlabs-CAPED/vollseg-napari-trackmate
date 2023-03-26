@@ -981,184 +981,201 @@ def plugin_wrapper_track():
                                 ]
                             )
 
-                global_data_cluster_plot = []
-                index_array = []
+                        global_data_cluster_plot = []
+                        index_array = []
 
-                for count, i in enumerate(range(len(unique_shape_properties))):
+                        for count, i in enumerate(
+                            range(len(unique_shape_properties))
+                        ):
 
-                    current_unique_shape_properties = unique_shape_properties[
-                        i
-                    ]
-                    cluster_time = current_unique_shape_properties[0]
-                    cluster_radius = current_unique_shape_properties[1]
-                    cluster_volume = current_unique_shape_properties[2]
-                    cluster_eccentricity_x = current_unique_shape_properties[3]
-                    cluster_eccentricity_y = current_unique_shape_properties[4]
-                    cluster_eccentricity_z = current_unique_shape_properties[5]
-                    cluster_surface_area = current_unique_shape_properties[6]
-                    cluster_class = current_unique_shape_properties[7]
-                    cluster_class_score = current_unique_shape_properties[8]
-                    if size_catagories_json is not None:
+                            current_unique_shape_properties = (
+                                unique_shape_properties[i]
+                            )
+                            cluster_time = current_unique_shape_properties[0]
+                            cluster_radius = current_unique_shape_properties[1]
+                            cluster_volume = current_unique_shape_properties[2]
+                            cluster_eccentricity_x = (
+                                current_unique_shape_properties[3]
+                            )
+                            cluster_eccentricity_y = (
+                                current_unique_shape_properties[4]
+                            )
+                            cluster_eccentricity_z = (
+                                current_unique_shape_properties[5]
+                            )
+                            cluster_surface_area = (
+                                current_unique_shape_properties[6]
+                            )
+                            cluster_class = current_unique_shape_properties[7]
+                            cluster_class_score = (
+                                current_unique_shape_properties[8]
+                            )
+                            if size_catagories_json is not None:
 
-                        cluster_class_name = current_unique_shape_properties[9]
-                        data_cluster_plot = pd.DataFrame(
-                            {
-                                "Time": cluster_time,
-                                "Radius": cluster_radius,
-                                "Volume": cluster_volume,
-                                "Eccentricity_X": cluster_eccentricity_x,
-                                "Eccentricity_Y": cluster_eccentricity_y,
-                                "Eccentricity_Z": cluster_eccentricity_z,
-                                "Surface_Area": cluster_surface_area,
-                                "Class": cluster_class,
-                                "Class_Score": cluster_class_score,
-                                "Class_Name": cluster_class_name,
-                            }
+                                cluster_class_name = (
+                                    current_unique_shape_properties[9]
+                                )
+                                data_cluster_plot = pd.DataFrame(
+                                    {
+                                        "Time": cluster_time,
+                                        "Radius": cluster_radius,
+                                        "Volume": cluster_volume,
+                                        "Eccentricity_X": cluster_eccentricity_x,
+                                        "Eccentricity_Y": cluster_eccentricity_y,
+                                        "Eccentricity_Z": cluster_eccentricity_z,
+                                        "Surface_Area": cluster_surface_area,
+                                        "Class": cluster_class,
+                                        "Class_Score": cluster_class_score,
+                                        "Class_Name": cluster_class_name,
+                                    }
+                                )
+                            else:
+                                data_cluster_plot = pd.DataFrame(
+                                    {
+                                        "Time": cluster_time,
+                                        "Radius": cluster_radius,
+                                        "Volume": cluster_volume,
+                                        "Eccentricity_X": cluster_eccentricity_x,
+                                        "Eccentricity_Y": cluster_eccentricity_y,
+                                        "Eccentricity_Z": cluster_eccentricity_z,
+                                        "Surface_Area": cluster_surface_area,
+                                        "Class": cluster_class,
+                                        "Class_Score": cluster_class_score,
+                                    }
+                                )
+
+                            for _ in range(np.asarray(cluster_time).shape[0]):
+                                index_array.append(int(count))
+
+                            data_cluster_plot = data_cluster_plot.mask(
+                                data_cluster_plot.astype(object).eq("None")
+                            ).dropna()
+
+                            if len(global_data_cluster_plot) == 0:
+                                global_data_cluster_plot = data_cluster_plot
+                            else:
+                                global_data_cluster_plot = pd.concat(
+                                    [
+                                        global_data_cluster_plot,
+                                        data_cluster_plot,
+                                    ],
+                                    ignore_index=True,
+                                )
+
+                        global_data_cluster_plot["index"] = index_array[
+                            0 : len(global_data_cluster_plot)
+                        ]
+
+                        global_data_cluster_plot = (
+                            global_data_cluster_plot.set_index("index")
                         )
-                    else:
-                        data_cluster_plot = pd.DataFrame(
-                            {
-                                "Time": cluster_time,
-                                "Radius": cluster_radius,
-                                "Volume": cluster_volume,
-                                "Eccentricity_X": cluster_eccentricity_x,
-                                "Eccentricity_Y": cluster_eccentricity_y,
-                                "Eccentricity_Z": cluster_eccentricity_z,
-                                "Surface_Area": cluster_surface_area,
-                                "Class": cluster_class,
-                                "Class_Score": cluster_class_score,
-                            }
+                        global_data_cluster_plot.drop_duplicates(
+                            global_data_cluster_plot
                         )
+                        if size_catagories_json is None:
+                            sns.lineplot(
+                                global_data_cluster_plot,
+                                x="Time",
+                                y="Class",
+                                hue=global_data_cluster_plot.index.values.tolist(),
+                                ax=plot_ax,
+                            )
+                            sns.move_legend(plot_ax, "lower right")
+                        if size_catagories_json is not None:
+                            sns.lineplot(
+                                global_data_cluster_plot,
+                                x="Time",
+                                y="Class_Name",
+                                hue=global_data_cluster_plot.index.values.tolist(),
+                                ax=plot_ax,
+                            )
+                            sns.move_legend(plot_ax, "lower right")
+                        plot_ax.set_title("Cluster class")
+                        plot_ax.set_xlabel("Time (min)")
 
-                    for _ in range(np.asarray(cluster_time).shape[0]):
-                        index_array.append(int(count))
+                        phenotype_plot_class._repeat_after_plot()
+                        plot_ax = phenotype_plot_class.plot_ax
 
-                    data_cluster_plot = data_cluster_plot.mask(
-                        data_cluster_plot.astype(object).eq("None")
-                    ).dropna()
-
-                    if len(global_data_cluster_plot) == 0:
-                        global_data_cluster_plot = data_cluster_plot
-                    else:
-                        global_data_cluster_plot = pd.concat(
-                            [global_data_cluster_plot, data_cluster_plot],
-                            ignore_index=True,
+                        sns.lineplot(
+                            global_data_cluster_plot,
+                            x="Time",
+                            y="Radius",
+                            hue=global_data_cluster_plot.index.values.tolist(),
+                            ax=plot_ax,
                         )
+                        sns.move_legend(plot_ax, "lower right")
+                        plot_ax.set_title("Radius")
+                        plot_ax.set_xlabel("Time (min)")
 
-                global_data_cluster_plot["index"] = index_array[
-                    0 : len(global_data_cluster_plot)
-                ]
+                        phenotype_plot_class._repeat_after_plot()
+                        plot_ax = phenotype_plot_class.plot_ax
 
-                global_data_cluster_plot = global_data_cluster_plot.set_index(
-                    "index"
-                )
-                global_data_cluster_plot.drop_duplicates(
-                    global_data_cluster_plot
-                )
-                if size_catagories_json is None:
-                    sns.lineplot(
-                        global_data_cluster_plot,
-                        x="Time",
-                        y="Class",
-                        hue=global_data_cluster_plot.index.values.tolist(),
-                        ax=plot_ax,
-                    )
-                    sns.move_legend(plot_ax, "lower right")
-                if size_catagories_json is not None:
-                    sns.lineplot(
-                        global_data_cluster_plot,
-                        x="Time",
-                        y="Class_Name",
-                        hue=global_data_cluster_plot.index.values.tolist(),
-                        ax=plot_ax,
-                    )
-                    sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Cluster class")
-                plot_ax.set_xlabel("Time (min)")
+                        sns.lineplot(
+                            global_data_cluster_plot,
+                            x="Time",
+                            y="Volume",
+                            hue=global_data_cluster_plot.index.values.tolist(),
+                            ax=plot_ax,
+                        )
+                        sns.move_legend(plot_ax, "lower right")
+                        plot_ax.set_title("Volume")
+                        plot_ax.set_xlabel("Time (min)")
 
-                phenotype_plot_class._repeat_after_plot()
-                plot_ax = phenotype_plot_class.plot_ax
+                        phenotype_plot_class._repeat_after_plot()
+                        plot_ax = phenotype_plot_class.plot_ax
 
-                sns.lineplot(
-                    global_data_cluster_plot,
-                    x="Time",
-                    y="Radius",
-                    hue=global_data_cluster_plot.index.values.tolist(),
-                    ax=plot_ax,
-                )
-                sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Radius")
-                plot_ax.set_xlabel("Time (min)")
+                        sns.lineplot(
+                            global_data_cluster_plot,
+                            x="Time",
+                            y="Surface_Area",
+                            hue=global_data_cluster_plot.index.values.tolist(),
+                            ax=plot_ax,
+                        )
+                        sns.move_legend(plot_ax, "lower right")
+                        plot_ax.set_title("Surface_Area")
+                        plot_ax.set_xlabel("Time (min)")
 
-                phenotype_plot_class._repeat_after_plot()
-                plot_ax = phenotype_plot_class.plot_ax
+                        phenotype_plot_class._repeat_after_plot()
+                        plot_ax = phenotype_plot_class.plot_ax
 
-                sns.lineplot(
-                    global_data_cluster_plot,
-                    x="Time",
-                    y="Volume",
-                    hue=global_data_cluster_plot.index.values.tolist(),
-                    ax=plot_ax,
-                )
-                sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Volume")
-                plot_ax.set_xlabel("Time (min)")
+                        sns.lineplot(
+                            global_data_cluster_plot,
+                            x="Time",
+                            y="Eccentricity_X",
+                            hue=global_data_cluster_plot.index.values.tolist(),
+                            ax=plot_ax,
+                        )
+                        sns.move_legend(plot_ax, "lower right")
+                        plot_ax.set_title("Eccentricity X")
+                        plot_ax.set_xlabel("Time (min)")
 
-                phenotype_plot_class._repeat_after_plot()
-                plot_ax = phenotype_plot_class.plot_ax
+                        phenotype_plot_class._repeat_after_plot()
+                        plot_ax = phenotype_plot_class.plot_ax
 
-                sns.lineplot(
-                    global_data_cluster_plot,
-                    x="Time",
-                    y="Surface_Area",
-                    hue=global_data_cluster_plot.index.values.tolist(),
-                    ax=plot_ax,
-                )
-                sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Surface_Area")
-                plot_ax.set_xlabel("Time (min)")
+                        sns.lineplot(
+                            global_data_cluster_plot,
+                            x="Time",
+                            y="Eccentricity_Y",
+                            hue=global_data_cluster_plot.index.values.tolist(),
+                            ax=plot_ax,
+                        )
+                        sns.move_legend(plot_ax, "lower right")
+                        plot_ax.set_title("Eccentricity Y")
+                        plot_ax.set_xlabel("Time (min)")
 
-                phenotype_plot_class._repeat_after_plot()
-                plot_ax = phenotype_plot_class.plot_ax
+                        phenotype_plot_class._repeat_after_plot()
+                        plot_ax = phenotype_plot_class.plot_ax
 
-                sns.lineplot(
-                    global_data_cluster_plot,
-                    x="Time",
-                    y="Eccentricity_X",
-                    hue=global_data_cluster_plot.index.values.tolist(),
-                    ax=plot_ax,
-                )
-                sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Eccentricity X")
-                plot_ax.set_xlabel("Time (min)")
-
-                phenotype_plot_class._repeat_after_plot()
-                plot_ax = phenotype_plot_class.plot_ax
-
-                sns.lineplot(
-                    global_data_cluster_plot,
-                    x="Time",
-                    y="Eccentricity_Y",
-                    hue=global_data_cluster_plot.index.values.tolist(),
-                    ax=plot_ax,
-                )
-                sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Eccentricity Y")
-                plot_ax.set_xlabel("Time (min)")
-
-                phenotype_plot_class._repeat_after_plot()
-                plot_ax = phenotype_plot_class.plot_ax
-
-                sns.lineplot(
-                    global_data_cluster_plot,
-                    x="Time",
-                    y="Eccentricity_Z",
-                    hue=global_data_cluster_plot.index.values.tolist(),
-                    ax=plot_ax,
-                )
-                sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Eccentricity Z")
-                plot_ax.set_xlabel("Time (min)")
+                        sns.lineplot(
+                            global_data_cluster_plot,
+                            x="Time",
+                            y="Eccentricity_Z",
+                            hue=global_data_cluster_plot.index.values.tolist(),
+                            ax=plot_ax,
+                        )
+                        sns.move_legend(plot_ax, "lower right")
+                        plot_ax.set_title("Eccentricity Z")
+                        plot_ax.set_xlabel("Time (min)")
 
             data_fft_plot = pd.DataFrame(
                 {
@@ -1941,6 +1958,7 @@ def plugin_wrapper_track():
                 _track_ids_analyze = _both_track_ids_analyze
 
             _track_ids_analyze = list(map(int, _track_ids_analyze))
+            _to_analyze = _track_ids_analyze
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
