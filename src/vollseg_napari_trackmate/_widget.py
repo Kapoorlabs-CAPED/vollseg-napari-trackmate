@@ -1053,6 +1053,7 @@ def plugin_wrapper_track():
                     hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
+                sns.move_legend(plot_ax, "lower right")
             if size_catagories_json is not None:
                 sns.lineplot(
                     global_data_cluster_plot,
@@ -1061,6 +1062,7 @@ def plugin_wrapper_track():
                     hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
+                sns.move_legend(plot_ax, "lower right")
             plot_ax.set_title("Cluster class")
             plot_ax.set_xlabel("Time (min)")
 
@@ -1074,6 +1076,7 @@ def plugin_wrapper_track():
                 hue=global_data_cluster_plot.index.values.tolist(),
                 ax=plot_ax,
             )
+            sns.move_legend(plot_ax, "lower right")
             plot_ax.set_title("Radius")
             plot_ax.set_xlabel("Time (min)")
 
@@ -1087,6 +1090,7 @@ def plugin_wrapper_track():
                 hue=global_data_cluster_plot.index.values.tolist(),
                 ax=plot_ax,
             )
+            sns.move_legend(plot_ax, "lower right")
             plot_ax.set_title("Volume")
             plot_ax.set_xlabel("Time (min)")
 
@@ -1100,6 +1104,7 @@ def plugin_wrapper_track():
                 hue=global_data_cluster_plot.index.values.tolist(),
                 ax=plot_ax,
             )
+            sns.move_legend(plot_ax, "lower right")
             plot_ax.set_title("Surface_Area")
             plot_ax.set_xlabel("Time (min)")
 
@@ -1113,6 +1118,7 @@ def plugin_wrapper_track():
                 hue=global_data_cluster_plot.index.values.tolist(),
                 ax=plot_ax,
             )
+            sns.move_legend(plot_ax, "lower right")
             plot_ax.set_title("Eccentricity X")
             plot_ax.set_xlabel("Time (min)")
 
@@ -1126,6 +1132,7 @@ def plugin_wrapper_track():
                 hue=global_data_cluster_plot.index.values.tolist(),
                 ax=plot_ax,
             )
+            sns.move_legend(plot_ax, "lower right")
             plot_ax.set_title("Eccentricity Y")
             plot_ax.set_xlabel("Time (min)")
 
@@ -1139,6 +1146,7 @@ def plugin_wrapper_track():
                 hue=global_data_cluster_plot.index.values.tolist(),
                 ax=plot_ax,
             )
+            sns.move_legend(plot_ax, "lower right")
             plot_ax.set_title("Eccentricity Z")
             plot_ax.set_xlabel("Time (min)")
 
