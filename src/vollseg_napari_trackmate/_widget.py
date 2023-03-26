@@ -1062,123 +1062,123 @@ def plugin_wrapper_track():
                                     ignore_index=True,
                                 )
 
-                        global_data_cluster_plot["index"] = index_array[
-                            0 : len(global_data_cluster_plot)
-                        ]
+                    global_data_cluster_plot["index"] = index_array[
+                        0 : len(global_data_cluster_plot)
+                    ]
 
-                        global_data_cluster_plot = (
-                            global_data_cluster_plot.set_index("index")
-                        )
-                        global_data_cluster_plot.drop_duplicates(
-                            global_data_cluster_plot
-                        )
-                        if size_catagories_json is None:
-                            sns.lineplot(
-                                global_data_cluster_plot,
-                                x="Time",
-                                y="Class",
-                                hue=global_data_cluster_plot.index.values.tolist(),
-                                ax=plot_ax,
-                            )
-                            sns.move_legend(plot_ax, "lower right")
-                        if size_catagories_json is not None:
-                            sns.lineplot(
-                                global_data_cluster_plot,
-                                x="Time",
-                                y="Class_Name",
-                                hue=global_data_cluster_plot.index.values.tolist(),
-                                ax=plot_ax,
-                            )
-                            sns.move_legend(plot_ax, "lower right")
-                        plot_ax.set_title("Cluster class")
-                        plot_ax.set_xlabel("Time (min)")
-
-                        phenotype_plot_class._repeat_after_plot()
-                        plot_ax = phenotype_plot_class.plot_ax
-
+                    global_data_cluster_plot = (
+                        global_data_cluster_plot.set_index("index")
+                    )
+                    global_data_cluster_plot.drop_duplicates(
+                        global_data_cluster_plot
+                    )
+                    if size_catagories_json is None:
                         sns.lineplot(
                             global_data_cluster_plot,
                             x="Time",
-                            y="Radius",
+                            y="Class",
                             hue=global_data_cluster_plot.index.values.tolist(),
                             ax=plot_ax,
                         )
                         sns.move_legend(plot_ax, "lower right")
-                        plot_ax.set_title("Radius")
-                        plot_ax.set_xlabel("Time (min)")
-
-                        phenotype_plot_class._repeat_after_plot()
-                        plot_ax = phenotype_plot_class.plot_ax
-
+                    if size_catagories_json is not None:
                         sns.lineplot(
                             global_data_cluster_plot,
                             x="Time",
-                            y="Volume",
+                            y="Class_Name",
                             hue=global_data_cluster_plot.index.values.tolist(),
                             ax=plot_ax,
                         )
                         sns.move_legend(plot_ax, "lower right")
-                        plot_ax.set_title("Volume")
-                        plot_ax.set_xlabel("Time (min)")
+                    plot_ax.set_title("Cluster class")
+                    plot_ax.set_xlabel("Time (min)")
 
-                        phenotype_plot_class._repeat_after_plot()
-                        plot_ax = phenotype_plot_class.plot_ax
+                    phenotype_plot_class._repeat_after_plot()
+                    plot_ax = phenotype_plot_class.plot_ax
 
-                        sns.lineplot(
-                            global_data_cluster_plot,
-                            x="Time",
-                            y="Surface_Area",
-                            hue=global_data_cluster_plot.index.values.tolist(),
-                            ax=plot_ax,
-                        )
-                        sns.move_legend(plot_ax, "lower right")
-                        plot_ax.set_title("Surface_Area")
-                        plot_ax.set_xlabel("Time (min)")
+                    sns.lineplot(
+                        global_data_cluster_plot,
+                        x="Time",
+                        y="Radius",
+                        hue=global_data_cluster_plot.index.values.tolist(),
+                        ax=plot_ax,
+                    )
+                    sns.move_legend(plot_ax, "lower right")
+                    plot_ax.set_title("Radius")
+                    plot_ax.set_xlabel("Time (min)")
 
-                        phenotype_plot_class._repeat_after_plot()
-                        plot_ax = phenotype_plot_class.plot_ax
+                    phenotype_plot_class._repeat_after_plot()
+                    plot_ax = phenotype_plot_class.plot_ax
 
-                        sns.lineplot(
-                            global_data_cluster_plot,
-                            x="Time",
-                            y="Eccentricity_X",
-                            hue=global_data_cluster_plot.index.values.tolist(),
-                            ax=plot_ax,
-                        )
-                        sns.move_legend(plot_ax, "lower right")
-                        plot_ax.set_title("Eccentricity X")
-                        plot_ax.set_xlabel("Time (min)")
+                    sns.lineplot(
+                        global_data_cluster_plot,
+                        x="Time",
+                        y="Volume",
+                        hue=global_data_cluster_plot.index.values.tolist(),
+                        ax=plot_ax,
+                    )
+                    sns.move_legend(plot_ax, "lower right")
+                    plot_ax.set_title("Volume")
+                    plot_ax.set_xlabel("Time (min)")
 
-                        phenotype_plot_class._repeat_after_plot()
-                        plot_ax = phenotype_plot_class.plot_ax
+                    phenotype_plot_class._repeat_after_plot()
+                    plot_ax = phenotype_plot_class.plot_ax
 
-                        sns.lineplot(
-                            global_data_cluster_plot,
-                            x="Time",
-                            y="Eccentricity_Y",
-                            hue=global_data_cluster_plot.index.values.tolist(),
-                            ax=plot_ax,
-                        )
-                        sns.move_legend(plot_ax, "lower right")
-                        plot_ax.set_title("Eccentricity Y")
-                        plot_ax.set_xlabel("Time (min)")
+                    sns.lineplot(
+                        global_data_cluster_plot,
+                        x="Time",
+                        y="Surface_Area",
+                        hue=global_data_cluster_plot.index.values.tolist(),
+                        ax=plot_ax,
+                    )
+                    sns.move_legend(plot_ax, "lower right")
+                    plot_ax.set_title("Surface_Area")
+                    plot_ax.set_xlabel("Time (min)")
 
-                        phenotype_plot_class._repeat_after_plot()
-                        plot_ax = phenotype_plot_class.plot_ax
+                    phenotype_plot_class._repeat_after_plot()
+                    plot_ax = phenotype_plot_class.plot_ax
 
-                        sns.lineplot(
-                            global_data_cluster_plot,
-                            x="Time",
-                            y="Eccentricity_Z",
-                            hue=global_data_cluster_plot.index.values.tolist(),
-                            ax=plot_ax,
-                        )
-                        sns.move_legend(plot_ax, "lower right")
-                        plot_ax.set_title("Eccentricity Z")
-                        plot_ax.set_xlabel("Time (min)")
+                    sns.lineplot(
+                        global_data_cluster_plot,
+                        x="Time",
+                        y="Eccentricity_X",
+                        hue=global_data_cluster_plot.index.values.tolist(),
+                        ax=plot_ax,
+                    )
+                    sns.move_legend(plot_ax, "lower right")
+                    plot_ax.set_title("Eccentricity X")
+                    plot_ax.set_xlabel("Time (min)")
 
-                        phenotype_plot_class._repeat_after_plot()
-                        plot_ax = phenotype_plot_class.plot_ax
+                    phenotype_plot_class._repeat_after_plot()
+                    plot_ax = phenotype_plot_class.plot_ax
+
+                    sns.lineplot(
+                        global_data_cluster_plot,
+                        x="Time",
+                        y="Eccentricity_Y",
+                        hue=global_data_cluster_plot.index.values.tolist(),
+                        ax=plot_ax,
+                    )
+                    sns.move_legend(plot_ax, "lower right")
+                    plot_ax.set_title("Eccentricity Y")
+                    plot_ax.set_xlabel("Time (min)")
+
+                    phenotype_plot_class._repeat_after_plot()
+                    plot_ax = phenotype_plot_class.plot_ax
+
+                    sns.lineplot(
+                        global_data_cluster_plot,
+                        x="Time",
+                        y="Eccentricity_Z",
+                        hue=global_data_cluster_plot.index.values.tolist(),
+                        ax=plot_ax,
+                    )
+                    sns.move_legend(plot_ax, "lower right")
+                    plot_ax.set_title("Eccentricity Z")
+                    plot_ax.set_xlabel("Time (min)")
+
+                    phenotype_plot_class._repeat_after_plot()
+                    plot_ax = phenotype_plot_class.plot_ax
 
             data_fft_plot = pd.DataFrame(
                 {
