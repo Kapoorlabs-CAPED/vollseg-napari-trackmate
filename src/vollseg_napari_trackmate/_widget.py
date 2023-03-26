@@ -1959,7 +1959,8 @@ def plugin_wrapper_track():
                 _track_ids_analyze = _both_track_ids_analyze
 
             _track_ids_analyze = list(map(int, _track_ids_analyze))
-            _to_analyze = _track_ids_analyze
+            if _to_analyze is None:
+                _to_analyze = _track_ids_analyze
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
