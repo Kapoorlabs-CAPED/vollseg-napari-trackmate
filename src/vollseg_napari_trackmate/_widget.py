@@ -1026,7 +1026,7 @@ def plugin_wrapper_track():
                 current_index = np.ones(np.asarray(cluster_time).shape) * i
 
                 for index in current_index:
-                    index_array.append(index)
+                    index_array.append(int(index))
 
                 data_cluster_plot = data_cluster_plot.mask(
                     data_cluster_plot.astype(object).eq("None")
@@ -1039,7 +1039,10 @@ def plugin_wrapper_track():
                         [global_data_cluster_plot, data_cluster_plot],
                         ignore_index=True,
                     )
-            global_data_cluster_plot.set_index(index_array)
+            global_data_cluster_plot.update({"index": index_array})
+            global_data_cluster_plot = global_data_cluster_plot.set_index(
+                "index"
+            )
             if size_catagories_json is None:
                 sns.lineplot(
                     global_data_cluster_plot,
