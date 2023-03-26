@@ -1044,6 +1044,8 @@ def plugin_wrapper_track():
             global_data_cluster_plot["index"] = index_array[
                 0 : len(global_data_cluster_plot)
             ]
+
+            print(global_data_cluster_plot["index"])
             global_data_cluster_plot = global_data_cluster_plot.set_index(
                 "index"
             )
