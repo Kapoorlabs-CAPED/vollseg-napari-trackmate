@@ -1025,7 +1025,7 @@ def plugin_wrapper_track():
                         }
                     )
 
-                for _ in np.asarray(cluster_time).shape[0]:
+                for _ in range(np.asarray(cluster_time).shape[0]):
                     index_array.append(int(count))
 
                 data_cluster_plot = data_cluster_plot.mask(
