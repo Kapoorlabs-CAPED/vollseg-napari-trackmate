@@ -1024,9 +1024,8 @@ def plugin_wrapper_track():
                             "Class_Score": cluster_class_score,
                         }
                     )
-                current_index = np.ones(np.asarray(cluster_time).shape)
 
-                for _ in current_index:
+                for _ in np.asarray(cluster_time).shape[0]:
                     index_array.append(int(count))
 
                 data_cluster_plot = data_cluster_plot.mask(
@@ -1045,7 +1044,6 @@ def plugin_wrapper_track():
                 0 : len(global_data_cluster_plot)
             ]
 
-            print(global_data_cluster_plot["index"])
             global_data_cluster_plot = global_data_cluster_plot.set_index(
                 "index"
             )
