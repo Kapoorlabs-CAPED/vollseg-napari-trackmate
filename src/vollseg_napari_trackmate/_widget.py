@@ -980,7 +980,8 @@ def plugin_wrapper_track():
 
             global_data_cluster_plot = []
             index_array = []
-            for i in range(len(unique_shape_properties)):
+
+            for count, i in enumerate(range(len(unique_shape_properties))):
 
                 current_unique_shape_properties = unique_shape_properties[i]
                 cluster_time = current_unique_shape_properties[0]
@@ -1023,10 +1024,10 @@ def plugin_wrapper_track():
                             "Class_Score": cluster_class_score,
                         }
                     )
-                current_index = np.ones(np.asarray(cluster_time).shape) * i
+                current_index = np.ones(np.asarray(cluster_time).shape)
 
-                for index in current_index:
-                    index_array.append(int(index))
+                for _ in current_index:
+                    index_array.append(int(count))
 
                 data_cluster_plot = data_cluster_plot.mask(
                     data_cluster_plot.astype(object).eq("None")
