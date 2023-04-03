@@ -950,9 +950,8 @@ def plugin_wrapper_track():
                             cluster_time,
                             cluster_radius,
                             cluster_volume,
-                            cluster_eccentricity_x,
-                            cluster_eccentricity_y,
-                            cluster_eccentricity_z,
+                            cluster_eccentricity_comp_first,
+                            cluster_eccentricity_comp_second,
                             cluster_surface_area,
                             cluster_class,
                             cluster_class_score,
@@ -976,9 +975,8 @@ def plugin_wrapper_track():
                                     cluster_time,
                                     cluster_radius,
                                     cluster_volume,
-                                    cluster_eccentricity_x,
-                                    cluster_eccentricity_y,
-                                    cluster_eccentricity_z,
+                                    cluster_eccentricity_comp_first,
+                                    cluster_eccentricity_comp_second,
                                     cluster_surface_area,
                                     cluster_class,
                                     cluster_class_score,
@@ -992,9 +990,8 @@ def plugin_wrapper_track():
                                     cluster_time,
                                     cluster_radius,
                                     cluster_volume,
-                                    cluster_eccentricity_x,
-                                    cluster_eccentricity_y,
-                                    cluster_eccentricity_z,
+                                    cluster_eccentricity_comp_first,
+                                    cluster_eccentricity_comp_second,
                                     cluster_surface_area,
                                     cluster_class,
                                     cluster_class_score,
@@ -1015,35 +1012,32 @@ def plugin_wrapper_track():
                             cluster_time = current_unique_shape_properties[0]
                             cluster_radius = current_unique_shape_properties[1]
                             cluster_volume = current_unique_shape_properties[2]
-                            cluster_eccentricity_x = (
+                            cluster_eccentricity_comp_first = (
                                 current_unique_shape_properties[3]
                             )
-                            cluster_eccentricity_y = (
+                            cluster_eccentricity_comp_second = (
                                 current_unique_shape_properties[4]
                             )
-                            cluster_eccentricity_z = (
+
+                            cluster_surface_area = (
                                 current_unique_shape_properties[5]
                             )
-                            cluster_surface_area = (
-                                current_unique_shape_properties[6]
-                            )
-                            cluster_class = current_unique_shape_properties[7]
+                            cluster_class = current_unique_shape_properties[6]
                             cluster_class_score = (
-                                current_unique_shape_properties[8]
+                                current_unique_shape_properties[7]
                             )
                             if size_catagories_json is not None:
 
                                 cluster_class_name = (
-                                    current_unique_shape_properties[9]
+                                    current_unique_shape_properties[8]
                                 )
                                 data_cluster_plot = pd.DataFrame(
                                     {
                                         "Time": cluster_time,
                                         "Radius": cluster_radius,
                                         "Volume": cluster_volume,
-                                        "Eccentricity_X": cluster_eccentricity_x,
-                                        "Eccentricity_Y": cluster_eccentricity_y,
-                                        "Eccentricity_Z": cluster_eccentricity_z,
+                                        "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
+                                        "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
                                         "Surface_Area": cluster_surface_area,
                                         "Class": cluster_class,
                                         "Class_Score": cluster_class_score,
@@ -1056,9 +1050,8 @@ def plugin_wrapper_track():
                                         "Time": cluster_time,
                                         "Radius": cluster_radius,
                                         "Volume": cluster_volume,
-                                        "Eccentricity_X": cluster_eccentricity_x,
-                                        "Eccentricity_Y": cluster_eccentricity_y,
-                                        "Eccentricity_Z": cluster_eccentricity_z,
+                                        "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
+                                        "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
                                         "Surface_Area": cluster_surface_area,
                                         "Class": cluster_class,
                                         "Class_Score": cluster_class_score,
@@ -1163,12 +1156,12 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
-                    y="Eccentricity_X",
+                    y="Eccentricity_Comp_First",
                     hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
                 sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Eccentricity X")
+                plot_ax.set_title("Eccentricity Comp First")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
@@ -1177,26 +1170,12 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
-                    y="Eccentricity_Y",
+                    y="Eccentricity_Comp_Second",
                     hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
                 sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Eccentricity Y")
-                plot_ax.set_xlabel("Time (min)")
-
-                phenotype_plot_class._repeat_after_plot()
-                plot_ax = phenotype_plot_class.plot_ax
-
-                sns.lineplot(
-                    global_data_cluster_plot,
-                    x="Time",
-                    y="Eccentricity_Z",
-                    hue=global_data_cluster_plot.index.values.tolist(),
-                    ax=plot_ax,
-                )
-                sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Eccentricity Z")
+                plot_ax.set_title("Eccentricity Comp Second")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
