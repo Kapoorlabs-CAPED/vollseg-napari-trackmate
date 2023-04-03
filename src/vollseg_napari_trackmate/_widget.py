@@ -853,19 +853,19 @@ def plugin_wrapper_track():
             "generation": np.asarray(
                 unique_tracks_properties, dtype="float64"
             )[:, 2],
-            "speed": np.asarray(unique_tracks_properties, dtype="float64")[
+            "radius": np.asarray(unique_tracks_properties, dtype="float64")[
                 :, 3
             ],
-            "directional_change_rate": np.asarray(
-                unique_tracks_properties, dtype="float64"
-            )[:, 4],
-            "total-intensity": np.asarray(
-                unique_tracks_properties, dtype="float64"
-            )[:, 5],
             "volume_pixels": np.asarray(
                 unique_tracks_properties, dtype="float64"
+            )[:, 4],
+            "eccentricity_comp_first": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 5],
+            "eccentricity_comp_second": np.asarray(
+                unique_tracks_properties, dtype="float64"
             )[:, 6],
-            "acceleration": np.asarray(
+            "surface_area": np.asarray(
                 unique_tracks_properties, dtype="float64"
             )[:, 7],
             "cluster_class": np.asarray(
@@ -874,6 +874,21 @@ def plugin_wrapper_track():
             "cluster_score": np.asarray(
                 unique_tracks_properties, dtype="float64"
             )[:, 9],
+            "total_intensity": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 10],
+            "speed": np.asarray(unique_tracks_properties, dtype="float64")[
+                :, 11
+            ],
+            "directional_rate_change": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 12],
+            "acceleration": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 13],
+            "distance_cell_mask": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 14],
         }
         print("Refreshing track data")
         for layer in list(plugin.viewer.value.layers):
@@ -883,9 +898,7 @@ def plugin_wrapper_track():
                 or "Track_points" == layer.name
             ):
                 plugin.viewer.value.layers.remove(layer)
-        vertices = unique_tracks[:, 1:]
-        plugin.viewer.value.add_points(vertices, name="Track_points", size=1)
-        print("Added vertices")
+
         plugin.viewer.value.add_tracks(
             unique_tracks,
             name="Track",
@@ -1430,6 +1443,22 @@ def plugin_wrapper_track():
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_distance_cell_mask,
+                    _trackmate_objects.mitotic_var_distance_cell_mask,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Cell-tissue distance")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
                     _trackmate_objects.mitotic_mean_directional_change,
                     _trackmate_objects.mitotic_var_directional_change,
                     linestyle="None",
@@ -1580,6 +1609,22 @@ def plugin_wrapper_track():
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_distance_cell_mask,
+                    _trackmate_objects.non_mitotic_var_distance_cell_mask,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Cell-tissue distance")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_directional_change,
                     _trackmate_objects.non_mitotic_var_directional_change,
                     linestyle="None",
@@ -1724,6 +1769,22 @@ def plugin_wrapper_track():
 
                     stat_plot_class._repeat_after_plot()
                     plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.all_mean_distance_cell_mask,
+                    _trackmate_objects.all_var_distance_cell_mask,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Cell-tissue distance")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
