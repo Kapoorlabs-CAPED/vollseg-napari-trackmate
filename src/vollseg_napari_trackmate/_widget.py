@@ -232,9 +232,18 @@ def plugin_wrapper_track():
                 encoder_type=config_cloud_auto_encoder["encoder_type"],
                 decoder_type=config_cloud_auto_encoder["decoder_type"],
             )
-            checkpoint = torch.load(
-                os.path.join(path_auto.parent, path_auto.stem + ".pt")
-            )
+            try:
+                checkpoint = torch.load(
+                    os.path.join(path_auto.parent, path_auto.stem + ".pt"),
+                    map_location=lambda storage, loc: storage,
+                )
+            except ValueError:
+
+                checkpoint = torch.load(
+                    os.path.join(path_auto.parent, path_auto.stem + ".pt"),
+                    map_location=torch.device("cpu"),
+                )
+
             autoencoder.load_state_dict(checkpoint["model_state_dict"])
             return autoencoder
 
