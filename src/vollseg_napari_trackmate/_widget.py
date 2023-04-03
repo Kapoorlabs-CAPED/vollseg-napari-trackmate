@@ -912,15 +912,17 @@ def plugin_wrapper_track():
 
     def show_phenotype():
 
-        nonlocal _to_analyze, size_catagories_json
+        nonlocal _to_analyze, size_catagories_json, _trackmate_objects
 
         phenotype_plot_class._reset_container(
             phenotype_plot_class.scroll_layout
         )
-        if _to_analyze is not None:
+
+        if _to_analyze is not None and _trackmate_objects is not None:
 
             unique_fft_properties = []
             unique_shape_properties = []
+            unique_dynamic_properties = []
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
             plot_ax.cla()
@@ -969,6 +971,20 @@ def plugin_wrapper_track():
                             cluster_class,
                             cluster_class_score,
                         ) = unique_shape_properties_tracklet
+
+                        unique_dynamic_properties_tracklet = (
+                            _trackmate_objects.unique_dynamic_properties[
+                                unique_track_id
+                            ][k]
+                        )
+                        (
+                            cluster_time,
+                            cluster_speed,
+                            cluster_directional_rate_change,
+                            cluster_acceleration,
+                            cluster_distance_cell_mask,
+                        ) = unique_dynamic_properties_tracklet
+
                         cluster_class_name = []
                         if size_catagories_json is not None:
                             for i in range(cluster_class.shape[0]):
@@ -981,6 +997,15 @@ def plugin_wrapper_track():
                                 else:
                                     cluster_class_name.append(None)
 
+                        unique_dynamic_properties.append(
+                            [
+                                cluster_time,
+                                cluster_speed,
+                                cluster_directional_rate_change,
+                                cluster_acceleration,
+                                cluster_distance_cell_mask,
+                            ]
+                        )
                         if size_catagories_json is None:
 
                             unique_shape_properties.append(
@@ -1014,6 +1039,64 @@ def plugin_wrapper_track():
 
                         global_data_cluster_plot = []
                         index_array = []
+
+                        global_data_dynamic_cluster_plot = []
+                        index_dynamic_array = []
+
+                        for count, i in enumerate(
+                            range(len(unique_dynamic_properties))
+                        ):
+
+                            current_unique_dynamic_properties = (
+                                unique_dynamic_properties[i]
+                            )
+                            cluster_time = current_unique_dynamic_properties[0]
+                            cluster_speed = current_unique_dynamic_properties[
+                                1
+                            ]
+                            cluster_directional_rate_change = (
+                                current_unique_dynamic_properties[2]
+                            )
+                            cluster_acceleration = (
+                                current_unique_dynamic_properties[3]
+                            )
+                            cluster_distance_cell_mask = (
+                                current_unique_dynamic_properties[4]
+                            )
+
+                            data_dynamic_cluster_plot = pd.DataFrame(
+                                {
+                                    "Time": cluster_time,
+                                    "Speed": cluster_speed,
+                                    "Directional Change Rate": cluster_directional_rate_change,
+                                    "Acceleration": cluster_acceleration,
+                                    "Distance cell to tissue": cluster_distance_cell_mask,
+                                }
+                            )
+
+                            for _ in range(np.asarray(cluster_time).shape[0]):
+                                index_array.append(int(count))
+
+                            data_dynamic_cluster_plot = (
+                                data_dynamic_cluster_plot.mask(
+                                    data_dynamic_cluster_plot.astype(
+                                        object
+                                    ).eq("None")
+                                ).dropna()
+                            )
+
+                            if len(global_data_dynamic_cluster_plot) == 0:
+                                global_data_dynamic_cluster_plot = (
+                                    data_dynamic_cluster_plot
+                                )
+                            else:
+                                global_data_dynamic_cluster_plot = pd.concat(
+                                    [
+                                        global_data_dynamic_cluster_plot,
+                                        data_dynamic_cluster_plot,
+                                    ],
+                                    ignore_index=True,
+                                )
 
                         for count, i in enumerate(
                             range(len(unique_shape_properties))
@@ -1090,6 +1173,90 @@ def plugin_wrapper_track():
                                 )
 
             if len(_to_analyze) <= 2:
+
+                global_data_dynamic_cluster_plot[
+                    "index"
+                ] = index_dynamic_array[
+                    0 : len(global_data_dynamic_cluster_plot)
+                ]
+
+                global_data_dynamic_cluster_plot = (
+                    global_data_dynamic_cluster_plot.set_index("index")
+                )
+                global_data_dynamic_cluster_plot.drop_duplicates(
+                    global_data_dynamic_cluster_plot
+                )
+
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Speed",
+                    hue=global_data_cluster_plot.index.values.tolist(),
+                    ax=plot_ax,
+                )
+                sns.move_legend(plot_ax, "lower right")
+                plot_ax.set_title("Speed")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Speed",
+                    hue=global_data_cluster_plot.index.values.tolist(),
+                    ax=plot_ax,
+                )
+                sns.move_legend(plot_ax, "lower right")
+                plot_ax.set_title("Speed")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Directional Change Rate",
+                    hue=global_data_cluster_plot.index.values.tolist(),
+                    ax=plot_ax,
+                )
+                sns.move_legend(plot_ax, "lower right")
+                plot_ax.set_title("Directional Change Rate")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Acceleration",
+                    hue=global_data_cluster_plot.index.values.tolist(),
+                    ax=plot_ax,
+                )
+                sns.move_legend(plot_ax, "lower right")
+                plot_ax.set_title("Acceleration")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Distance cell to tissue",
+                    hue=global_data_cluster_plot.index.values.tolist(),
+                    ax=plot_ax,
+                )
+                sns.move_legend(plot_ax, "lower right")
+                plot_ax.set_title("Distqnce cell to tissue")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+
                 global_data_cluster_plot["index"] = index_array[
                     0 : len(global_data_cluster_plot)
                 ]
@@ -2088,6 +2255,7 @@ def plugin_wrapper_track():
         ):
 
             track_id = value
+
             show_track(track_id)
 
     widget_for_cloud_auto_encoder_modeltype = {
