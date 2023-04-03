@@ -276,11 +276,23 @@ def plugin_wrapper_track():
                     FileNotFoundError(f"{path_cluster} is not a file")
                 )
 
-                checkpoint = torch.load(
-                    os.path.join(
-                        path_cluster.parent, path_cluster.stem + ".pt"
+                try:
+                    checkpoint = torch.load(
+                        os.path.join(
+                            path_cluster.parent, path_cluster.stem + ".pt"
+                        ),
+                        map_location=lambda storage, loc: storage,
                     )
-                )
+                except ValueError:
+
+                    checkpoint = (
+                        torch.load(
+                            os.path.join(
+                                path_cluster.parent, path_cluster.stem + ".pt"
+                            ),
+                            map_location=torch.device("cpu"),
+                        ),
+                    )
                 num_clusters = checkpoint["model_state_dict"][
                     "clustering_layer.weight"
                 ].shape[0]
