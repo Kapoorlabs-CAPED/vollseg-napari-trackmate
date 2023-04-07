@@ -880,7 +880,7 @@ def plugin_wrapper_track():
             "speed": np.asarray(unique_tracks_properties, dtype="float64")[
                 :, 11
             ],
-            "directional_rate_change": np.asarray(
+            "motion_angle": np.asarray(
                 unique_tracks_properties, dtype="float64"
             )[:, 12],
             "acceleration": np.asarray(
@@ -889,6 +889,12 @@ def plugin_wrapper_track():
             "distance_cell_mask": np.asarray(
                 unique_tracks_properties, dtype="float64"
             )[:, 14],
+            "radial_angle": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 15],
+            "cell_axis_mask": np.asarray(
+                unique_tracks_properties, dtype="float64"
+            )[:, 16],
         }
         print("Refreshing track data")
         for layer in list(plugin.viewer.value.layers):
@@ -980,7 +986,7 @@ def plugin_wrapper_track():
                         (
                             cluster_time,
                             cluster_speed,
-                            cluster_directional_rate_change,
+                            cluster_motion_angle,
                             cluster_acceleration,
                             cluster_distance_cell_mask,
                         ) = unique_dynamic_properties_tracklet
@@ -1001,7 +1007,7 @@ def plugin_wrapper_track():
                             [
                                 cluster_time,
                                 cluster_speed,
-                                cluster_directional_rate_change,
+                                cluster_motion_angle,
                                 cluster_acceleration,
                                 cluster_distance_cell_mask,
                             ]
@@ -1054,7 +1060,7 @@ def plugin_wrapper_track():
                             cluster_speed = current_unique_dynamic_properties[
                                 1
                             ]
-                            cluster_directional_rate_change = (
+                            cluster_motion_angle = (
                                 current_unique_dynamic_properties[2]
                             )
                             cluster_acceleration = (
@@ -1068,7 +1074,7 @@ def plugin_wrapper_track():
                                 {
                                     "Time": cluster_time,
                                     "Speed": cluster_speed,
-                                    "Directional Change Rate": cluster_directional_rate_change,
+                                    "Directional Change Rate": cluster_motion_angle,
                                     "Acceleration": cluster_acceleration,
                                     "Distance cell to tissue": cluster_distance_cell_mask,
                                 }
