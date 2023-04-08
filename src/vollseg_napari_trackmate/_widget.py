@@ -847,53 +847,53 @@ def plugin_wrapper_track():
         nonlocal _to_analyze
         unique_tracks, unique_tracks_properties, track_id = pred
         features = {
-            "time": np.asarray(unique_tracks_properties, dtype="float64")[
+            "time": np.asarray(unique_tracks_properties, dtype="float16")[
                 :, 0
             ],
             "generation": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 2],
-            "radius": np.asarray(unique_tracks_properties, dtype="float64")[
+            "radius": np.asarray(unique_tracks_properties, dtype="float16")[
                 :, 3
             ],
             "volume_pixels": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 4],
             "eccentricity_comp_first": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 5],
             "eccentricity_comp_second": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 6],
             "surface_area": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 7],
             "cluster_class": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 8],
             "cluster_score": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 9],
             "total_intensity": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 10],
-            "speed": np.asarray(unique_tracks_properties, dtype="float64")[
+            "speed": np.asarray(unique_tracks_properties, dtype="float16")[
                 :, 11
             ],
             "motion_angle": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 12],
             "acceleration": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 13],
             "distance_cell_mask": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 14],
             "radial_angle": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 15],
             "cell_axis_mask": np.asarray(
-                unique_tracks_properties, dtype="float64"
+                unique_tracks_properties, dtype="float16"
             )[:, 16],
         }
         print("Refreshing track data")
@@ -989,6 +989,8 @@ def plugin_wrapper_track():
                             cluster_motion_angle,
                             cluster_acceleration,
                             cluster_distance_cell_mask,
+                            cluster_radial_angle,
+                            cluster_cell_axis_mask,
                         ) = unique_dynamic_properties_tracklet
 
                         cluster_class_name = []
@@ -1010,6 +1012,8 @@ def plugin_wrapper_track():
                                 cluster_motion_angle,
                                 cluster_acceleration,
                                 cluster_distance_cell_mask,
+                                cluster_radial_angle,
+                                cluster_cell_axis_mask,
                             ]
                         )
                         if size_catagories_json is None:
@@ -1069,14 +1073,22 @@ def plugin_wrapper_track():
                             cluster_distance_cell_mask = (
                                 current_unique_dynamic_properties[4]
                             )
+                            cluster_radial_angle = (
+                                current_unique_dynamic_properties[5]
+                            )
+                            cluster_cell_axis_mask = (
+                                current_unique_dynamic_properties[6]
+                            )
 
                             data_dynamic_cluster_plot = pd.DataFrame(
                                 {
                                     "Time": cluster_time,
                                     "Speed": cluster_speed,
-                                    "Directional Change Rate": cluster_motion_angle,
+                                    "Motion Angle": cluster_motion_angle,
                                     "Acceleration": cluster_acceleration,
                                     "Distance cell to tissue": cluster_distance_cell_mask,
+                                    "Radial Angle": cluster_radial_angle,
+                                    "Cell Axis Mask": cluster_cell_axis_mask,
                                 }
                             )
 
