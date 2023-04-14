@@ -2361,9 +2361,10 @@ def plugin_wrapper_track():
 
             try:
                 device = torch.device("cuda:0")
+                model_cluster.to(device)
             except ValueError:
                 device = torch.device("cpu")
-            model_cluster.to(device)
+                model_cluster.to(device)
         else:
             model_cluster = None
 
