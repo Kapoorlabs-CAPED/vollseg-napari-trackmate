@@ -1095,14 +1095,6 @@ def plugin_wrapper_track():
                             for _ in range(np.asarray(cluster_time).shape[0]):
                                 index_array.append(int(count))
 
-                            data_dynamic_cluster_plot = (
-                                data_dynamic_cluster_plot.mask(
-                                    data_dynamic_cluster_plot.astype(
-                                        object
-                                    ).eq("None")
-                                ).dropna()
-                            )
-
                             if len(global_data_dynamic_cluster_plot) == 0:
                                 global_data_dynamic_cluster_plot = (
                                     data_dynamic_cluster_plot
@@ -1174,10 +1166,6 @@ def plugin_wrapper_track():
 
                             for _ in range(np.asarray(cluster_time).shape[0]):
                                 index_array.append(int(count))
-
-                            data_cluster_plot = data_cluster_plot.mask(
-                                data_cluster_plot.astype(object).eq("None")
-                            ).dropna()
 
                             if len(global_data_cluster_plot) == 0:
                                 global_data_cluster_plot = data_cluster_plot
