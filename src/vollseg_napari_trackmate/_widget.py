@@ -1048,10 +1048,8 @@ def plugin_wrapper_track():
                             )
 
                         global_data_cluster_plot = []
-                        index_array = []
 
                         global_data_dynamic_cluster_plot = []
-                        index_dynamic_array = []
 
                         for count, i in enumerate(
                             range(len(unique_dynamic_properties))
@@ -1091,9 +1089,6 @@ def plugin_wrapper_track():
                                     "Cell Axis Mask": cluster_cell_axis_mask,
                                 }
                             )
-
-                            for _ in range(np.asarray(cluster_time).shape[0]):
-                                index_array.append(int(count))
 
                             if len(global_data_dynamic_cluster_plot) == 0:
                                 global_data_dynamic_cluster_plot = (
@@ -1164,9 +1159,6 @@ def plugin_wrapper_track():
                                     }
                                 )
 
-                            for _ in range(np.asarray(cluster_time).shape[0]):
-                                index_array.append(int(count))
-
                             if len(global_data_cluster_plot) == 0:
                                 global_data_cluster_plot = data_cluster_plot
                             else:
@@ -1180,27 +1172,13 @@ def plugin_wrapper_track():
 
             if len(_to_analyze) <= 2:
 
-                global_data_dynamic_cluster_plot[
-                    "index"
-                ] = index_dynamic_array[
-                    0 : len(global_data_dynamic_cluster_plot)
-                ]
-
-                global_data_dynamic_cluster_plot = (
-                    global_data_dynamic_cluster_plot.set_index("index")
-                )
-                global_data_dynamic_cluster_plot.drop_duplicates(
-                    global_data_dynamic_cluster_plot
-                )
-
                 sns.lineplot(
-                    global_data_cluster_plot,
+                    global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Speed",
-                    hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
-                sns.move_legend(plot_ax, "lower right")
+
                 plot_ax.set_title("Speed")
                 plot_ax.set_xlabel("Time (min)")
 
@@ -1208,41 +1186,38 @@ def plugin_wrapper_track():
                 plot_ax = phenotype_plot_class.plot_ax
 
                 sns.lineplot(
-                    global_data_cluster_plot,
+                    global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Speed",
-                    hue=global_data_cluster_plot.index.values.tolist(),
+                    y="Motion Angle",
                     ax=plot_ax,
                 )
-                sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Speed")
+
+                plot_ax.set_title("Motion Angle")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
                 sns.lineplot(
-                    global_data_cluster_plot,
+                    global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Directional Change Rate",
-                    hue=global_data_cluster_plot.index.values.tolist(),
+                    y="Radial Angle",
                     ax=plot_ax,
                 )
-                sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Directional Change Rate")
+
+                plot_ax.set_title("Radial Angle")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
                 sns.lineplot(
-                    global_data_cluster_plot,
+                    global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Acceleration",
-                    hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
-                sns.move_legend(plot_ax, "lower right")
+
                 plot_ax.set_title("Acceleration")
                 plot_ax.set_xlabel("Time (min)")
 
@@ -1250,48 +1225,26 @@ def plugin_wrapper_track():
                 plot_ax = phenotype_plot_class.plot_ax
 
                 sns.lineplot(
-                    global_data_cluster_plot,
+                    global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Distance cell to tissue",
-                    hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
-                sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Distqnce cell to tissue")
+
+                plot_ax.set_title("Distance cell to tissue")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
-                global_data_cluster_plot["index"] = index_array[
-                    0 : len(global_data_cluster_plot)
-                ]
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Cell Axis Mask",
+                    ax=plot_ax,
+                )
 
-                global_data_cluster_plot = global_data_cluster_plot.set_index(
-                    "index"
-                )
-                global_data_cluster_plot.drop_duplicates(
-                    global_data_cluster_plot
-                )
-                if size_catagories_json is None:
-                    sns.lineplot(
-                        global_data_cluster_plot,
-                        x="Time",
-                        y="Class",
-                        hue=global_data_cluster_plot.index.values.tolist(),
-                        ax=plot_ax,
-                    )
-                    sns.move_legend(plot_ax, "lower right")
-                if size_catagories_json is not None:
-                    sns.lineplot(
-                        global_data_cluster_plot,
-                        x="Time",
-                        y="Class_Name",
-                        hue=global_data_cluster_plot.index.values.tolist(),
-                        ax=plot_ax,
-                    )
-                    sns.move_legend(plot_ax, "lower right")
-                plot_ax.set_title("Cluster class")
+                plot_ax.set_title("Cell Axis Mask")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
@@ -1301,10 +1254,9 @@ def plugin_wrapper_track():
                     global_data_cluster_plot,
                     x="Time",
                     y="Radius",
-                    hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
-                sns.move_legend(plot_ax, "lower right")
+
                 plot_ax.set_title("Radius")
                 plot_ax.set_xlabel("Time (min)")
 
@@ -1315,10 +1267,9 @@ def plugin_wrapper_track():
                     global_data_cluster_plot,
                     x="Time",
                     y="Volume",
-                    hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
-                sns.move_legend(plot_ax, "lower right")
+
                 plot_ax.set_title("Volume")
                 plot_ax.set_xlabel("Time (min)")
 
@@ -1329,10 +1280,9 @@ def plugin_wrapper_track():
                     global_data_cluster_plot,
                     x="Time",
                     y="Surface_Area",
-                    hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
-                sns.move_legend(plot_ax, "lower right")
+
                 plot_ax.set_title("Surface_Area")
                 plot_ax.set_xlabel("Time (min)")
 
@@ -1343,10 +1293,9 @@ def plugin_wrapper_track():
                     global_data_cluster_plot,
                     x="Time",
                     y="Eccentricity_Comp_First",
-                    hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
-                sns.move_legend(plot_ax, "lower right")
+
                 plot_ax.set_title("Eccentricity Comp First")
                 plot_ax.set_xlabel("Time (min)")
 
@@ -1357,15 +1306,37 @@ def plugin_wrapper_track():
                     global_data_cluster_plot,
                     x="Time",
                     y="Eccentricity_Comp_Second",
-                    hue=global_data_cluster_plot.index.values.tolist(),
                     ax=plot_ax,
                 )
-                sns.move_legend(plot_ax, "lower right")
+
                 plot_ax.set_title("Eccentricity Comp Second")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
+
+                if not global_data_cluster_plot["Class"].isna().all():
+                    if size_catagories_json is None:
+                        sns.lineplot(
+                            global_data_cluster_plot,
+                            x="Time",
+                            y="Class",
+                            ax=plot_ax,
+                        )
+
+                    if size_catagories_json is not None:
+                        sns.lineplot(
+                            global_data_cluster_plot,
+                            x="Time",
+                            y="Class_Name",
+                            ax=plot_ax,
+                        )
+
+                    plot_ax.set_title("Cluster class")
+                    plot_ax.set_xlabel("Time (min)")
+
+                    phenotype_plot_class._repeat_after_plot()
+                    plot_ax = phenotype_plot_class.plot_ax
 
             data_fft_plot = pd.DataFrame(
                 {
