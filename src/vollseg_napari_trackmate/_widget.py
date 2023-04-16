@@ -1167,7 +1167,7 @@ def plugin_wrapper_track():
                                         "Surface_Area": cluster_surface_area,
                                         "Class": cluster_class,
                                         "Class_Score": cluster_class_score,
-                                        "cluster_id": cluster_id,
+                                        "id": cluster_id,
                                     }
                                 )
 
