@@ -1014,6 +1014,7 @@ def plugin_wrapper_track():
                                 cluster_distance_cell_mask,
                                 cluster_radial_angle,
                                 cluster_cell_axis_mask,
+                                k,
                             ]
                         )
                         if size_catagories_json is None:
@@ -1028,6 +1029,7 @@ def plugin_wrapper_track():
                                     cluster_surface_area,
                                     cluster_class,
                                     cluster_class_score,
+                                    k,
                                 ]
                             )
 
@@ -1044,6 +1046,7 @@ def plugin_wrapper_track():
                                     cluster_class,
                                     cluster_class_score,
                                     cluster_class_name,
+                                    k,
                                 ]
                             )
 
@@ -1078,6 +1081,8 @@ def plugin_wrapper_track():
                                 current_unique_dynamic_properties[6]
                             )
 
+                            cluster_id = current_unique_dynamic_properties[-1]
+
                             data_dynamic_cluster_plot = pd.DataFrame(
                                 {
                                     "Time": cluster_time,
@@ -1087,6 +1092,7 @@ def plugin_wrapper_track():
                                     "Distance cell to tissue": cluster_distance_cell_mask,
                                     "Radial Angle": cluster_radial_angle,
                                     "Cell Axis Mask": cluster_cell_axis_mask,
+                                    "cluster_id": cluster_id,
                                 }
                             )
 
@@ -1127,6 +1133,8 @@ def plugin_wrapper_track():
                             cluster_class_score = (
                                 current_unique_shape_properties[7]
                             )
+
+                            cluster_id = current_unique_shape_properties[-1]
                             if size_catagories_json is not None:
 
                                 cluster_class_name = (
@@ -1143,6 +1151,7 @@ def plugin_wrapper_track():
                                         "Class": cluster_class,
                                         "Class_Score": cluster_class_score,
                                         "Class_Name": cluster_class_name,
+                                        "cluster_id": cluster_id,
                                     }
                                 )
                             else:
@@ -1156,6 +1165,7 @@ def plugin_wrapper_track():
                                         "Surface_Area": cluster_surface_area,
                                         "Class": cluster_class,
                                         "Class_Score": cluster_class_score,
+                                        "cluster_id": cluster_id,
                                     }
                                 )
 
@@ -1176,6 +1186,7 @@ def plugin_wrapper_track():
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Speed",
+                    hue="cluster_id",
                     ax=plot_ax,
                 )
 
@@ -1189,6 +1200,7 @@ def plugin_wrapper_track():
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Motion Angle",
+                    hue="cluster_id",
                     ax=plot_ax,
                 )
 
@@ -1202,6 +1214,7 @@ def plugin_wrapper_track():
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Radial Angle",
+                    hue="cluster_id",
                     ax=plot_ax,
                 )
 
@@ -1215,6 +1228,7 @@ def plugin_wrapper_track():
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Acceleration",
+                    hue="cluster_id",
                     ax=plot_ax,
                 )
 
@@ -1228,6 +1242,7 @@ def plugin_wrapper_track():
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Distance cell to tissue",
+                    hue="cluster_id",
                     ax=plot_ax,
                 )
 
@@ -1241,6 +1256,7 @@ def plugin_wrapper_track():
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Cell Axis Mask",
+                    hue="cluster_id",
                     ax=plot_ax,
                 )
 
@@ -1254,6 +1270,7 @@ def plugin_wrapper_track():
                     global_data_cluster_plot,
                     x="Time",
                     y="Radius",
+                    hue="cluster_id",
                     ax=plot_ax,
                 )
 
@@ -1267,6 +1284,7 @@ def plugin_wrapper_track():
                     global_data_cluster_plot,
                     x="Time",
                     y="Volume",
+                    hue="cluster_id",
                     ax=plot_ax,
                 )
 
@@ -1280,6 +1298,7 @@ def plugin_wrapper_track():
                     global_data_cluster_plot,
                     x="Time",
                     y="Surface_Area",
+                    hue="cluster_id",
                     ax=plot_ax,
                 )
 
@@ -1293,6 +1312,7 @@ def plugin_wrapper_track():
                     global_data_cluster_plot,
                     x="Time",
                     y="Eccentricity_Comp_First",
+                    hue="cluster_id",
                     ax=plot_ax,
                 )
 
@@ -1306,6 +1326,7 @@ def plugin_wrapper_track():
                     global_data_cluster_plot,
                     x="Time",
                     y="Eccentricity_Comp_Second",
+                    hue="cluster_id",
                     ax=plot_ax,
                 )
 
@@ -1321,6 +1342,7 @@ def plugin_wrapper_track():
                             global_data_cluster_plot,
                             x="Time",
                             y="Class",
+                            hue="cluster_id",
                             ax=plot_ax,
                         )
 
@@ -1329,6 +1351,7 @@ def plugin_wrapper_track():
                             global_data_cluster_plot,
                             x="Time",
                             y="Class_Name",
+                            hue="cluster_id",
                             ax=plot_ax,
                         )
 
