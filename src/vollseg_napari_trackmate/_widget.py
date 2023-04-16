@@ -1184,7 +1184,7 @@ def plugin_wrapper_track():
 
             if len(_to_analyze) <= 2:
 
-                sns.scatterplot(
+                sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Speed",
@@ -1198,7 +1198,7 @@ def plugin_wrapper_track():
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
-                sns.scatterplot(
+                sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Motion Angle",
@@ -1212,7 +1212,7 @@ def plugin_wrapper_track():
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
-                sns.scatterplot(
+                sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Radial Angle",
@@ -1226,7 +1226,7 @@ def plugin_wrapper_track():
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
-                sns.scatterplot(
+                sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Acceleration",
@@ -1240,7 +1240,7 @@ def plugin_wrapper_track():
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
-                sns.scatterplot(
+                sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Distance cell to tissue",
@@ -1254,7 +1254,7 @@ def plugin_wrapper_track():
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
-                sns.scatterplot(
+                sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Cell Axis Mask",
@@ -1268,7 +1268,7 @@ def plugin_wrapper_track():
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
-                sns.scatterplot(
+                sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Radius",
@@ -1282,7 +1282,7 @@ def plugin_wrapper_track():
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
-                sns.scatterplot(
+                sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Volume",
@@ -1296,7 +1296,7 @@ def plugin_wrapper_track():
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
-                sns.scatterplot(
+                sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Surface_Area",
@@ -1310,7 +1310,7 @@ def plugin_wrapper_track():
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
-                sns.scatterplot(
+                sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Eccentricity_Comp_First",
@@ -1324,7 +1324,7 @@ def plugin_wrapper_track():
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
-                sns.scatterplot(
+                sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Eccentricity_Comp_Second",
@@ -1340,7 +1340,7 @@ def plugin_wrapper_track():
 
                 if not global_data_cluster_plot["Class"].isna().all():
                     if size_catagories_json is None:
-                        sns.scatterplot(
+                        sns.lineplot(
                             global_data_cluster_plot,
                             x="Time",
                             y="Class",
@@ -1349,7 +1349,7 @@ def plugin_wrapper_track():
                         )
 
                     if size_catagories_json is not None:
-                        sns.scatterplot(
+                        sns.lineplot(
                             global_data_cluster_plot,
                             x="Time",
                             y="Class_Name",
@@ -1377,9 +1377,7 @@ def plugin_wrapper_track():
                 }
             )
 
-            sns.scatterplot(
-                data_time_plot, x="Time", y="Intensity", ax=plot_ax
-            )
+            sns.lineplot(data_time_plot, x="Time", y="Intensity", ax=plot_ax)
             plot_ax.set_title("Cell Intensity")
             plot_ax.set_xlabel("Time (min)")
             plot_ax.set_ylabel("Amplitude")
@@ -1387,9 +1385,7 @@ def plugin_wrapper_track():
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
 
-            sns.scatterplot(
-                data_fft_plot, x="Frequ", y="Amplitude", ax=plot_ax
-            )
+            sns.lineplot(data_fft_plot, x="Frequ", y="Amplitude", ax=plot_ax)
             plot_ax.set_title("FFT Intensity")
             plot_ax.set_xlabel("Frequency (1/min)")
             plot_ax.set_ylabel("Amplitude")
