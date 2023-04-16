@@ -935,9 +935,11 @@ def plugin_wrapper_track():
 
             for unique_track_id in _to_analyze:
 
-                for k in _trackmate_objects.unique_fft_properties[
-                    unique_track_id
-                ].keys():
+                for countk, k in enumerate(
+                    _trackmate_objects.unique_fft_properties[
+                        unique_track_id
+                    ].keys()
+                ):
 
                     unique_fft_properties_tracklet = (
                         _trackmate_objects.unique_fft_properties[
@@ -1014,7 +1016,7 @@ def plugin_wrapper_track():
                                 cluster_distance_cell_mask,
                                 cluster_radial_angle,
                                 cluster_cell_axis_mask,
-                                k,
+                                countk + 1,
                             ]
                         )
                         if size_catagories_json is None:
@@ -1029,7 +1031,7 @@ def plugin_wrapper_track():
                                     cluster_surface_area,
                                     cluster_class,
                                     cluster_class_score,
-                                    k,
+                                    countk + 1,
                                 ]
                             )
 
@@ -1046,7 +1048,7 @@ def plugin_wrapper_track():
                                     cluster_class,
                                     cluster_class_score,
                                     cluster_class_name,
-                                    k,
+                                    countk + 1,
                                 ]
                             )
 
@@ -1092,7 +1094,7 @@ def plugin_wrapper_track():
                                     "Distance cell to tissue": cluster_distance_cell_mask,
                                     "Radial Angle": cluster_radial_angle,
                                     "Cell Axis Mask": cluster_cell_axis_mask,
-                                    "cluster_id": cluster_id,
+                                    "id": cluster_id,
                                 }
                             )
 
@@ -1151,7 +1153,7 @@ def plugin_wrapper_track():
                                         "Class": cluster_class,
                                         "Class_Score": cluster_class_score,
                                         "Class_Name": cluster_class_name,
-                                        "cluster_id": cluster_id,
+                                        "id": cluster_id,
                                     }
                                 )
                             else:
