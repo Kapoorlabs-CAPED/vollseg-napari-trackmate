@@ -1183,183 +1183,199 @@ def plugin_wrapper_track():
                                 )
 
             if len(_to_analyze) <= 2:
-
+                flatui = ["#9b59b6", "#3498db", "orange"]
+                sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Speed",
                     hue="id",
                     ax=plot_ax,
+                    legend=False,
                 )
 
                 plot_ax.set_title("Speed")
                 plot_ax.set_xlabel("Time (min)")
-
+                sns.move_legend(plot_ax, "lower right")
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
+                sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Motion Angle",
                     hue="id",
                     ax=plot_ax,
+                    legend=False,
                 )
 
                 plot_ax.set_title("Motion Angle")
                 plot_ax.set_xlabel("Time (min)")
-
+                sns.move_legend(plot_ax, "lower right")
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
+                sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Radial Angle",
                     hue="id",
                     ax=plot_ax,
+                    legend=False,
                 )
 
                 plot_ax.set_title("Radial Angle")
                 plot_ax.set_xlabel("Time (min)")
-
+                sns.move_legend(plot_ax, "lower right")
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
+                sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Acceleration",
                     hue="id",
                     ax=plot_ax,
+                    legend=False,
                 )
 
                 plot_ax.set_title("Acceleration")
                 plot_ax.set_xlabel("Time (min)")
-
+                sns.move_legend(plot_ax, "lower right")
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
+                sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Distance cell to tissue",
                     hue="id",
                     ax=plot_ax,
+                    legend=False,
                 )
 
                 plot_ax.set_title("Distance cell to tissue")
                 plot_ax.set_xlabel("Time (min)")
-
+                sns.move_legend(plot_ax, "lower right")
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
+                sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
                     y="Cell Axis Mask",
                     hue="id",
                     ax=plot_ax,
+                    legend=False,
                 )
 
                 plot_ax.set_title("Cell Axis Mask")
                 plot_ax.set_xlabel("Time (min)")
-
+                sns.move_legend(plot_ax, "lower right")
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
+                sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Radius",
                     hue="id",
                     ax=plot_ax,
+                    legend=False,
                 )
 
                 plot_ax.set_title("Radius")
                 plot_ax.set_xlabel("Time (min)")
-
+                sns.move_legend(plot_ax, "lower right")
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
+                sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Volume",
                     hue="id",
                     ax=plot_ax,
+                    legend=False,
                 )
 
                 plot_ax.set_title("Volume")
                 plot_ax.set_xlabel("Time (min)")
-
+                sns.move_legend(plot_ax, "lower right")
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
+                sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Surface_Area",
                     hue="id",
                     ax=plot_ax,
+                    legend=False,
                 )
 
                 plot_ax.set_title("Surface_Area")
                 plot_ax.set_xlabel("Time (min)")
-
+                sns.move_legend(plot_ax, "lower right")
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
+                sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Eccentricity_Comp_First",
                     hue="id",
                     ax=plot_ax,
+                    legend=False,
                 )
 
                 plot_ax.set_title("Eccentricity Comp First")
                 plot_ax.set_xlabel("Time (min)")
-
+                sns.move_legend(plot_ax, "lower right")
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
+                sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
                     y="Eccentricity_Comp_Second",
                     hue="id",
                     ax=plot_ax,
+                    legend=False,
                 )
 
                 plot_ax.set_title("Eccentricity Comp Second")
                 plot_ax.set_xlabel("Time (min)")
-
+                sns.move_legend(plot_ax, "lower right")
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
                 if not global_data_cluster_plot["Class"].isna().all():
                     if size_catagories_json is None:
+                        sns.set_palette(flatui)
                         sns.lineplot(
                             global_data_cluster_plot,
                             x="Time",
                             y="Class",
                             hue="id",
                             ax=plot_ax,
+                            legend=False,
                         )
 
                     if size_catagories_json is not None:
+                        sns.set_palette(flatui)
                         sns.lineplot(
                             global_data_cluster_plot,
                             x="Time",
                             y="Class_Name",
                             hue="id",
                             ax=plot_ax,
+                            legend=False,
                         )
 
                     plot_ax.set_title("Cluster class")
                     plot_ax.set_xlabel("Time (min)")
-
+                    sns.move_legend(plot_ax, "lower right")
                     phenotype_plot_class._repeat_after_plot()
                     plot_ax = phenotype_plot_class.plot_ax
 
@@ -1377,6 +1393,7 @@ def plugin_wrapper_track():
                 }
             )
 
+            sns.set_palette(flatui)
             sns.lineplot(data_time_plot, x="Time", y="Intensity", ax=plot_ax)
             plot_ax.set_title("Cell Intensity")
             plot_ax.set_xlabel("Time (min)")
@@ -1385,6 +1402,7 @@ def plugin_wrapper_track():
             phenotype_plot_class._repeat_after_plot()
             plot_ax = phenotype_plot_class.plot_ax
 
+            sns.set_palette(flatui)
             sns.lineplot(data_fft_plot, x="Frequ", y="Amplitude", ax=plot_ax)
             plot_ax.set_title("FFT Intensity")
             plot_ax.set_xlabel("Frequency (1/min)")
