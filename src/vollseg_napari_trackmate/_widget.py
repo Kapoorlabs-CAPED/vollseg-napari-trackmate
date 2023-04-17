@@ -23,6 +23,8 @@ from psygnal import Signal
 from qtpy.QtWidgets import QSizePolicy, QTabWidget, QVBoxLayout, QWidget
 from scipy import spatial
 
+flatui = ["#9b59b6", "#3498db", "orange"]
+
 
 def plugin_wrapper_track():
 
@@ -1183,7 +1185,7 @@ def plugin_wrapper_track():
                                 )
 
             if len(_to_analyze) <= 2:
-                flatui = ["#9b59b6", "#3498db", "orange"]
+
                 sns.set_palette(flatui)
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
