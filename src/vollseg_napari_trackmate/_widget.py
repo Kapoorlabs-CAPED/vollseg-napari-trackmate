@@ -1198,7 +1198,7 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Speed")
                 plot_ax.set_xlabel("Time (min)")
-                sns.move_legend(plot_ax, "lower right")
+
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
                 sns.set_palette(flatui)
@@ -1213,7 +1213,7 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Motion Angle")
                 plot_ax.set_xlabel("Time (min)")
-                sns.move_legend(plot_ax, "lower right")
+
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
                 sns.set_palette(flatui)
@@ -1228,7 +1228,7 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Radial Angle")
                 plot_ax.set_xlabel("Time (min)")
-                sns.move_legend(plot_ax, "lower right")
+
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
                 sns.set_palette(flatui)
@@ -1243,7 +1243,7 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Acceleration")
                 plot_ax.set_xlabel("Time (min)")
-                sns.move_legend(plot_ax, "lower right")
+
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
                 sns.set_palette(flatui)
@@ -1258,7 +1258,7 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Distance cell to tissue")
                 plot_ax.set_xlabel("Time (min)")
-                sns.move_legend(plot_ax, "lower right")
+
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
                 sns.set_palette(flatui)
@@ -1273,7 +1273,7 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Cell Axis Mask")
                 plot_ax.set_xlabel("Time (min)")
-                sns.move_legend(plot_ax, "lower right")
+
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
                 sns.set_palette(flatui)
@@ -1288,7 +1288,7 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Radius")
                 plot_ax.set_xlabel("Time (min)")
-                sns.move_legend(plot_ax, "lower right")
+
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
                 sns.set_palette(flatui)
@@ -1303,7 +1303,7 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Volume")
                 plot_ax.set_xlabel("Time (min)")
-                sns.move_legend(plot_ax, "lower right")
+
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
                 sns.set_palette(flatui)
@@ -1318,7 +1318,7 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Surface_Area")
                 plot_ax.set_xlabel("Time (min)")
-                sns.move_legend(plot_ax, "lower right")
+
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
                 sns.set_palette(flatui)
@@ -1333,7 +1333,7 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Eccentricity Comp First")
                 plot_ax.set_xlabel("Time (min)")
-                sns.move_legend(plot_ax, "lower right")
+
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
                 sns.set_palette(flatui)
@@ -1348,7 +1348,7 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Eccentricity Comp Second")
                 plot_ax.set_xlabel("Time (min)")
-                sns.move_legend(plot_ax, "lower right")
+
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
 
@@ -1377,7 +1377,7 @@ def plugin_wrapper_track():
 
                     plot_ax.set_title("Cluster class")
                     plot_ax.set_xlabel("Time (min)")
-                    sns.move_legend(plot_ax, "lower right")
+
                     phenotype_plot_class._repeat_after_plot()
                     plot_ax = phenotype_plot_class.plot_ax
 
