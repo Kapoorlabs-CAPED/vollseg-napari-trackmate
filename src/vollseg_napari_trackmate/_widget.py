@@ -170,10 +170,10 @@ def plugin_wrapper_track():
     # ]
 
     model_cloud_auto_encoder_configs = dict()
-    model_cluster_configs = dict()
+    # model_cluster_configs = dict()
 
     model_selected_cloud_auto_encoder = None
-    model_selected_cluster = None
+    # model_selected_cluster = None
 
     DEFAULTS_MODEL = dict(
         cloud_auto_encoder_model_type=CloudAutoEncoder,
@@ -551,7 +551,7 @@ def plugin_wrapper_track():
             self.help(help_msg)
 
     update_cloud_auto_encoder = Updater_Auto_Encoder()
-    update_cluster = Updater_Cluster()
+    # update_cluster = Updater_Cluster()
 
     def select_model_cloud_auto_encoder(key):
         nonlocal model_selected_cloud_auto_encoder
@@ -567,7 +567,7 @@ def plugin_wrapper_track():
         ):
             model_selected_cloud_auto_encoder = None
 
-    def select_model_cluster(key):
+    """ def select_model_cluster(key):
         nonlocal model_selected_cluster
         if key is not None:
             model_selected_cluster = key
@@ -579,9 +579,9 @@ def plugin_wrapper_track():
             plugin.cluster_model_type.value
             == DEFAULTS_MODEL["model_cluster_none"]
         ):
-            model_selected_cluster = None
+            model_selected_cluster = None """
 
-    @change_handler(
+    """ @change_handler(
         plugin.cluster_model,
         plugin.cluster_model_none,
         init=False,
@@ -634,6 +634,7 @@ def plugin_wrapper_track():
             plugin.model_folder_cluster.line_edit.tooltip = (
                 "Invalid model file"
             )
+ """
 
     @change_handler(
         plugin.cloud_auto_encoder_model,
@@ -719,7 +720,7 @@ def plugin_wrapper_track():
         finally:
             select_model_cloud_auto_encoder(key)
 
-    @change_handler(plugin.model_folder_cluster, init=False)
+    """     @change_handler(plugin.model_folder_cluster, init=False)
     def _model_cluster_folder_change(_path: str):
         path = Path(_path)
         key = CUSTOM_MODEL_CLUSTER, path
@@ -730,7 +731,7 @@ def plugin_wrapper_track():
         except FileNotFoundError:
             pass
         finally:
-            select_model_cluster(key)
+            select_model_cluster(key) """
 
     _track_ids_analyze = None
     _to_analyze = None
