@@ -148,9 +148,9 @@ def plugin_wrapper_track():
         _aliases_cloud_auto_encoder,
     ) = get_registered_models(CloudAutoEncoder)
 
-    _models_cluster, _aliases_cluster = get_registered_models(
-        DeepEmbeddedClustering
-    )
+    # _models_cluster, _aliases_cluster = get_registered_models(
+    #    DeepEmbeddedClustering
+    # )
 
     models_cloud_auto_encoder = [
         (
@@ -164,25 +164,24 @@ def plugin_wrapper_track():
         for m in _models_cloud_auto_encoder
     ]
 
-    models_cluster = [
-        ((_aliases_cluster[m][0] if len(_aliases_cluster[m]) > 0 else m), m)
-        for m in _models_cluster
-    ]
+    # models_cluster = [
+    #    ((_aliases_cluster[m][0] if len(_aliases_cluster[m]) > 0 else m), m)
+    #    for m in _models_cluster
+    # ]
 
     model_cloud_auto_encoder_configs = dict()
     model_cluster_configs = dict()
 
     model_selected_cloud_auto_encoder = None
     model_selected_cluster = None
-    size_catagories_json = None
 
     DEFAULTS_MODEL = dict(
         cloud_auto_encoder_model_type=CloudAutoEncoder,
-        cluster_model_type=DeepEmbeddedClustering,
+        # cluster_model_type=DeepEmbeddedClustering,
         model_cloud_auto_encoder=models_cloud_auto_encoder[0][0],
-        model_cluster=models_cluster[0][0],
+        # model_cluster=models_cluster[0][0],
         model_cloud_auto_encoder_none="No(Encoder)",
-        model_cluster_none="No(Cluster)",
+        # model_cluster_none="No(Cluster)",
         axes="TZYX",
         track_model_type="Both",
     )
@@ -196,11 +195,11 @@ def plugin_wrapper_track():
         ("No(Encoder)", "No(Encoder)"),
         ("Custom Encoder", CUSTOM_MODEL_CLOUD_AUTO_ENCODER),
     ]
-    cluster_model_type_choices = [
+    """  cluster_model_type_choices = [
         ("PreTrained(Cluster)", DeepEmbeddedClustering),
         ("No(Cluster)", "No(Cluster)"),
         ("Custom Cluster", CUSTOM_MODEL_CLUSTER),
-    ]
+    ] """
 
     track_model_type_choices = [
         ("Dividing", "Dividing"),
@@ -355,29 +354,29 @@ def plugin_wrapper_track():
             label="Custom Auto Encoder",
             mode="r",
         ),
-        cluster_model_type=dict(
-            widget_type="RadioButtons",
-            label="Cluster Model Type",
-            orientation="horizontal",
-            choices=cluster_model_type_choices,
-            value=DEFAULTS_MODEL["cluster_model_type"],
-        ),
-        cluster_model=dict(
-            widget_type="ComboBox",
-            visible=False,
-            label="Pre-trained Clustering Models",
-            choices=models_cluster,
-            value=DEFAULTS_MODEL["model_cluster"],
-        ),
-        cluster_model_none=dict(
-            widget_type="Label", visible=False, label="No(Cluster)"
-        ),
-        model_folder_cluster=dict(
-            widget_type="FileEdit",
-            visible=False,
-            label="Custom Cluster Model",
-            mode="r",
-        ),
+        # cluster_model_type=dict(
+        #    widget_type="RadioButtons",
+        #    label="Cluster Model Type",
+        #    orientation="horizontal",
+        #    choices=cluster_model_type_choices,
+        #    value=DEFAULTS_MODEL["cluster_model_type"],
+        # ),
+        # cluster_model=dict(
+        #    widget_type="ComboBox",
+        #    visible=False,
+        #    label="Pre-trained Clustering Models",
+        #    choices=models_cluster,
+        #    value=DEFAULTS_MODEL["model_cluster"],
+        # ),
+        # cluster_model_none=dict(
+        #    widget_type="Label", visible=False, label="No(Cluster)"
+        # ),
+        # model_folder_cluster=dict(
+        #    widget_type="FileEdit",
+        #    visible=False,
+        #    label="Custom Cluster Model",
+        #    mode="r",
+        # ),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
         persist=True,
@@ -393,10 +392,10 @@ def plugin_wrapper_track():
         cloud_auto_encoder_model,
         cloud_auto_encoder_model_none,
         model_folder_cloud_auto,
-        cluster_model_type,
-        cluster_model,
-        cluster_model_none,
-        model_folder_cluster,
+        # cluster_model_type,
+        # cluster_model,
+        # cluster_model_none,
+        # model_folder_cluster,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
@@ -766,12 +765,6 @@ def plugin_wrapper_track():
             label="Edges/Links csv",
             mode="r",
         ),
-        size_catagories=dict(
-            widget_type="FileEdit",
-            visible=True,
-            label="Sentinal size catagories json",
-            mode="r",
-        ),
         axes=dict(
             widget_type="LineEdit",
             label="Image Axes",
@@ -808,7 +801,6 @@ def plugin_wrapper_track():
         track_csv_path,
         spot_csv_path,
         edges_csv_path,
-        size_catagories,
         axes,
         batch_size,
         plot_step_size,
@@ -870,33 +862,27 @@ def plugin_wrapper_track():
             "surface_area": np.asarray(
                 unique_tracks_properties, dtype="float16"
             )[:, 7],
-            "cluster_class": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 8],
-            "cluster_score": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 9],
             "total_intensity": np.asarray(
                 unique_tracks_properties, dtype="float16"
-            )[:, 10],
+            )[:, 8],
             "speed": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 11
+                :, 9
             ],
             "motion_angle": np.asarray(
                 unique_tracks_properties, dtype="float16"
-            )[:, 12],
+            )[:, 10],
             "acceleration": np.asarray(
                 unique_tracks_properties, dtype="float16"
-            )[:, 13],
+            )[:, 11],
             "distance_cell_mask": np.asarray(
                 unique_tracks_properties, dtype="float16"
-            )[:, 14],
+            )[:, 12],
             "radial_angle": np.asarray(
                 unique_tracks_properties, dtype="float16"
-            )[:, 15],
+            )[:, 13],
             "cell_axis_mask": np.asarray(
                 unique_tracks_properties, dtype="float16"
-            )[:, 16],
+            )[:, 14],
         }
         print("Refreshing track data")
         for layer in list(plugin.viewer.value.layers):
@@ -920,7 +906,7 @@ def plugin_wrapper_track():
 
     def show_phenotype():
 
-        nonlocal _to_analyze, size_catagories_json, _trackmate_objects
+        nonlocal _to_analyze, _trackmate_objects
 
         phenotype_plot_class._reset_container(
             phenotype_plot_class.scroll_layout
@@ -978,8 +964,6 @@ def plugin_wrapper_track():
                             cluster_eccentricity_comp_first,
                             cluster_eccentricity_comp_second,
                             cluster_surface_area,
-                            cluster_class,
-                            cluster_class_score,
                         ) = unique_shape_properties_tracklet
 
                         unique_dynamic_properties_tracklet = (
@@ -997,18 +981,6 @@ def plugin_wrapper_track():
                             cluster_cell_axis_mask,
                         ) = unique_dynamic_properties_tracklet
 
-                        cluster_class_name = []
-                        if size_catagories_json is not None:
-                            for i in range(cluster_class.shape[0]):
-                                if cluster_class[i] is not None:
-                                    cluster_class_name.append(
-                                        size_catagories_json[
-                                            str(int(cluster_class[i]))
-                                        ]
-                                    )
-                                else:
-                                    cluster_class_name.append(None)
-
                         unique_dynamic_properties.append(
                             [
                                 cluster_time,
@@ -1021,38 +993,17 @@ def plugin_wrapper_track():
                                 countk + 1,
                             ]
                         )
-                        if size_catagories_json is None:
-
-                            unique_shape_properties.append(
-                                [
-                                    cluster_time,
-                                    cluster_radius,
-                                    cluster_volume,
-                                    cluster_eccentricity_comp_first,
-                                    cluster_eccentricity_comp_second,
-                                    cluster_surface_area,
-                                    cluster_class,
-                                    cluster_class_score,
-                                    countk + 1,
-                                ]
-                            )
-
-                        if size_catagories_json is not None:
-
-                            unique_shape_properties.append(
-                                [
-                                    cluster_time,
-                                    cluster_radius,
-                                    cluster_volume,
-                                    cluster_eccentricity_comp_first,
-                                    cluster_eccentricity_comp_second,
-                                    cluster_surface_area,
-                                    cluster_class,
-                                    cluster_class_score,
-                                    cluster_class_name,
-                                    countk + 1,
-                                ]
-                            )
+                        unique_shape_properties.append(
+                            [
+                                cluster_time,
+                                cluster_radius,
+                                cluster_volume,
+                                cluster_eccentricity_comp_first,
+                                cluster_eccentricity_comp_second,
+                                cluster_surface_area,
+                                countk + 1,
+                            ]
+                        )
 
                         global_data_cluster_plot = []
 
@@ -1133,45 +1084,20 @@ def plugin_wrapper_track():
                             cluster_surface_area = (
                                 current_unique_shape_properties[5]
                             )
-                            cluster_class = current_unique_shape_properties[6]
-                            cluster_class_score = (
-                                current_unique_shape_properties[7]
-                            )
 
                             cluster_id = current_unique_shape_properties[-1]
-                            if size_catagories_json is not None:
 
-                                cluster_class_name = (
-                                    current_unique_shape_properties[8]
-                                )
-                                data_cluster_plot = pd.DataFrame(
-                                    {
-                                        "Time": cluster_time,
-                                        "Radius": cluster_radius,
-                                        "Volume": cluster_volume,
-                                        "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
-                                        "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
-                                        "Surface_Area": cluster_surface_area,
-                                        "Class": cluster_class,
-                                        "Class_Score": cluster_class_score,
-                                        "Class_Name": cluster_class_name,
-                                        "id": cluster_id,
-                                    }
-                                )
-                            else:
-                                data_cluster_plot = pd.DataFrame(
-                                    {
-                                        "Time": cluster_time,
-                                        "Radius": cluster_radius,
-                                        "Volume": cluster_volume,
-                                        "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
-                                        "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
-                                        "Surface_Area": cluster_surface_area,
-                                        "Class": cluster_class,
-                                        "Class_Score": cluster_class_score,
-                                        "id": cluster_id,
-                                    }
-                                )
+                            data_cluster_plot = pd.DataFrame(
+                                {
+                                    "Time": cluster_time,
+                                    "Radius": cluster_radius,
+                                    "Volume": cluster_volume,
+                                    "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
+                                    "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
+                                    "Surface_Area": cluster_surface_area,
+                                    "id": cluster_id,
+                                }
+                            )
 
                             if len(global_data_cluster_plot) == 0:
                                 global_data_cluster_plot = data_cluster_plot
@@ -1351,35 +1277,6 @@ def plugin_wrapper_track():
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
-                if not global_data_cluster_plot["Class"].isna().all():
-                    if size_catagories_json is None:
-                        sns.set_palette(flatui)
-                        sns.lineplot(
-                            global_data_cluster_plot,
-                            x="Time",
-                            y="Class",
-                            hue="id",
-                            ax=plot_ax,
-                            legend=False,
-                        )
-
-                    if size_catagories_json is not None:
-                        sns.set_palette(flatui)
-                        sns.lineplot(
-                            global_data_cluster_plot,
-                            x="Time",
-                            y="Class_Name",
-                            hue="id",
-                            ax=plot_ax,
-                            legend=False,
-                        )
-
-                    plot_ax.set_title("Cluster class")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
 
             data_fft_plot = pd.DataFrame(
                 {
@@ -2311,11 +2208,11 @@ def plugin_wrapper_track():
         # Trigger model change
         selected.changed(selected.value)
 
-    widget_for_cluster_modeltype = {
-        DeepEmbeddedClustering: plugin.cluster_model,
-        "No(Cluster)": plugin.cluster_model_none,
-        CUSTOM_MODEL_CLUSTER: plugin.model_folder_cluster,
-    }
+    # widget_for_cluster_modeltype = {
+    # DeepEmbeddedClustering: plugin.cluster_model,
+    # "No(Cluster)": plugin.cluster_model_none,
+    # CUSTOM_MODEL_CLUSTER: plugin.model_folder_cluster,
+    # }
 
     plugin_data.compute_button.native.setStyleSheet("background-color: orange")
 
@@ -2329,15 +2226,6 @@ def plugin_wrapper_track():
         x_seg = None
         x_channel_seg = None
         x_mask = None
-
-        nonlocal size_catagories_json
-
-        if (
-            plugin_data.size_catagories is not None
-            and plugin_data.size_catagories.value.is_file()
-        ):
-
-            size_catagories_json = load_json(plugin_data.size_catagories.value)
 
         if plugin_data.xml_path.value is not None:
             save_dir = os.path.join(
@@ -2362,20 +2250,19 @@ def plugin_wrapper_track():
 
         nonlocal _trackmate_objects
 
-        if model_selected_cluster is not None:
-            model_cluster = get_model_cluster(
+        if model_selected_cloud_auto_encoder is not None:
+            model_cloud_auto_encoder = get_model_cloud_auto_encoder(
                 *model_selected_cloud_auto_encoder,
-                *model_selected_cluster,
             )
 
             try:
                 device = torch.device("cuda:0")
-                model_cluster.to(device)
+                model_cloud_auto_encoder.to(device)
             except ValueError:
                 device = torch.device("cpu")
-                model_cluster.to(device)
+                model_cloud_auto_encoder.to(device)
         else:
-            model_cluster = None
+            model_cloud_auto_encoder = None
 
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
@@ -2390,9 +2277,14 @@ def plugin_wrapper_track():
             ]
             if len(config) > 0:
                 num_points = config["num_points"]
+                scale_z = config["scale_z"]
+                scale_xy = config["scale_xy"]
             else:
                 num_points = 0
-
+        if torch.cuda.is_available():
+            accelerator = "gpu"
+        else:
+            accelerator = "cpu"
         _trackmate_objects = TrackMate(
             plugin_data.xml_path.value,
             plugin_data.spot_csv_path.value,
@@ -2407,10 +2299,14 @@ def plugin_wrapper_track():
             seg_image=x_seg,
             image=x,
             mask=x_mask,
-            cluster_model=model_cluster,
+            autoencoder_model=model_cloud_auto_encoder,
             num_points=num_points,
             progress_bar=plugin.progress_bar,
             batch_size=plugin_data.batch_size.value,
+            accelerator=accelerator,
+            devices=-1,
+            scale_z=scale_z,
+            scale_xy=scale_xy,
         )
         nonlocal track_centroid_tree, track_centroid_list
         track_centroid_list = [
@@ -2435,11 +2331,6 @@ def plugin_wrapper_track():
 
         plugin_data.compute_button.enabled = True
 
-    @change_handler(plugin_data.size_catagories, init=False)
-    def _size_catagories_change(value):
-
-        plugin_data.compute_button.enabled = True
-
     @change_handler(plugin_data.master_xml_path, init=False)
     def _master_xml_path_change(value):
 
@@ -2450,7 +2341,7 @@ def plugin_wrapper_track():
 
         plugin_data.compute_button.enabled = True
 
-    @change_handler(plugin.cluster_model_type, init=False)
+    """  @change_handler(plugin.cluster_model_type, init=False)
     def _cluster_model_type_change(cluster_model_type: Union[str, type]):
         selected = widget_for_cluster_modeltype[cluster_model_type]
         for w in {
@@ -2463,7 +2354,7 @@ def plugin_wrapper_track():
         selected.show()
         plugin_data.compute_button.enabled = True
         # Trigger model change
-        selected.changed(selected.value)
+        selected.changed(selected.value) """
 
     @change_handler(plugin.track_model_type, init=False)
     def _change_track_model_type(value):
