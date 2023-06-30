@@ -1,15 +1,15 @@
 import numpy as np
-from kapoorlabs_lightning.lightning_trainer import AutoLightningModel
-from tifffile import imread
-from pyntcloud import PyntCloud
-from cellshape_cloud import CloudAutoEncoder
-from napatrackmater import load_json
-from kapoorlabs_lightning.pytorch_losses import ChamferLoss
-import trimesh
-from kapoorlabs_lightning.optimizers import Adam
-import torch
 import pandas as pd
+import torch
+import trimesh
+from cellshape_cloud import CloudAutoEncoder
+from kapoorlabs_lightning.lightning_trainer import AutoLightningModel
+from kapoorlabs_lightning.optimizers import Adam
+from kapoorlabs_lightning.pytorch_losses import ChamferLoss
+from napatrackmater import load_json
+from pyntcloud import PyntCloud
 from skimage.measure import marching_cubes
+from tifffile import imread
 
 
 def main():

@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Segmentation and Tracking &#8212; VollSeg extension for cell shapes and tracking solutions</title>
+    <title>Algorithm &#8212; VollSeg extension for cell tracking</title>
 
 
 
@@ -135,7 +135,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
-    <p class="title logo__title">VollSeg extension for cell shapes and tracking solutions</p>
+    <p class="title logo__title">VollSeg extension for cell tracking</p>
 
 </a></div>
         <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
@@ -149,11 +149,7 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Segmentation and Tracking</a></li>
-
-
-
-
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Algorithm</a></li>
 </ul>
 
     </div>
@@ -337,7 +333,7 @@ document.write(`
 
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Segmentation and Tracking</h1>
+    <h1>Algorithm</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -347,13 +343,12 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Segmentation and Tracking</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#point-clouds">Point Clouds</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#autoencoder">Autoencoder</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-features">Shape Features</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-features">Dynamic Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation-and-tracking">Segmentation and Tracking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-clouds">Point Clouds</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autoencoder">Autoencoder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-features">Shape Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-features">Dynamic Features</a></li>
 </ul>
-
             </nav>
         </div>
     </div>
@@ -364,8 +359,10 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
 
-  <section class="tex2jax_ignore mathjax_ignore" id="segmentation-and-tracking">
-<h1>Segmentation and Tracking<a class="headerlink" href="#segmentation-and-tracking" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="algorithm">
+<h1>Algorithm<a class="headerlink" href="#algorithm" title="Permalink to this headline">#</a></h1>
+<section id="segmentation-and-tracking">
+<h2>Segmentation and Tracking<a class="headerlink" href="#segmentation-and-tracking" title="Permalink to this headline">#</a></h2>
 <p>VollSeg has multiple model combinations for obtaining segmentations, some of its combination are more suited for certain image and microscopy types, the details
 of whcih can be found in the <a class="reference external" href="https://github.com/Kapoorlabs-CAPED/VollSeg">VollSeg repository</a>. The output of segmentation are instance labels for 2D, 3D, 2D + time,
 and 3D + time datasets. The aim of obtaining these labels is accurate quantification of cell shapes as that is usually a biological aim for researchers interested in
@@ -378,21 +375,22 @@ is performed prior to using this plugin in Fiji using TrackMate, which is the mo
 are xml and [tracks, spots and edges csv files] that serve as an input to this plugin. We also provide pre-trained auto encoder models for nuclei and membrane that can
 be used to obtain the point cloud representation of the segmented cells. The users can also provide their own autoencoder models if they have trained them on their data.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="point-clouds">
-<h1>Point Clouds<a class="headerlink" href="#point-clouds" title="Permalink to this headline">#</a></h1>
+<section id="point-clouds">
+<h2>Point Clouds<a class="headerlink" href="#point-clouds" title="Permalink to this headline">#</a></h2>
 <p>As a first step the users apply the trained autoencoder models on the input timelapse of segmentation and in the plugin point cloud representation of all the cells in
 the tracks are computed. We provide a <a class="reference download internal" download="" href="_downloads/c74da13609f81dcb94d74f88327c6b07/visualize_point_clouds.py"><span class="xref download myst">script</span></a> to visualize point cloud representation for the input segmentation image (binary) using classical and autoencoder model predictions.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="autoencoder">
-<h1>Autoencoder<a class="headerlink" href="#autoencoder" title="Permalink to this headline">#</a></h1>
+<section id="autoencoder">
+<h2>Autoencoder<a class="headerlink" href="#autoencoder" title="Permalink to this headline">#</a></h2>
 <p>This is an algorithm developed by <a class="reference external" href="https://www.sentinal4d.com/">Sentinal</a> AI startup of the UK and they created a <a class="reference external" href="https://github.com/Sentinal4D">pytorch</a> based program to train autoencoder models that
 generate point cloud representations. KapoorLabs created a <a class="reference external" href="https://github.com/Kapoorlabs-CAPED/KapoorLabs-Lightning">Lightning version</a> of their software that allows for multi-GPU training.</p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="shape-features">
-<h1>Shape Features<a class="headerlink" href="#shape-features" title="Permalink to this headline">#</a></h1>
+<section id="shape-features">
+<h2>Shape Features<a class="headerlink" href="#shape-features" title="Permalink to this headline">#</a></h2>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="dynamic-features">
-<h1>Dynamic Features<a class="headerlink" href="#dynamic-features" title="Permalink to this headline">#</a></h1>
+<section id="dynamic-features">
+<h2>Dynamic Features<a class="headerlink" href="#dynamic-features" title="Permalink to this headline">#</a></h2>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -453,13 +451,12 @@ generate point cloud representations. KapoorLabs created a <a class="reference e
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Segmentation and Tracking</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#point-clouds">Point Clouds</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#autoencoder">Autoencoder</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-features">Shape Features</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-features">Dynamic Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation-and-tracking">Segmentation and Tracking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-clouds">Point Clouds</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autoencoder">Autoencoder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-features">Shape Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-features">Dynamic Features</a></li>
 </ul>
-
   </nav></div>
 
 </div></div>
