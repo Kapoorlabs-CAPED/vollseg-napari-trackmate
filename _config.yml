@@ -1,7 +1,7 @@
 # Book settings
 # Learn more at https://jupyterbook.org/customize/config.html
 
-title: VollSeg extension for cell shapes and tracking solutions
+title: VollSeg extension for cell tracking
 author: Varun Kapoor
 logo: images/kapoorlablogo.png
 
