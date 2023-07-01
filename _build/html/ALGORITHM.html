@@ -367,12 +367,10 @@ document.write(`
 of whcih can be found in the <a class="reference external" href="https://github.com/Kapoorlabs-CAPED/VollSeg">VollSeg repository</a>. The output of segmentation are instance labels for 2D, 3D, 2D + time,
 and 3D + time datasets. The aim of obtaining these labels is accurate quantification of cell shapes as that is usually a biological aim for researchers interested in
 cell fate quantification and this tool was made as a <a class="reference external" href="https://chanzuckerberg.com/science/programs-resources/imaging/napari/vollseg-extensions-and-workflow-development-with-user-support/">Napari grant action</a>
-to achieve that purpose in cell tracking. Simply using algorithms like Marching Cubes on the segmentation labels that come out of AI approaches is akin to giving up
-when victory is in sight, in our algorithm we train an autoencoder model to obtain point cloud representation of the segmentation labels and as is evitable from the comparision with classical computation approaches, the point cloud representation achieved therby is far superior (figure below). In our algorithm
-the segmentation labels coming from VollSeg along with Raw image of the cells and tissue boundary mask of those cells serve as an input to this plugin. The tracking
-is performed prior to using this plugin in Fiji using TrackMate, which is the most popular tracking solution with track editing tools in Fiji. The out put of that plugin
-are xml and [tracks, spots and edges csv files] that serve as an input to this plugin. We also provide pre-trained auto encoder models for nuclei and membrane that can
-be used to obtain the point cloud representation of the segmented cells. The users can also provide their own autoencoder models if they have trained them on their data.
+to achieve that purpose in cell tracking.</p>
+<p>Simply using algorithms like Marching Cubes on the segmentation labels that come out of AI approaches is akin to giving up
+when victory is in sight, in our algorithm we train an autoencoder model to obtain point cloud representation of the segmentation labels and as is evitable from the comparision with classical computation approaches, the point cloud representation achieved therby is far superior (figure below).</p>
+<p>In our algorithm the segmentation labels coming from VollSeg along with Raw image of the cells and tissue boundary mask of those cells serve as an input to this plugin. The tracking is performed prior to using this plugin in Fiji using TrackMate, which is the most popular tracking solution with track editing tools in Fiji. The output of that plugin are xml and [tracks, spots and edges csv files] that serve as an input to this plugin. We also provide pre-trained auto encoder models for nuclei and membrane that can be used to obtain the point cloud representation of the segmented cells. The users can also provide their own autoencoder models if they have trained them on their data.
 <img alt="comparision" src="_images/point_clouds_compared.png" /></p>
 </section>
 <section id="point-clouds">
@@ -383,13 +381,28 @@ the tracks are computed. We provide a <a class="reference download internal" dow
 <section id="autoencoder">
 <h2>Autoencoder<a class="headerlink" href="#autoencoder" title="Permalink to this headline">#</a></h2>
 <p>This is an algorithm developed by <a class="reference external" href="https://www.sentinal4d.com/">Sentinal</a> AI startup of the UK and they created a <a class="reference external" href="https://github.com/Sentinal4D">pytorch</a> based program to train autoencoder models that
-generate point cloud representations. KapoorLabs created a <a class="reference external" href="https://github.com/Kapoorlabs-CAPED/KapoorLabs-Lightning">Lightning version</a> of their software that allows for multi-GPU training.</p>
+generate point cloud representations. KapoorLabs created a <a class="reference external" href="https://github.com/Kapoorlabs-CAPED/KapoorLabs-Lightning">Lightning version</a> of their software that allows for multi-GPU training. In this plugin autoencoder model is used to convert the instances to point clouds, users can select our pre-trained models or choose their own prior to applying the model. The computation is then performed on their GPU (recommended) before further analysis is carried out. As this is an expensive computation we also provide a <a class="reference download internal" download="" href="_downloads/7304322522eb33b4c1d6fcd9b8dac0af/apply_autoencoder.py"><span class="xref download myst">script</span></a> to do the same that can be submitted to the HPC to obtain a master XML file that appends additional shape and dynamic features to the cell feature vectors therby enhancing the basic XML that comes out of TrackMate.</p>
 </section>
 <section id="shape-features">
 <h2>Shape Features<a class="headerlink" href="#shape-features" title="Permalink to this headline">#</a></h2>
+<p>The shape features computed in the plugin uses the point cloud representations produced by the autoencoder model. We compute the following shape features</p>
+<ul class="simple">
+<li><p>Eccentricity</p></li>
+<li><p>Eigenvectors and Eigenvalues of covariance matrix</p></li>
+<li><p>Surface area and Volume</p></li>
+</ul>
 </section>
 <section id="dynamic-features">
 <h2>Dynamic Features<a class="headerlink" href="#dynamic-features" title="Permalink to this headline">#</a></h2>
+<p>The dynamic features computed in the plugin are the following</p>
+<ul class="simple">
+<li><p>Radial Angle: Angle between the center of the tissue and the cell centroid taking the origin as top left co-ordinate of the image.</p></li>
+<li><p>Motion Angle: Angle between the center of the tissue and the difference between the cell locations in successive co-ordinates.</p></li>
+<li><p>Cell Axis Angle: Angle between the center of the tissue and largest eigenvector of the cell.</p></li>
+<li><p>Speed: Cell speed at a given time-instance.</p></li>
+<li><p>Acceleration: Cell acceleration at a given time-instance.</p></li>
+<li><p>Distance of cell-mask: Distance between cell and the tissue mask at a given time-instance.</p></li>
+</ul>
 </section>
 </section>
 
