@@ -1,17 +1,17 @@
-from pathlib import Path
 import os
-from kapoorlabs_lightning.optimizers import Adam
-from kapoorlabs_lightning.lightning_trainer import AutoLightningModel
-from napatrackmater.Trackmate import TrackMate
-from napatrackmater import load_json
+from pathlib import Path
+
 from cellshape_cloud import CloudAutoEncoder
-from tifffile import imread
+from kapoorlabs_lightning.lightning_trainer import AutoLightningModel
+from kapoorlabs_lightning.optimizers import Adam
 from kapoorlabs_lightning.pytorch_losses import ChamferLoss
+from napatrackmater import load_json
+from napatrackmater.Trackmate import TrackMate
+from tifffile import imread
 
 
 def main():
 
-    base_dir = "path/to/base/dir"
     xml_path = Path("path/to/xml/file")
     track_csv = Path("path/to/track/csv/file")
     spot_csv = Path("path/to/spot/csv/file")
