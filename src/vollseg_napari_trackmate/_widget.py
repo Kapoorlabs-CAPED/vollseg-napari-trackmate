@@ -220,6 +220,7 @@ def plugin_wrapper_track():
     def get_model_cloud_auto_encoder(
         cloud_auto_encoder_model_type, model_cloud_auto_encoder
     ):
+        print(cloud_auto_encoder_model_type)
         if cloud_auto_encoder_model_type == CUSTOM_MODEL_CLOUD_AUTO_ENCODER:
             path_auto = Path(model_cloud_auto_encoder)
             path_auto.is_file() or _raise(
@@ -257,10 +258,12 @@ def plugin_wrapper_track():
             cloud_auto_encoder_model_type
             != DEFAULTS_MODEL["model_cloud_auto_encoder_none"]
         ):
+            print("sec")
             return cloud_auto_encoder_model_type.local_from_pretrained(
                 model_cloud_auto_encoder
             )
         else:
+            print("none")
             return None
 
     @functools.lru_cache(maxsize=None)
