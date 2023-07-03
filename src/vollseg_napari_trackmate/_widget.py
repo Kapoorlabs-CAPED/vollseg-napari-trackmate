@@ -236,6 +236,11 @@ def plugin_wrapper_track():
                 encoder_type=config_cloud_auto_encoder["encoder_type"],
                 decoder_type=config_cloud_auto_encoder["decoder_type"],
             )
+            if torch.cuda.is_available():
+                map_location = torch.device("cuda")
+            else:
+                map_location = torch.device("cpu")
+
             autoencoder_model = AutoLightningModel.load_from_checkpoint(
                 path_auto,
                 network=autoencoder,
@@ -243,6 +248,7 @@ def plugin_wrapper_track():
                 optim_func=Adam(lr=0.001),
                 scale_z=config_cloud_auto_encoder["scale_z"],
                 scale_xy=config_cloud_auto_encoder["scale_xy"],
+                map_location=map_location,
             )
 
             return autoencoder_model
@@ -1271,18 +1277,25 @@ def plugin_wrapper_track():
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
+            summed_amplitude = []
+            for i in range(len(unique_fft_properties)):
+                summed_amplitude.append(np.sum(unique_fft_properties[i][3]))
+            summed_amplitude = np.array(summed_amplitude)
+            summed_intesity = []
+            for i in range(len(unique_fft_properties)):
+                summed_intesity.append(np.sum(unique_fft_properties[i][1]))
+            summed_intesity = np.array(summed_intesity)
             data_fft_plot = pd.DataFrame(
                 {
                     "Frequ": unique_fft_properties[0][2],
-                    "Amplitude": np.sum(unique_fft_properties, axis=0)[3],
+                    "Amplitude": summed_amplitude,
                 }
             )
 
             data_time_plot = pd.DataFrame(
                 {
                     "Time": unique_fft_properties[0][0],
-                    "Intensity": np.sum(unique_fft_properties, axis=0)[1],
+                    "Intensity": summed_intesity,
                 }
             )
 
@@ -2161,6 +2174,8 @@ def plugin_wrapper_track():
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
         num_points = 0
+        scale_z = 1
+        scale_xy = 1
         if model_selected_cloud_auto_encoder is not None:
             (
                 cloud_auto_encoder_model_type,
@@ -2169,12 +2184,12 @@ def plugin_wrapper_track():
             config = model_cloud_auto_encoder_configs[
                 (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
             ]
+
             if len(config) > 0:
                 num_points = config["num_points"]
                 scale_z = config["scale_z"]
                 scale_xy = config["scale_xy"]
-            else:
-                num_points = 0
+
         if torch.cuda.is_available():
             accelerator = "gpu"
         else:
