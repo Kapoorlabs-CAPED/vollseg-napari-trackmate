@@ -4,7 +4,7 @@ This GUI plugin allows you to do track analysis by using autoencoder models that
 a TrackMate generated XML and csv files and creates a master XML file by computing additional shape and dynamic features based on the generated point clouds. 
 
 
-
+Elaborate documentation for users of this repository at this [documentation]
 
 # Who is This For?
 
@@ -26,14 +26,7 @@ issue on the [GitHub repository](https://github.com/Kapoorlabs-CAPED/vollseg-nap
 # How to Cite
 
 Please use the following citations if you use this in your work:
+https://conference.scipy.org/proceedings/scipy2021/varun_kapoor.html
 
 
-@InProceedings{ varun_kapoor-proc-scipy-2021,
-  author    = { {V}arun {K}apoor and {C}laudia {C}araba\~na },
-  title     = { {C}ell {T}racking in 3{D} using deep learning segmentations },
-  booktitle = { {P}roceedings of the 20th {P}ython in {S}cience {C}onference },
-  pages     = { 154 - 161 },
-  year      = { 2021 },
-  editor    = { {M}eghann {A}garwal and {C}hris {C}alloway and {D}illon {N}iederhut and {D}avid {S}hupe },
-  doi       = { 10.25080/majora-1b6fd038-014 }
-}
+[documentation]: https://kapoorlabs-caped.github.io/vollseg-napari-trackmate
