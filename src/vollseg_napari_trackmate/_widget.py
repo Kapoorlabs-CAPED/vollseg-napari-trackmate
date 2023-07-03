@@ -33,6 +33,9 @@ def plugin_wrapper_track():
         DeepEmbeddedClustering,
         load_json,
     )
+    from kapoorlabs_lightning.optimizers import Adam
+    from kapoorlabs_lightning.pytorch_losses import ChamferLoss
+    from kapoorlabs_lightning.lightning_trainer import AutoLightningModel
     from napatrackmater.pretrained import (
         get_model_folder,
         get_registered_models,
@@ -233,20 +236,16 @@ def plugin_wrapper_track():
                 encoder_type=config_cloud_auto_encoder["encoder_type"],
                 decoder_type=config_cloud_auto_encoder["decoder_type"],
             )
-            try:
-                checkpoint = torch.load(
-                    os.path.join(path_auto.parent, path_auto.stem + ".ckpt"),
-                    map_location=lambda storage, loc: storage,
-                )
-            except ValueError:
+            autoencoder_model = AutoLightningModel.load_from_checkpoint(
+                os.path.join(path_auto.parent, path_auto.stem),
+                network=autoencoder,
+                loss_func=ChamferLoss(),
+                optim_func=Adam(lr=0.001),
+                scale_z=config_cloud_auto_encoder["scale_z"],
+                scale_xy=config_cloud_auto_encoder["scale_xy"],
+            )
 
-                checkpoint = torch.load(
-                    os.path.join(path_auto.parent, path_auto.stem + ".ckpt"),
-                    map_location=torch.device("cpu"),
-                )
-
-            autoencoder.load_state_dict(checkpoint["model_state_dict"])
-            return autoencoder
+            return autoencoder_model
 
         elif (
             cloud_auto_encoder_model_type

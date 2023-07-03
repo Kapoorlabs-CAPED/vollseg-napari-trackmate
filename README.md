@@ -11,6 +11,8 @@ Track analysis using TrackMate xml and csv generated tracks using NapaTrackMater
 
 ----------------------------------
 
+Elaborate documentation for users of this repository at this [link](https://kapoorlabs-caped.github.io/vollseg-napari-trackmate)
+
 This [napari] plugin was generated with [Cookiecutter] using [@caped]'s [cookiecutter-napari-plugin] template.
 
 <!--
