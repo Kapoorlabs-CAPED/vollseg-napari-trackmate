@@ -250,7 +250,7 @@ def plugin_wrapper_track():
                 scale_xy=config_cloud_auto_encoder["scale_xy"],
                 map_location=map_location,
             )
-
+            print(autoencoder_model, type(autoencoder_model))
             return autoencoder_model
 
         elif (
@@ -464,7 +464,17 @@ def plugin_wrapper_track():
                     valid=valid,
                 )
 
-            all_valid = True
+            def _restore():
+                widgets_valid(
+                    plugin.image, valid=plugin.image.value is not None
+                )
+
+            all_valid = False
+            for layer in list(plugin.viewer.value.layers):
+                if isinstance(layer, napari.layers.Labels):
+                    all_valid = True
+                    break
+            help_msg = ""
 
             if self.valid.model_autoencoder:
 
@@ -477,6 +487,9 @@ def plugin_wrapper_track():
             else:
 
                 _model(self.valid.model_autoencoder)
+
+                _restore()
+            self.help(help_msg)
 
     class Updater_Cluster:
         def __init__(self, debug=DEBUG):
@@ -772,14 +785,6 @@ def plugin_wrapper_track():
             step=1,
             value=DEFAULTS_PARAMETERS["batch_size"],
         ),
-        plot_step_size=dict(
-            widget_type="SpinBox",
-            label="Cluster class time step",
-            min=1,
-            max=10000000,
-            step=1,
-            value=DEFAULTS_PARAMETERS["step_size"],
-        ),
         compute_button=dict(widget_type="PushButton", text="Compute"),
         layout="vertical",
         persist=False,
@@ -797,7 +802,6 @@ def plugin_wrapper_track():
         edges_csv_path,
         axes,
         batch_size,
-        plot_step_size,
         compute_button,
     ) -> List[napari.types.LayerDataTuple]:
 
@@ -2065,12 +2069,6 @@ def plugin_wrapper_track():
 
         plugin_data.compute_button.enabled = True
         plugin_data.batch_size.value = value
-
-    @change_handler(plugin_data.plot_step_size)
-    def _plot_step_size_change(value: int):
-
-        plugin_data.compute_button.enabled = True
-        plugin_data.plot_step_size.value = value
 
     @change_handler(plugin.track_id_box, init=False)
     def _track_id_box_change(value):
