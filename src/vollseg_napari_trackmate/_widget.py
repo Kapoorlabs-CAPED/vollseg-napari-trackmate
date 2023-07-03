@@ -1279,12 +1279,12 @@ def plugin_wrapper_track():
                 plot_ax = phenotype_plot_class.plot_ax
             summed_amplitude = []
             for i in range(len(unique_fft_properties)):
-                summed_amplitude.append(np.sum(unique_fft_properties[i][3]))
-            summed_amplitude = np.array(summed_amplitude)
+                summed_amplitude.append(unique_fft_properties[i][3] ** 2)
+            summed_amplitude = np.sum(summed_amplitude, axis=0)
             summed_intesity = []
             for i in range(len(unique_fft_properties)):
-                summed_intesity.append(np.sum(unique_fft_properties[i][1]))
-            summed_intesity = np.array(summed_intesity)
+                summed_intesity.append(unique_fft_properties[i][1])
+            summed_intesity = np.sum(summed_intesity, axis=0)
             data_fft_plot = pd.DataFrame(
                 {
                     "Frequ": unique_fft_properties[0][2],
