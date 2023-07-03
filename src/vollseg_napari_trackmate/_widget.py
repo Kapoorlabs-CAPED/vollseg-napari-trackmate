@@ -186,6 +186,7 @@ def plugin_wrapper_track():
         # model_cluster_none="No(Cluster)",
         axes="TZYX",
         track_model_type="Both",
+        device_type="cpu",
     )
     DEFAULTS_PARAMETERS = dict(batch_size=8, step_size=10)
 
@@ -742,7 +743,7 @@ def plugin_wrapper_track():
             label="Device type (CPU/GPU)",
             orientation="horizontal",
             choices=device_type_choices,
-            value=DEFAULTS_MODEL["unet_seg_model_type"],
+            value=DEFAULTS_MODEL["device_type"],
         ),
         compute_button=dict(widget_type="PushButton", text="Compute"),
         layout="vertical",
