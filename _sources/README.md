@@ -11,7 +11,9 @@ Track analysis using TrackMate xml and csv generated tracks using NapaTrackMater
 
 ----------------------------------
 
-This [napari] plugin was generated with [Cookiecutter] using [@napari]'s [cookiecutter-napari-plugin] template.
+Elaborate documentation for users of this repository at this [documentation]
+
+This [napari] plugin was generated with [Cookiecutter] using [@caped]'s [cookiecutter-napari-plugin] template.
 
 <!--
 Don't miss the full getting started guide to set up your new package:
@@ -51,15 +53,16 @@ If you encounter any problems, please [file an issue] along with a detailed desc
 [napari]: https://github.com/napari/napari
 [Cookiecutter]: https://github.com/audreyr/cookiecutter
 [@napari]: https://github.com/napari
+[@caped]: https://github.com/Kapoorlabs-CAPED/
 [MIT]: http://opensource.org/licenses/MIT
 [BSD-3]: http://opensource.org/licenses/BSD-3-Clause
 [GNU GPL v3.0]: http://www.gnu.org/licenses/gpl-3.0.txt
 [GNU LGPL v3.0]: http://www.gnu.org/licenses/lgpl-3.0.txt
 [Apache Software License 2.0]: http://www.apache.org/licenses/LICENSE-2.0
 [Mozilla Public License 2.0]: https://www.mozilla.org/media/MPL/2.0/index.txt
-[cookiecutter-napari-plugin]: https://github.com/napari/cookiecutter-napari-plugin
-
-[file an issue]: https://github.com/Kapoorlabs-CAPED/vollseg-napari-trackmate/issues
+[cookiecutter-napari-plugin]: https://github.com/Kapoorlabs-CAPED/cookiecutter-kapoorlabs-napari-plugin
+[documentation]: https://kapoorlabs-caped.github.io/vollseg-napari-trackmate
+[file an issue]: https://github.com/Kapoorlabs-CAPED/vollseg-napari-mtrack/issues
 
 [napari]: https://github.com/napari/napari
 [tox]: https://tox.readthedocs.io/en/latest/
