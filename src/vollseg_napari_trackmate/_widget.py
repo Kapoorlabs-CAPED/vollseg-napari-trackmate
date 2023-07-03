@@ -220,7 +220,6 @@ def plugin_wrapper_track():
     def get_model_cloud_auto_encoder(
         cloud_auto_encoder_model_type, model_cloud_auto_encoder
     ):
-        print(cloud_auto_encoder_model_type)
         if cloud_auto_encoder_model_type == CUSTOM_MODEL_CLOUD_AUTO_ENCODER:
             path_auto = Path(model_cloud_auto_encoder)
             path_auto.is_file() or _raise(
@@ -251,7 +250,6 @@ def plugin_wrapper_track():
                 scale_xy=config_cloud_auto_encoder["scale_xy"],
                 map_location=map_location,
             )
-            print("returning", autoencoder_model)
             return autoencoder_model
 
         elif (
@@ -2171,7 +2169,8 @@ def plugin_wrapper_track():
                 model_cloud_auto_encoder.to(device)
         else:
             model_cloud_auto_encoder = None
-        print(model_cloud_auto_encoder, type(model_cloud_auto_encoder), "path")
+        autoencoder_model = model_cloud_auto_encoder
+
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
         num_points = 0
@@ -2190,7 +2189,7 @@ def plugin_wrapper_track():
                 num_points = config["num_points"]
                 scale_z = config["scale_z"]
                 scale_xy = config["scale_xy"]
-
+        print(model_cloud_auto_encoder, type(model_cloud_auto_encoder), "path")
         if torch.cuda.is_available():
             accelerator = "gpu"
         else:
@@ -2209,7 +2208,7 @@ def plugin_wrapper_track():
             seg_image=x_seg,
             image=x,
             mask=x_mask,
-            autoencoder_model=model_cloud_auto_encoder,
+            autoencoder_model=autoencoder_model,
             num_points=num_points,
             progress_bar=plugin.progress_bar,
             batch_size=plugin_data.batch_size.value,
