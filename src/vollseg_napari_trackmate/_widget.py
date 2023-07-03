@@ -947,6 +947,9 @@ def plugin_wrapper_track():
                         )
                         (
                             cluster_time,
+                            cluster_z,
+                            cluster_y,
+                            cluster_x,
                             cluster_radius,
                             cluster_volume,
                             cluster_eccentricity_comp_first,
@@ -984,6 +987,9 @@ def plugin_wrapper_track():
                         unique_shape_properties.append(
                             [
                                 cluster_time,
+                                cluster_z,
+                                cluster_y,
+                                cluster_x,
                                 cluster_radius,
                                 cluster_volume,
                                 cluster_eccentricity_comp_first,
