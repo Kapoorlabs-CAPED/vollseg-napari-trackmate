@@ -30,7 +30,6 @@ def plugin_wrapper_track():
 
     from napatrackmater import (
         CloudAutoEncoder,
-        DeepEmbeddedClustering,
         load_json,
     )
     from kapoorlabs_lightning.optimizers import Adam
@@ -191,7 +190,6 @@ def plugin_wrapper_track():
     DEFAULTS_PARAMETERS = dict(batch_size=8, step_size=10)
 
     CUSTOM_MODEL_CLOUD_AUTO_ENCODER = "CUSTOM_MODEL_CLOUD_AUTO_ENCODER"
-    CUSTOM_MODEL_CLUSTER = "CUSTOM_MODEL_CLUSTER"
 
     cloud_auto_encoder_model_type_choices = [
         ("PreTrained(Encoder)", CloudAutoEncoder),
@@ -209,6 +207,15 @@ def plugin_wrapper_track():
         ("Non-Dividing", "Non-Dividing"),
         ("Both", "Both"),
     ]
+    device_type_choices = [
+        ("CPU", "cpu"),
+        ("GPU", "cuda"),
+    ]
+
+    device_type_dict = {
+        0: device_type_choices[0][0],
+        1: device_type_choices[1][0],
+    }
 
     track_model_type_dict = {
         0: track_model_type_choices[0][0],
@@ -256,67 +263,11 @@ def plugin_wrapper_track():
             cloud_auto_encoder_model_type
             != DEFAULTS_MODEL["model_cloud_auto_encoder_none"]
         ):
-            print("sec")
             return cloud_auto_encoder_model_type.local_from_pretrained(
                 model_cloud_auto_encoder
             )
         else:
-            print("none")
             return None
-
-    @functools.lru_cache(maxsize=None)
-    def get_model_cluster(
-        cloud_auto_encoder_model_type,
-        model_cloud_auto_encoder,
-        cluster_model_type,
-        model_cluster,
-    ):
-
-        autoencoder = get_model_cloud_auto_encoder(
-            cloud_auto_encoder_model_type, model_cloud_auto_encoder
-        )
-
-        if autoencoder is not None:
-            if cluster_model_type == CUSTOM_MODEL_CLUSTER:
-                path_cluster = Path(model_cluster)
-                path_cluster.is_file() or _raise(
-                    FileNotFoundError(f"{path_cluster} is not a file")
-                )
-
-                try:
-                    checkpoint = torch.load(
-                        os.path.join(
-                            path_cluster.parent, path_cluster.stem + ".ckpt"
-                        ),
-                        map_location=lambda storage, loc: storage,
-                    )
-                except ValueError:
-
-                    checkpoint = (
-                        torch.load(
-                            os.path.join(
-                                path_cluster.parent,
-                                path_cluster.stem + ".ckpt",
-                            ),
-                            map_location=torch.device("cpu"),
-                        ),
-                    )
-                num_clusters = checkpoint["model_state_dict"][
-                    "clustering_layer.weight"
-                ].shape[0]
-
-                model = DeepEmbeddedClustering(
-                    autoencoder=autoencoder, num_clusters=num_clusters
-                )
-                model.load_state_dict(checkpoint["model_state_dict"])
-                return model
-
-            elif cluster_model_type != DEFAULTS_MODEL["model_cluster_none"]:
-                return cluster_model_type.local_from_pretrained(
-                    model_cluster, autoencoder
-                )
-            else:
-                return None
 
     @magicgui(
         label_head=dict(
@@ -780,11 +731,18 @@ def plugin_wrapper_track():
         ),
         batch_size=dict(
             widget_type="SpinBox",
-            label="Batch size (clustering model)",
+            label="Batch size ",
             min=1,
             max=10000000,
             step=1,
             value=DEFAULTS_PARAMETERS["batch_size"],
+        ),
+        device_type=dict(
+            widget_type="RadioButtons",
+            label="Device type (CPU/GPU)",
+            orientation="horizontal",
+            choices=device_type_choices,
+            value=DEFAULTS_MODEL["unet_seg_model_type"],
         ),
         compute_button=dict(widget_type="PushButton", text="Compute"),
         layout="vertical",
@@ -803,6 +761,7 @@ def plugin_wrapper_track():
         edges_csv_path,
         axes,
         batch_size,
+        device_type,
         compute_button,
     ) -> List[napari.types.LayerDataTuple]:
 
@@ -2161,12 +2120,13 @@ def plugin_wrapper_track():
                 *model_selected_cloud_auto_encoder,
             )
 
-            try:
-                device = torch.device("cuda:0")
-                model_cloud_auto_encoder.to(device)
-            except ValueError:
-                device = torch.device("cpu")
-                model_cloud_auto_encoder.to(device)
+            device_cuda = torch.device("cuda:0")
+            device_cpu = torch.device("cpu")
+            if device_type_dict[0]:
+                model_cloud_auto_encoder.to(device_cuda)
+            if device_type_dict[1]:
+                model_cloud_auto_encoder.to(device_cpu)
+
         else:
             model_cloud_auto_encoder = None
         autoencoder_model = model_cloud_auto_encoder
@@ -2189,10 +2149,12 @@ def plugin_wrapper_track():
                 num_points = config["num_points"]
                 scale_z = config["scale_z"]
                 scale_xy = config["scale_xy"]
-        if torch.cuda.is_available():
+
+        if device_type_dict[0]:
             accelerator = "gpu"
         else:
             accelerator = "cpu"
+
         _trackmate_objects = TrackMate(
             plugin_data.xml_path.value,
             plugin_data.spot_csv_path.value,
