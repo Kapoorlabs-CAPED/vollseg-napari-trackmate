@@ -2140,7 +2140,7 @@ def plugin_wrapper_track():
         if model_selected_cloud_auto_encoder is not None:
             (
                 cloud_auto_encoder_model_type,
-                model_cloud_auto_encoder_path,
+                model_cloud_auto_encoder,
             ) = model_selected_cloud_auto_encoder
             config = model_cloud_auto_encoder_configs[
                 (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
