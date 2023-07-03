@@ -235,13 +235,13 @@ def plugin_wrapper_track():
             )
             try:
                 checkpoint = torch.load(
-                    os.path.join(path_auto.parent, path_auto.stem + ".pt"),
+                    os.path.join(path_auto.parent, path_auto.stem + ".ckpt"),
                     map_location=lambda storage, loc: storage,
                 )
             except ValueError:
 
                 checkpoint = torch.load(
-                    os.path.join(path_auto.parent, path_auto.stem + ".pt"),
+                    os.path.join(path_auto.parent, path_auto.stem + ".ckpt"),
                     map_location=torch.device("cpu"),
                 )
 
@@ -280,7 +280,7 @@ def plugin_wrapper_track():
                 try:
                     checkpoint = torch.load(
                         os.path.join(
-                            path_cluster.parent, path_cluster.stem + ".pt"
+                            path_cluster.parent, path_cluster.stem + ".ckpt"
                         ),
                         map_location=lambda storage, loc: storage,
                     )
@@ -289,7 +289,8 @@ def plugin_wrapper_track():
                     checkpoint = (
                         torch.load(
                             os.path.join(
-                                path_cluster.parent, path_cluster.stem + ".pt"
+                                path_cluster.parent,
+                                path_cluster.stem + ".ckpt",
                             ),
                             map_location=torch.device("cpu"),
                         ),
