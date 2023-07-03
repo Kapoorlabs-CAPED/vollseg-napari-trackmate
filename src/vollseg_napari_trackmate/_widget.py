@@ -237,7 +237,7 @@ def plugin_wrapper_track():
                 decoder_type=config_cloud_auto_encoder["decoder_type"],
             )
             autoencoder_model = AutoLightningModel.load_from_checkpoint(
-                os.path.join(path_auto.parent, path_auto.stem),
+                path_auto,
                 network=autoencoder,
                 loss_func=ChamferLoss(),
                 optim_func=Adam(lr=0.001),
