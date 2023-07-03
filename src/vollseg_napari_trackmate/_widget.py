@@ -236,7 +236,7 @@ def plugin_wrapper_track():
                 encoder_type=config_cloud_auto_encoder["encoder_type"],
                 decoder_type=config_cloud_auto_encoder["decoder_type"],
             )
-            autoencoder_model = AutoLightningModel.load_from_checkpoint(
+            autoencoder_model = AutoLightningModel.load_fvolrom_checkpoint(
                 path_auto,
                 network=autoencoder,
                 loss_func=ChamferLoss(),
@@ -458,17 +458,7 @@ def plugin_wrapper_track():
                     valid=valid,
                 )
 
-            def _restore():
-                widgets_valid(
-                    plugin.image, valid=plugin.image.value is not None
-                )
-
-            all_valid = False
-            for layer in list(plugin.viewer.value.layers):
-                if isinstance(layer, napari.layers.Labels):
-                    all_valid = True
-                    break
-            help_msg = ""
+            all_valid = True
 
             if self.valid.model_autoencoder:
 
@@ -481,9 +471,6 @@ def plugin_wrapper_track():
             else:
 
                 _model(self.valid.model_autoencoder)
-
-                _restore()
-            self.help(help_msg)
 
     class Updater_Cluster:
         def __init__(self, debug=DEBUG):
@@ -1494,40 +1481,6 @@ def plugin_wrapper_track():
                 plot_ax = stat_plot_class.plot_ax
                 plot_ax.cla()
 
-                if _trackmate_objects.mitotic_cluster_class is not None:
-                    if len(_trackmate_objects.mitotic_cluster_class) > 0:
-                        data_columns = ["Time", "Mitotic_Cluster_Class"]
-                        data = []
-
-                        for i in range(
-                            0,
-                            len(_trackmate_objects.mitotic_cluster_class),
-                            plugin_data.plot_step_size.value,
-                        ):
-                            time = _trackmate_objects.time[i]
-
-                            class_array = (
-                                _trackmate_objects.mitotic_cluster_class[i]
-                            )
-                            for i in range(class_array.shape[0]):
-                                data.append([time, class_array[i]])
-                        clusters = pd.DataFrame(data, columns=data_columns)
-
-                        sns.violinplot(
-                            x="Time",
-                            y="Mitotic_Cluster_Class",
-                            data=clusters,
-                            ax=plot_ax,
-                        )
-
-                        plot_ax.set_xticklabels([])
-
-                        plot_ax.set_xlabel("Time (min)")
-                        plot_ax.set_ylabel("Class")
-
-                        stat_plot_class._repeat_after_plot()
-                        plot_ax = stat_plot_class.plot_ax
-
                 plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.mitotic_mean_distance_cell_mask,
@@ -1662,40 +1615,6 @@ def plugin_wrapper_track():
                 plot_ax = stat_plot_class.plot_ax
                 plot_ax.cla()
 
-                if _trackmate_objects.non_mitotic_cluster_class is not None:
-
-                    if len(_trackmate_objects.non_mitotic_cluster_class) > 0:
-
-                        data_columns = ["Time", "Non_Mitotic_Cluster_Class"]
-                        data = []
-
-                        for i in range(
-                            0,
-                            len(_trackmate_objects.non_mitotic_cluster_class),
-                            plugin_data.plot_step_size.value,
-                        ):
-                            time = _trackmate_objects.time[i]
-
-                            class_array = (
-                                _trackmate_objects.non_mitotic_cluster_class[i]
-                            )
-                            for i in range(class_array.shape[0]):
-                                data.append([time, class_array[i]])
-                        clusters = pd.DataFrame(data, columns=data_columns)
-                        sns.violinplot(
-                            x="Time",
-                            y="Non_Mitotic_Cluster_Class",
-                            data=clusters,
-                            ax=plot_ax,
-                        )
-
-                        plot_ax.set_xticklabels([])
-                        plot_ax.set_xlabel("Time (min)")
-                        plot_ax.set_ylabel("Class")
-
-                        stat_plot_class._repeat_after_plot()
-                        plot_ax = stat_plot_class.plot_ax
-
                 plot_ax.errorbar(
                     _trackmate_objects.time,
                     _trackmate_objects.non_mitotic_mean_distance_cell_mask,
@@ -1829,38 +1748,6 @@ def plugin_wrapper_track():
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
                 plot_ax.cla()
-
-                if _trackmate_objects.all_cluster_class is not None:
-                    if len(_trackmate_objects.all_cluster_class) > 0:
-
-                        data_columns = ["Time", "All_CellType_Cluster_Class"]
-                        data = []
-
-                        for i in range(
-                            0,
-                            len(_trackmate_objects.all_cluster_class),
-                            plugin_data.plot_step_size.value,
-                        ):
-                            time = _trackmate_objects.time[i]
-
-                            class_array = _trackmate_objects.all_cluster_class[
-                                i
-                            ]
-                            for i in range(class_array.shape[0]):
-                                data.append([time, class_array[i]])
-                        clusters = pd.DataFrame(data, columns=data_columns)
-                        sns.violinplot(
-                            x="Time",
-                            y="All_CellType_Cluster_Class",
-                            data=clusters,
-                            ax=plot_ax,
-                        )
-                        plot_ax.set_xticklabels([])
-                        plot_ax.set_xlabel("Time (min)")
-                        plot_ax.set_ylabel("Class")
-
-                        stat_plot_class._repeat_after_plot()
-                        plot_ax = stat_plot_class.plot_ax
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
