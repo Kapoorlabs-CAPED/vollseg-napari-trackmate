@@ -2179,7 +2179,7 @@ def plugin_wrapper_track():
         if model_selected_cloud_auto_encoder is not None:
             (
                 cloud_auto_encoder_model_type,
-                model_cloud_auto_encoder,
+                model_cloud_auto_encoder_path,
             ) = model_selected_cloud_auto_encoder
             config = model_cloud_auto_encoder_configs[
                 (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
@@ -2189,7 +2189,6 @@ def plugin_wrapper_track():
                 num_points = config["num_points"]
                 scale_z = config["scale_z"]
                 scale_xy = config["scale_xy"]
-        print(model_cloud_auto_encoder, type(model_cloud_auto_encoder), "path")
         if torch.cuda.is_available():
             accelerator = "gpu"
         else:
