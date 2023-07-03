@@ -250,7 +250,7 @@ def plugin_wrapper_track():
                 scale_xy=config_cloud_auto_encoder["scale_xy"],
                 map_location=map_location,
             )
-            print(autoencoder_model, type(autoencoder_model))
+            print("returning", autoencoder_model)
             return autoencoder_model
 
         elif (
@@ -2168,7 +2168,7 @@ def plugin_wrapper_track():
                 model_cloud_auto_encoder.to(device)
         else:
             model_cloud_auto_encoder = None
-
+        print(model_cloud_auto_encoder, type(model_cloud_auto_encoder), "path")
         plugin.progress_bar.value = 0
         plugin.progress_bar.show()
         num_points = 0
