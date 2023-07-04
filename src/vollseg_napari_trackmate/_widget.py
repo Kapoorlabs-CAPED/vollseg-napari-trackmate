@@ -213,11 +213,6 @@ def plugin_wrapper_track():
         ("GPU", "cuda"),
     ]
 
-    device_type_dict = {
-        0: device_type_choices[0][0],
-        1: device_type_choices[1][0],
-    }
-
     track_model_type_dict = {
         0: track_model_type_choices[0][0],
         1: track_model_type_choices[1][0],
@@ -2123,9 +2118,10 @@ def plugin_wrapper_track():
 
             device_cuda = torch.device("cuda:0")
             device_cpu = torch.device("cpu")
-            if device_type_dict[0]:
+
+            if plugin_data.device_type.value == "GPU":
                 model_cloud_auto_encoder.to(device_cuda)
-            if device_type_dict[1]:
+            if plugin_data.device_type.value == "CPU":
                 model_cloud_auto_encoder.to(device_cpu)
 
         else:
@@ -2151,7 +2147,7 @@ def plugin_wrapper_track():
                 scale_z = config["scale_z"]
                 scale_xy = config["scale_xy"]
 
-        if device_type_dict[0]:
+        if plugin_data.device_type.value == "GPU":
             accelerator = "gpu"
         else:
             accelerator = "cpu"
@@ -2175,7 +2171,7 @@ def plugin_wrapper_track():
             progress_bar=plugin.progress_bar,
             batch_size=plugin_data.batch_size.value,
             accelerator=accelerator,
-            devices=-1,
+            devices=1,
             scale_z=scale_z,
             scale_xy=scale_xy,
         )
@@ -2273,6 +2269,11 @@ def plugin_wrapper_track():
             plugin_data.axes.changed(axes)
         else:
             plugin_data.axes.value = axes
+
+    @change_handler(plugin_data.device_type)
+    def _device_type(value: float):
+        print(value)
+        plugin_data.device_type.value = value
 
     # -> triggered by _image_change
     @change_handler(plugin_data.axes, init=False)
