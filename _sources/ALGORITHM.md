@@ -31,7 +31,7 @@ The shape features computed in the plugin uses the point cloud representations p
 ## Dynamic Features
 The dynamic features computed in the plugin are the following
 
-- Radial Angle: Angle between the center of the tissue and the cell centroid taking the origin as top left co-ordinate of the image.
+- Radial Angle: Angle between the center of the tissue and the cell centroid taking the origin as top left co-ordinate of the image. [demonstration](RADIAL_ANGLE.md)
 - Motion Angle: Angle between the center of the tissue and the difference between the cell locations in successive co-ordinates.
 - Cell Axis Angle: Angle between the center of the tissue and largest eigenvector of the cell.
 - Speed: Cell speed at a given time-instance.
