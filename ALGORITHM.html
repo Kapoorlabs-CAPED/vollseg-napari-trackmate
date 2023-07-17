@@ -158,6 +158,7 @@ const thebe_selector_output = ".output, .cell_output"
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MITOSIS.html">Mitosis Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RADIAL_ANGLE.html">Radial Angle Visualization</a></li>
 </ul>
 
     </div>
@@ -354,6 +355,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation-and-tracking">Segmentation and Tracking</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-clouds">Point Clouds</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autoencoder">Autoencoder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#auto-track-correction">Auto Track Correction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-features">Shape Features</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-features">Dynamic Features</a></li>
 </ul>
@@ -390,6 +392,10 @@ the tracks are computed. We provide a <a class="reference download internal" dow
 <h2>Autoencoder<a class="headerlink" href="#autoencoder" title="Permalink to this headline">#</a></h2>
 <p>This is an algorithm developed by <a class="reference external" href="https://www.sentinal4d.com/">Sentinal</a> AI startup of the UK and they created a <a class="reference external" href="https://github.com/Sentinal4D">pytorch</a> based program to train autoencoder models that
 generate point cloud representations. KapoorLabs created a <a class="reference external" href="https://github.com/Kapoorlabs-CAPED/KapoorLabs-Lightning">Lightning version</a> of their software that allows for multi-GPU training. In this plugin autoencoder model is used to convert the instances to point clouds, users can select our pre-trained models or choose their own prior to applying the model. The computation is then performed on their GPU (recommended) before further analysis is carried out. As this is an expensive computation we also provide a <a class="reference download internal" download="" href="_downloads/7304322522eb33b4c1d6fcd9b8dac0af/apply_autoencoder.py"><span class="xref download myst">script</span></a> to do the same that can be submitted to the HPC to obtain a master XML file that appends additional shape and dynamic features to the cell feature vectors therby enhancing the basic XML that comes out of TrackMate.</p>
+</section>
+<section id="auto-track-correction">
+<h2>Auto Track Correction<a class="headerlink" href="#auto-track-correction" title="Permalink to this headline">#</a></h2>
+<p>We use a mitosis and apoptosis detection network to find the locations of cell sin mitosis which is then used as prior information to solve a local Jaqman linker for linking mitotic cell trajectories and terminating the apoptotic cell trajectories. To red more about this approach please read more about <a class="reference internal" href="MITOSIS.html"><span class="doc std std-doc">oneat</span></a></p>
 </section>
 <section id="shape-features">
 <h2>Shape Features<a class="headerlink" href="#shape-features" title="Permalink to this headline">#</a></h2>
@@ -484,6 +490,7 @@ generate point cloud representations. KapoorLabs created a <a class="reference e
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation-and-tracking">Segmentation and Tracking</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-clouds">Point Clouds</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autoencoder">Autoencoder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#auto-track-correction">Auto Track Correction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-features">Shape Features</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-features">Dynamic Features</a></li>
 </ul>
