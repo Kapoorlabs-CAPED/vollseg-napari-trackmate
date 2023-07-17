@@ -21,6 +21,10 @@ the tracks are computed. We provide a [script](examples/visualize_point_clouds.p
 This is an algorithm developed by [Sentinal](https://www.sentinal4d.com/) AI startup of the UK and they created a [pytorch](https://github.com/Sentinal4D) based program to train autoencoder models that
 generate point cloud representations. KapoorLabs created a [Lightning version](https://github.com/Kapoorlabs-CAPED/KapoorLabs-Lightning) of their software that allows for multi-GPU training. In this plugin autoencoder model is used to convert the instances to point clouds, users can select our pre-trained models or choose their own prior to applying the model. The computation is then performed on their GPU (recommended) before further analysis is carried out. As this is an expensive computation we also provide a [script](examples/apply_autoencoder.py) to do the same that can be submitted to the HPC to obtain a master XML file that appends additional shape and dynamic features to the cell feature vectors therby enhancing the basic XML that comes out of TrackMate.
 
+## Auto Track Correction
+
+We use a mitosis and apoptosis detection network to find the locations of cell sin mitosis which is then used as prior information to solve a local Jaqman linker for linking mitotic cell trajectories and terminating the apoptotic cell trajectories. To red more about this approach please read more about [oneat](MITOSIS.md)
+
 ## Shape Features
 The shape features computed in the plugin uses the point cloud representations produced by the autoencoder model. We compute the following shape features
 
