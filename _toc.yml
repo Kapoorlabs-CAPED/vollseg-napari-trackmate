@@ -6,3 +6,5 @@ root: README
 
 chapters:
     - file: ALGORITHM
+    - file: MITOSIS
+    - file: RADIAL_ANGLE
