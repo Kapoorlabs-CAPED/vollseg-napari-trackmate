@@ -63,7 +63,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'MITOSIS';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="RADIAL_ANGLE.html" />
+    <link rel="next" title="Radial Angle Visualization" href="RADIAL_ANGLE.html" />
     <link rel="prev" title="Algorithm" href="ALGORITHM.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
@@ -135,14 +135,8 @@ const thebe_selector_output = ".output, .cell_output"
   
   
   
-    
-    
-      
-    
-    
-    <img src="_static/kapoorlablogo.png" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="_static/kapoorlablogo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
+    <p class="title logo__title">VollSeg extension for cell tracking</p>
   
 </a></div>
         <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
@@ -158,6 +152,7 @@ const thebe_selector_output = ".output, .cell_output"
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ALGORITHM.html">Algorithm</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Mitosis Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RADIAL_ANGLE.html">Radial Angle Visualization</a></li>
 </ul>
 
     </div>
@@ -352,6 +347,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#densenet">DenseNet</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-data-details">Training Data Details</a></li>
 </ul>
             </nav>
         </div>
@@ -372,6 +368,30 @@ time frames before the occurance of the event and +T timeframe after the occuran
 ensures that the model can be trained on image volume patches but the trained model can be applied to time-lapse volumes of arbitary size. The prediction function maps
 location of the action event and also predicts height, width and depth of the detected cell in the central time frame.</p>
 <p><img alt="image" src="_images/mitosis_detection.gif" /></p>
+</section>
+<section id="training-data-details">
+<h2>Training Data Details<a class="headerlink" href="#training-data-details" title="Permalink to this headline">#</a></h2>
+<p>To create the training data for Xenopus we used <a class="reference download internal" download="" href="_downloads/be5fb5d8da0e65f7806b5e665641b20b/annotate_oneat.py"><span class="xref download myst">script</span></a> You will need to point to a directory containing raw timelapse images that will open in a custom Napari widget showing the classes to be annotated as point layers of different colors. Using the Napari points layer you can add/remove points at the location of the chosen events. Save points button will be dosplayed on the lower right corner and has to be clicked to save the csv file for each chosen tif file. On the lower left/middle of the widget is a drop down menu showing the raw image present in the directory that has to be chosen for the proces sof annotation. Once the annotation has been completed csv files bearing the filename, event name and an added name of ‘ONEAT’ appears in the directory. After this step please create segmentation images for the raw timelapse images using your custom VollSeg mode.</p>
+<p>Once these steps are done you are ready to create training patches and labels using this <a class="reference download internal" download="" href="_downloads/aee3717426441db7cebd583382cea38d/create_oneat_patches.py"><span class="xref download myst">script</span></a>. In this script you can specify a certain size (Z,Y,X) which for our example use case was (8,64,64). This script uses the event locations marked in the previous step and creates a voxel of volume around it to create a training patch. It also uses the segmentation image to obtain the height, width and depth of the cell that has been clicked and in our patch making process the cell clicked is always at the center of the frame in the TZYX generated patch. Users can specify the timeframe before and after the event location, we used 1 time frame before and one time frame after the event (mitosis) to make the training patch, hence the size of the generated patch in temporal dimension is 3. The output of this script is a directory containing training patches as .tif file, their corresponding .csv file labels and .npz files to be used in the training of the oneat model.</p>
+<p>Once the npz file has been created we use the generated npz file in this <a class="reference download internal" download="" href="_downloads/fa5c45620b066f046befc8baa4354e57/train_oneat.py"><span class="xref download myst">script</span></a> to train a volumetric action classification network of oneat using Densenet as underlying network. For the Xenopus dataset these are the training dataset details:</p>
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Volume shape (TZYX)</p></th>
+<th class="text-center head"><p>Number of patches</p></th>
+<th class="text-right head"><p>Size in MB</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>(3,8,64,64)</p></td>
+<td class="text-center"><p>20446 Normal events</p></td>
+<td class="text-right"><p>8200 MB</p></td>
+</tr>
+<tr class="row-odd"><td><p>(3,8,64,64)</p></td>
+<td class="text-center"><p>4336 Division events</p></td>
+<td class="text-right"><p>1700 MB</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 
@@ -420,7 +440,7 @@ location of the action event and also predicts height, width and depth of the de
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">&lt;no title&gt;</p>
+        <p class="prev-next-title">Radial Angle Visualization</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -443,6 +463,7 @@ location of the action event and also predicts height, width and depth of the de
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#densenet">DenseNet</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-data-details">Training Data Details</a></li>
 </ul>
   </nav></div>
 
