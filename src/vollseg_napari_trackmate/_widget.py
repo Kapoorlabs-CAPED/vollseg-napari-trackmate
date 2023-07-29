@@ -837,6 +837,21 @@ def plugin_wrapper_track():
             "cell_axis_mask": np.asarray(
                 unique_tracks_properties, dtype="float16"
             )[:, 14],
+            "track_displacement": np.asarray(
+                unique_tracks_properties, dtype="float16"
+            )[:, 15],
+            
+            "total_track_distance": np.asarray(
+                unique_tracks_properties, dtype="float16"
+            )[:, 16],
+            
+            "max_track_distance": np.asarray(
+                unique_tracks_properties, dtype="float16"
+            )[:, 17],
+             
+            "track_duration": np.asarray(
+                unique_tracks_properties, dtype="float16"
+            )[:, 18],
         }
         print("Refreshing track data")
         for layer in list(plugin.viewer.value.layers):
