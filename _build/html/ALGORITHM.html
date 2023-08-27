@@ -63,6 +63,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'ALGORITHM';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mitosis Detection" href="MITOSIS.html" />
     <link rel="prev" title="vollseg-napari-trackmate" href="README.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="None"/>
@@ -135,7 +136,13 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
-    <p class="title logo__title">VollSeg extension for cell tracking</p>
+
+
+
+
+    <img src="_static/kapoorlablogo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="_static/kapoorlablogo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+
 
 </a></div>
         <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
@@ -150,6 +157,8 @@ const thebe_selector_output = ".output, .cell_output"
         </ul>
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MITOSIS.html">Mitosis Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RADIAL_ANGLE.html">Radial Angle Visualization</a></li>
 </ul>
 
     </div>
@@ -346,6 +355,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation-and-tracking">Segmentation and Tracking</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-clouds">Point Clouds</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autoencoder">Autoencoder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#auto-track-correction">Auto Track Correction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-features">Shape Features</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-features">Dynamic Features</a></li>
 </ul>
@@ -383,6 +393,10 @@ the tracks are computed. We provide a <a class="reference download internal" dow
 <p>This is an algorithm developed by <a class="reference external" href="https://www.sentinal4d.com/">Sentinal</a> AI startup of the UK and they created a <a class="reference external" href="https://github.com/Sentinal4D">pytorch</a> based program to train autoencoder models that
 generate point cloud representations. KapoorLabs created a <a class="reference external" href="https://github.com/Kapoorlabs-CAPED/KapoorLabs-Lightning">Lightning version</a> of their software that allows for multi-GPU training. In this plugin autoencoder model is used to convert the instances to point clouds, users can select our pre-trained models or choose their own prior to applying the model. The computation is then performed on their GPU (recommended) before further analysis is carried out. As this is an expensive computation we also provide a <a class="reference download internal" download="" href="_downloads/7304322522eb33b4c1d6fcd9b8dac0af/apply_autoencoder.py"><span class="xref download myst">script</span></a> to do the same that can be submitted to the HPC to obtain a master XML file that appends additional shape and dynamic features to the cell feature vectors therby enhancing the basic XML that comes out of TrackMate.</p>
 </section>
+<section id="auto-track-correction">
+<h2>Auto Track Correction<a class="headerlink" href="#auto-track-correction" title="Permalink to this headline">#</a></h2>
+<p>We use a mitosis and apoptosis detection network to find the locations of cell sin mitosis which is then used as prior information to solve a local Jaqman linker for linking mitotic cell trajectories and terminating the apoptotic cell trajectories. To red more about this approach please read more about <a class="reference internal" href="MITOSIS.html"><span class="doc std std-doc">oneat</span></a></p>
+</section>
 <section id="shape-features">
 <h2>Shape Features<a class="headerlink" href="#shape-features" title="Permalink to this headline">#</a></h2>
 <p>The shape features computed in the plugin uses the point cloud representations produced by the autoencoder model. We compute the following shape features</p>
@@ -396,7 +410,7 @@ generate point cloud representations. KapoorLabs created a <a class="reference e
 <h2>Dynamic Features<a class="headerlink" href="#dynamic-features" title="Permalink to this headline">#</a></h2>
 <p>The dynamic features computed in the plugin are the following</p>
 <ul class="simple">
-<li><p>Radial Angle: Angle between the center of the tissue and the cell centroid taking the origin as top left co-ordinate of the image.</p></li>
+<li><p>Radial Angle: Angle between the center of the tissue and the cell centroid taking the origin as top left co-ordinate of the image. <a class="reference internal" href="RADIAL_ANGLE.html"><span class="doc std std-doc">demonstration</span></a></p></li>
 <li><p>Motion Angle: Angle between the center of the tissue and the difference between the cell locations in successive co-ordinates.</p></li>
 <li><p>Cell Axis Angle: Angle between the center of the tissue and largest eigenvector of the cell.</p></li>
 <li><p>Speed: Cell speed at a given time-instance.</p></li>
@@ -446,6 +460,15 @@ generate point cloud representations. KapoorLabs created a <a class="reference e
         <p class="prev-next-title">vollseg-napari-trackmate</p>
       </div>
     </a>
+    <a class="right-next"
+       href="MITOSIS.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Mitosis Detection</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div></div>
 
 </div>
@@ -467,6 +490,7 @@ generate point cloud representations. KapoorLabs created a <a class="reference e
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation-and-tracking">Segmentation and Tracking</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-clouds">Point Clouds</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autoencoder">Autoencoder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#auto-track-correction">Auto Track Correction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-features">Shape Features</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-features">Dynamic Features</a></li>
 </ul>
