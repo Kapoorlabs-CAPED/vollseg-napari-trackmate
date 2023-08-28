@@ -860,59 +860,96 @@ def plugin_wrapper_track():
 
     def show_phenotype():
 
-        if model_selected_cloud_auto_encoder is not None:
-            nonlocal _to_analyze, _trackmate_objects
+        nonlocal _to_analyze, _trackmate_objects
 
-            phenotype_plot_class._reset_container(
-                phenotype_plot_class.scroll_layout
-            )
+        phenotype_plot_class._reset_container(
+            phenotype_plot_class.scroll_layout
+        )
+        if _to_analyze is not None and _trackmate_objects is not None:
 
-            if _to_analyze is not None and _trackmate_objects is not None:
+            unique_fft_properties = []
+            unique_shape_properties = []
+            unique_dynamic_properties = []
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+            plot_ax.cla()
 
-                unique_fft_properties = []
-                unique_shape_properties = []
-                unique_dynamic_properties = []
-                phenotype_plot_class._repeat_after_plot()
-                plot_ax = phenotype_plot_class.plot_ax
-                plot_ax.cla()
+            for unique_track_id in _to_analyze:
 
-                for unique_track_id in _to_analyze:
+                for countk, k in enumerate(
+                    _trackmate_objects.unique_fft_properties[
+                        unique_track_id
+                    ].keys()
+                ):
 
-                    for countk, k in enumerate(
+                    unique_fft_properties_tracklet = (
                         _trackmate_objects.unique_fft_properties[
                             unique_track_id
-                        ].keys()
-                    ):
+                        ][k]
+                    )
 
-                        unique_fft_properties_tracklet = (
-                            _trackmate_objects.unique_fft_properties[
-                                unique_track_id
-                            ][k]
-                        )
-
-                        (
+                    (
+                        time,
+                        intensity,
+                        xf_sample,
+                        ffttotal_sample,
+                    ) = unique_fft_properties_tracklet
+                    unique_fft_properties.append(
+                        [
                             time,
                             intensity,
                             xf_sample,
                             ffttotal_sample,
-                        ) = unique_fft_properties_tracklet
-                        unique_fft_properties.append(
+                        ]
+                    )
+
+                    if len(_to_analyze) <= 2:
+
+                        unique_shape_properties_tracklet = (
+                            _trackmate_objects.unique_shape_properties[
+                                unique_track_id
+                            ][k]
+                        )
+                        (
+                            cluster_time,
+                            cluster_z,
+                            cluster_y,
+                            cluster_x,
+                            cluster_radius,
+                            cluster_volume,
+                            cluster_eccentricity_comp_first,
+                            cluster_eccentricity_comp_second,
+                            cluster_surface_area,
+                        ) = unique_shape_properties_tracklet
+
+                        unique_dynamic_properties_tracklet = (
+                            _trackmate_objects.unique_dynamic_properties[
+                                unique_track_id
+                            ][k]
+                        )
+                        (
+                            cluster_time,
+                            cluster_speed,
+                            cluster_motion_angle,
+                            cluster_acceleration,
+                            cluster_distance_cell_mask,
+                            cluster_radial_angle,
+                            cluster_cell_axis_mask,
+                        ) = unique_dynamic_properties_tracklet
+                        unique_dynamic_properties.append(
                             [
-                                time,
-                                intensity,
-                                xf_sample,
-                                ffttotal_sample,
+                                cluster_time,
+                                cluster_speed,
+                                cluster_motion_angle,
+                                cluster_acceleration,
+                                cluster_distance_cell_mask,
+                                cluster_radial_angle,
+                                cluster_cell_axis_mask,
+                                countk + 1,
                             ]
                         )
-
-                        if len(_to_analyze) <= 2:
-
-                            unique_shape_properties_tracklet = (
-                                _trackmate_objects.unique_shape_properties[
-                                    unique_track_id
-                                ][k]
-                            )
-                            (
+                        unique_shape_properties.append(
+                            [
                                 cluster_time,
                                 cluster_z,
                                 cluster_y,
@@ -922,376 +959,318 @@ def plugin_wrapper_track():
                                 cluster_eccentricity_comp_first,
                                 cluster_eccentricity_comp_second,
                                 cluster_surface_area,
-                            ) = unique_shape_properties_tracklet
+                                countk + 1,
+                            ]
+                        )
 
-                            unique_dynamic_properties_tracklet = (
-                                _trackmate_objects.unique_dynamic_properties[
-                                    unique_track_id
-                                ][k]
-                            )
-                            (
-                                cluster_time,
-                                cluster_speed,
-                                cluster_motion_angle,
-                                cluster_acceleration,
-                                cluster_distance_cell_mask,
-                                cluster_radial_angle,
-                                cluster_cell_axis_mask,
-                            ) = unique_dynamic_properties_tracklet
+                        global_data_cluster_plot = []
 
-                            unique_dynamic_properties.append(
-                                [
-                                    cluster_time,
-                                    cluster_speed,
-                                    cluster_motion_angle,
-                                    cluster_acceleration,
-                                    cluster_distance_cell_mask,
-                                    cluster_radial_angle,
-                                    cluster_cell_axis_mask,
-                                    countk + 1,
-                                ]
+                        global_data_dynamic_cluster_plot = []
+
+                        for count, i in enumerate(
+                            range(len(unique_dynamic_properties))
+                        ):
+
+                            current_unique_dynamic_properties = (
+                                unique_dynamic_properties[i]
                             )
-                            unique_shape_properties.append(
-                                [
-                                    cluster_time,
-                                    cluster_z,
-                                    cluster_y,
-                                    cluster_x,
-                                    cluster_radius,
-                                    cluster_volume,
-                                    cluster_eccentricity_comp_first,
-                                    cluster_eccentricity_comp_second,
-                                    cluster_surface_area,
-                                    countk + 1,
-                                ]
+                            cluster_time = current_unique_dynamic_properties[0]
+                            cluster_speed = current_unique_dynamic_properties[
+                                1
+                            ]
+                            cluster_motion_angle = (
+                                current_unique_dynamic_properties[2]
+                            )
+                            cluster_acceleration = (
+                                current_unique_dynamic_properties[3]
+                            )
+                            cluster_distance_cell_mask = (
+                                current_unique_dynamic_properties[4]
+                            )
+                            cluster_radial_angle = (
+                                current_unique_dynamic_properties[5]
+                            )
+                            cluster_cell_axis_mask = (
+                                current_unique_dynamic_properties[6]
                             )
 
-                            global_data_cluster_plot = []
+                            cluster_id = current_unique_dynamic_properties[-1]
 
-                            global_data_dynamic_cluster_plot = []
+                            data_dynamic_cluster_plot = pd.DataFrame(
+                                {
+                                    "Time": cluster_time,
+                                    "Speed": cluster_speed,
+                                    "Motion Angle": cluster_motion_angle,
+                                    "Acceleration": cluster_acceleration,
+                                    "Distance cell to tissue": cluster_distance_cell_mask,
+                                    "Radial Angle": cluster_radial_angle,
+                                    "Cell Axis Mask": cluster_cell_axis_mask,
+                                    "id": cluster_id,
+                                }
+                            )
 
-                            for count, i in enumerate(
-                                range(len(unique_dynamic_properties))
-                            ):
-
-                                current_unique_dynamic_properties = (
-                                    unique_dynamic_properties[i]
+                            if len(global_data_dynamic_cluster_plot) == 0:
+                                global_data_dynamic_cluster_plot = (
+                                    data_dynamic_cluster_plot
                                 )
-                                cluster_time = (
-                                    current_unique_dynamic_properties[0]
-                                )
-                                cluster_speed = (
-                                    current_unique_dynamic_properties[1]
-                                )
-                                cluster_motion_angle = (
-                                    current_unique_dynamic_properties[2]
-                                )
-                                cluster_acceleration = (
-                                    current_unique_dynamic_properties[3]
-                                )
-                                cluster_distance_cell_mask = (
-                                    current_unique_dynamic_properties[4]
-                                )
-                                cluster_radial_angle = (
-                                    current_unique_dynamic_properties[5]
-                                )
-                                cluster_cell_axis_mask = (
-                                    current_unique_dynamic_properties[6]
+                            else:
+                                global_data_dynamic_cluster_plot = pd.concat(
+                                    [
+                                        global_data_dynamic_cluster_plot,
+                                        data_dynamic_cluster_plot,
+                                    ],
+                                    ignore_index=True,
                                 )
 
-                                cluster_id = current_unique_dynamic_properties[
-                                    -1
-                                ]
+                        for count, i in enumerate(
+                            range(len(unique_shape_properties))
+                        ):
 
-                                data_dynamic_cluster_plot = pd.DataFrame(
-                                    {
-                                        "Time": cluster_time,
-                                        "Speed": cluster_speed,
-                                        "Motion Angle": cluster_motion_angle,
-                                        "Acceleration": cluster_acceleration,
-                                        "Distance cell to tissue": cluster_distance_cell_mask,
-                                        "Radial Angle": cluster_radial_angle,
-                                        "Cell Axis Mask": cluster_cell_axis_mask,
-                                        "id": cluster_id,
-                                    }
+                            current_unique_shape_properties = (
+                                unique_shape_properties[i]
+                            )
+                            cluster_time = current_unique_shape_properties[0]
+                            cluster_radius = current_unique_shape_properties[1]
+                            cluster_volume = current_unique_shape_properties[2]
+                            cluster_eccentricity_comp_first = (
+                                current_unique_shape_properties[3]
+                            )
+                            cluster_eccentricity_comp_second = (
+                                current_unique_shape_properties[4]
+                            )
+
+                            cluster_surface_area = (
+                                current_unique_shape_properties[5]
+                            )
+
+                            cluster_id = current_unique_shape_properties[-1]
+
+                            data_cluster_plot = pd.DataFrame(
+                                {
+                                    "Time": cluster_time,
+                                    "Radius": cluster_radius,
+                                    "Volume": cluster_volume,
+                                    "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
+                                    "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
+                                    "Surface_Area": cluster_surface_area,
+                                    "id": cluster_id,
+                                }
+                            )
+
+                            if len(global_data_cluster_plot) == 0:
+                                global_data_cluster_plot = data_cluster_plot
+                            else:
+                                global_data_cluster_plot = pd.concat(
+                                    [
+                                        global_data_cluster_plot,
+                                        data_cluster_plot,
+                                    ],
+                                    ignore_index=True,
                                 )
 
-                                if len(global_data_dynamic_cluster_plot) == 0:
-                                    global_data_dynamic_cluster_plot = (
-                                        data_dynamic_cluster_plot
-                                    )
-                                else:
-                                    global_data_dynamic_cluster_plot = pd.concat(
-                                        [
-                                            global_data_dynamic_cluster_plot,
-                                            data_dynamic_cluster_plot,
-                                        ],
-                                        ignore_index=True,
-                                    )
-
-                            for count, i in enumerate(
-                                range(len(unique_shape_properties))
-                            ):
-
-                                current_unique_shape_properties = (
-                                    unique_shape_properties[i]
-                                )
-                                cluster_time = current_unique_shape_properties[
-                                    0
-                                ]
-                                cluster_radius = (
-                                    current_unique_shape_properties[1]
-                                )
-                                cluster_volume = (
-                                    current_unique_shape_properties[2]
-                                )
-                                cluster_eccentricity_comp_first = (
-                                    current_unique_shape_properties[3]
-                                )
-                                cluster_eccentricity_comp_second = (
-                                    current_unique_shape_properties[4]
-                                )
-
-                                cluster_surface_area = (
-                                    current_unique_shape_properties[5]
-                                )
-
-                                cluster_id = current_unique_shape_properties[
-                                    -1
-                                ]
-
-                                data_cluster_plot = pd.DataFrame(
-                                    {
-                                        "Time": cluster_time,
-                                        "Radius": cluster_radius,
-                                        "Volume": cluster_volume,
-                                        "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
-                                        "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
-                                        "Surface_Area": cluster_surface_area,
-                                        "id": cluster_id,
-                                    }
-                                )
-
-                                if len(global_data_cluster_plot) == 0:
-                                    global_data_cluster_plot = (
-                                        data_cluster_plot
-                                    )
-                                else:
-                                    global_data_cluster_plot = pd.concat(
-                                        [
-                                            global_data_cluster_plot,
-                                            data_cluster_plot,
-                                        ],
-                                        ignore_index=True,
-                                    )
-
-                if len(_to_analyze) <= 2:
-
-                    sns.set_palette(flatui)
-                    sns.lineplot(
-                        global_data_dynamic_cluster_plot,
-                        x="Time",
-                        y="Speed",
-                        hue="id",
-                        ax=plot_ax,
-                        legend=False,
-                    )
-
-                    plot_ax.set_title("Speed")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
-                    sns.set_palette(flatui)
-                    sns.lineplot(
-                        global_data_dynamic_cluster_plot,
-                        x="Time",
-                        y="Motion Angle",
-                        hue="id",
-                        ax=plot_ax,
-                        legend=False,
-                    )
-
-                    plot_ax.set_title("Motion Angle")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
-                    sns.set_palette(flatui)
-                    sns.lineplot(
-                        global_data_dynamic_cluster_plot,
-                        x="Time",
-                        y="Radial Angle",
-                        hue="id",
-                        ax=plot_ax,
-                        legend=False,
-                    )
-
-                    plot_ax.set_title("Radial Angle")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
-                    sns.set_palette(flatui)
-                    sns.lineplot(
-                        global_data_dynamic_cluster_plot,
-                        x="Time",
-                        y="Acceleration",
-                        hue="id",
-                        ax=plot_ax,
-                        legend=False,
-                    )
-
-                    plot_ax.set_title("Acceleration")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
-                    sns.set_palette(flatui)
-                    sns.lineplot(
-                        global_data_dynamic_cluster_plot,
-                        x="Time",
-                        y="Distance cell to tissue",
-                        hue="id",
-                        ax=plot_ax,
-                        legend=False,
-                    )
-
-                    plot_ax.set_title("Distance cell to tissue")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
-                    sns.set_palette(flatui)
-                    sns.lineplot(
-                        global_data_dynamic_cluster_plot,
-                        x="Time",
-                        y="Cell Axis Mask",
-                        hue="id",
-                        ax=plot_ax,
-                        legend=False,
-                    )
-
-                    plot_ax.set_title("Cell Axis Mask")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
-                    sns.set_palette(flatui)
-                    sns.lineplot(
-                        global_data_cluster_plot,
-                        x="Time",
-                        y="Radius",
-                        hue="id",
-                        ax=plot_ax,
-                        legend=False,
-                    )
-
-                    plot_ax.set_title("Radius")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
-                    sns.set_palette(flatui)
-                    sns.lineplot(
-                        global_data_cluster_plot,
-                        x="Time",
-                        y="Volume",
-                        hue="id",
-                        ax=plot_ax,
-                        legend=False,
-                    )
-
-                    plot_ax.set_title("Volume")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
-                    sns.set_palette(flatui)
-                    sns.lineplot(
-                        global_data_cluster_plot,
-                        x="Time",
-                        y="Surface_Area",
-                        hue="id",
-                        ax=plot_ax,
-                        legend=False,
-                    )
-
-                    plot_ax.set_title("Surface_Area")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
-                    sns.set_palette(flatui)
-                    sns.lineplot(
-                        global_data_cluster_plot,
-                        x="Time",
-                        y="Eccentricity_Comp_First",
-                        hue="id",
-                        ax=plot_ax,
-                        legend=False,
-                    )
-
-                    plot_ax.set_title("Eccentricity Comp First")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
-                    sns.set_palette(flatui)
-                    sns.lineplot(
-                        global_data_cluster_plot,
-                        x="Time",
-                        y="Eccentricity_Comp_Second",
-                        hue="id",
-                        ax=plot_ax,
-                        legend=False,
-                    )
-
-                    plot_ax.set_title("Eccentricity Comp Second")
-                    plot_ax.set_xlabel("Time (min)")
-
-                    phenotype_plot_class._repeat_after_plot()
-                    plot_ax = phenotype_plot_class.plot_ax
-                summed_amplitude = []
-                for i in range(len(unique_fft_properties)):
-                    summed_amplitude.append(unique_fft_properties[i][3] ** 2)
-                summed_amplitude = np.sum(summed_amplitude, axis=0)
-                summed_intesity = []
-                for i in range(len(unique_fft_properties)):
-                    summed_intesity.append(unique_fft_properties[i][1])
-                summed_intesity = np.sum(summed_intesity, axis=0)
-                data_fft_plot = pd.DataFrame(
-                    {
-                        "Frequ": unique_fft_properties[0][2],
-                        "Amplitude": summed_amplitude,
-                    }
-                )
-
-                data_time_plot = pd.DataFrame(
-                    {
-                        "Time": unique_fft_properties[0][0],
-                        "Intensity": summed_intesity,
-                    }
-                )
+            if len(_to_analyze) <= 2:
 
                 sns.set_palette(flatui)
                 sns.lineplot(
-                    data_time_plot, x="Time", y="Intensity", ax=plot_ax
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Speed",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
                 )
-                plot_ax.set_title("Cell Intensity")
+
+                plot_ax.set_title("Speed")
                 plot_ax.set_xlabel("Time (min)")
-                plot_ax.set_ylabel("Amplitude")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-
                 sns.set_palette(flatui)
                 sns.lineplot(
-                    data_fft_plot, x="Frequ", y="Amplitude", ax=plot_ax
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Motion Angle",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
                 )
-                plot_ax.set_title("FFT Intensity")
-                plot_ax.set_xlabel("Frequency (1/min)")
-                plot_ax.set_ylabel("Amplitude")
+
+                plot_ax.set_title("Motion Angle")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Radial Angle",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Radial Angle")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Acceleration",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Acceleration")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Distance cell to tissue",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Distance cell to tissue")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Cell Axis Mask",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Cell Axis Mask")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Radius",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Radius")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Volume",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Volume")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Surface_Area",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Surface_Area")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Eccentricity_Comp_First",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Eccentricity Comp First")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Eccentricity_Comp_Second",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Eccentricity Comp Second")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+            summed_amplitude = []
+            for i in range(len(unique_fft_properties)):
+                summed_amplitude.append(unique_fft_properties[i][3] ** 2)
+            summed_amplitude = np.sum(summed_amplitude, axis=0)
+            summed_intesity = []
+            for i in range(len(unique_fft_properties)):
+                summed_intesity.append(unique_fft_properties[i][1])
+            summed_intesity = np.sum(summed_intesity, axis=0)
+            data_fft_plot = pd.DataFrame(
+                {
+                    "Frequ": unique_fft_properties[0][2],
+                    "Amplitude": summed_amplitude,
+                }
+            )
+
+            data_time_plot = pd.DataFrame(
+                {
+                    "Time": unique_fft_properties[0][0],
+                    "Intensity": summed_intesity,
+                }
+            )
+
+            sns.set_palette(flatui)
+            sns.lineplot(data_time_plot, x="Time", y="Intensity", ax=plot_ax)
+            plot_ax.set_title("Cell Intensity")
+            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_ylabel("Amplitude")
+
+            phenotype_plot_class._repeat_after_plot()
+            plot_ax = phenotype_plot_class.plot_ax
+
+            sns.set_palette(flatui)
+            sns.lineplot(data_fft_plot, x="Frequ", y="Amplitude", ax=plot_ax)
+            plot_ax.set_title("FFT Intensity")
+            plot_ax.set_xlabel("Frequency (1/min)")
+            plot_ax.set_ylabel("Amplitude")
 
     def return_color_tracks(pred):
 
