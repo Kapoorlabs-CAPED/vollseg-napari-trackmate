@@ -840,15 +840,12 @@ def plugin_wrapper_track():
             "track_displacement": np.asarray(
                 unique_tracks_properties, dtype="float16"
             )[:, 15],
-            
             "total_track_distance": np.asarray(
                 unique_tracks_properties, dtype="float16"
             )[:, 16],
-            
             "max_track_distance": np.asarray(
                 unique_tracks_properties, dtype="float16"
             )[:, 17],
-             
             "track_duration": np.asarray(
                 unique_tracks_properties, dtype="float16"
             )[:, 18],
@@ -950,6 +947,10 @@ def plugin_wrapper_track():
                             cluster_distance_cell_mask,
                             cluster_radial_angle,
                             cluster_cell_axis_mask,
+                            _,
+                            _,
+                            _,
+                            _,
                         ) = unique_dynamic_properties_tracklet
                         unique_dynamic_properties.append(
                             [
