@@ -880,7 +880,6 @@ def plugin_wrapper_track():
         phenotype_plot_class._reset_container(
             phenotype_plot_class.scroll_layout
         )
-
         if _to_analyze is not None and _trackmate_objects is not None:
 
             unique_fft_properties = []
@@ -952,7 +951,6 @@ def plugin_wrapper_track():
                             cluster_radial_angle,
                             cluster_cell_axis_mask,
                         ) = unique_dynamic_properties_tracklet
-
                         unique_dynamic_properties.append(
                             [
                                 cluster_time,
