@@ -4,7 +4,7 @@ This GUI plugin allows you to do track analysis by using autoencoder models that
 a TrackMate generated XML and csv files and creates a master XML file by computing additional shape and dynamic features based on the generated point clouds. 
 
 
-Elaborate documentation for users of this repository at this [documentation]
+Elaborate documentation for users of this repository at this website [documentation]
 
 # Who is This For?
 
