@@ -2232,6 +2232,7 @@ def plugin_wrapper_track():
 
     @change_handler(plugin_data.cluster_csv_path, init=False)
     def _cluster_csv_path_change(value):
+        print(plugin_data.cluster_csv_path.value)
         if not isinstance(plugin_data.cluster_csv_path.value, str):
             if plugin_data.cluster_csv_path.value.is_file():
                 cluster_class_dataset = pd.read_csv(
