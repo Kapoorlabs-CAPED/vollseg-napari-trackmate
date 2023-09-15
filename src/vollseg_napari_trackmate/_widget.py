@@ -2205,6 +2205,7 @@ def plugin_wrapper_track():
         track_centroid_tree = spatial.cKDTree(track_centroid_list)
         _refreshStatPlotData()
         _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
+        print(cluster_class_dataset)
         if not cluster_class_dataset.empty:
             print(f'adding cluster classes to viewer')
             plugin.viewer.value.add_tracks(
@@ -2231,8 +2232,8 @@ def plugin_wrapper_track():
 
     @change_handler(plugin_data.cluster_csv_path, init=False)
     def _cluster_csv_path_change(value):
-        print(plugin_data.cluster_csv_path.value)
-        if plugin_data.cluster_csv_path.value is not None:
+        if not isinstance(plugin_data.cluster_csv_path.value, str):
+            if plugin_data.cluster_csv_path.value.is_file():
                 cluster_class_dataset = pd.read_csv(
                     plugin_data.cluster_csv_path.value,delimiter=",", encoding="unicode_escape", low_memory=False
             )
