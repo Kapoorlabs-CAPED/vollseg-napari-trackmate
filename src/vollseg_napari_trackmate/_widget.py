@@ -2232,9 +2232,10 @@ def plugin_wrapper_track():
     @change_handler(plugin_data.cluster_csv_path, init=False)
     def _cluster_csv_path_change(value):
         print(plugin_data.cluster_csv_path.value)
-        cluster_class_dataset = pd.read_csv(
-            plugin_data.cluster_csv_path.value,delimiter=",", encoding="unicode_escape", low_memory=False
-    )
+        if plugin_data.cluster_csv_path.value is not None:
+                cluster_class_dataset = pd.read_csv(
+                    plugin_data.cluster_csv_path.value,delimiter=",", encoding="unicode_escape", low_memory=False
+            )
 
         plugin_data.compute_button.enabled = True    
 
