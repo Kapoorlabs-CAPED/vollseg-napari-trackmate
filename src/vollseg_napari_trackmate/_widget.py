@@ -2236,6 +2236,7 @@ def plugin_wrapper_track():
                 cluster_class_dataset = pd.read_csv(
                     plugin_data.cluster_csv_path.value,delimiter=",", encoding="unicode_escape", low_memory=False
             )
+                print(cluster_class_dataset) 
 
         plugin_data.compute_button.enabled = True    
 
