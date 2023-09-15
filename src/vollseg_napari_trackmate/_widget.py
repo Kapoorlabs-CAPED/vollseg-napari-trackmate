@@ -872,12 +872,7 @@ def plugin_wrapper_track():
             features=features,
         )
 
-        if not cluster_class_dataset.empty:
-            plugin.viewer.value.add_tracks(
-                cluster_class_dataset.values,
-                name="Cluster Classes",
-                properties=cluster_class_dataset.columns,
-            )
+        
         print("Track data refreshed")
         if str(track_id) not in TrackidBox and track_id is not None:
             _to_analyze = [int(track_id)]
@@ -2209,6 +2204,14 @@ def plugin_wrapper_track():
         ]
         track_centroid_tree = spatial.cKDTree(track_centroid_list)
         _refreshStatPlotData()
+        
+        if not cluster_class_dataset.empty:
+            print(f'adding cluster classes to viewer')
+            plugin.viewer.value.add_tracks(
+                cluster_class_dataset.values,
+                name="Cluster Classes",
+                properties=cluster_class_dataset.columns,
+            )
         plugin_data.compute_button.enabled = False
 
     @change_handler(plugin_data.track_csv_path, init=False)
