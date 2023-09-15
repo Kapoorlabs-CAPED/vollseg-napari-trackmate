@@ -2206,6 +2206,7 @@ def plugin_wrapper_track():
         _refreshStatPlotData()
         
         if not cluster_class_dataset.empty:
+            _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
             print(f'adding cluster classes to viewer')
             plugin.viewer.value.add_tracks(
                 cluster_class_dataset.values,
