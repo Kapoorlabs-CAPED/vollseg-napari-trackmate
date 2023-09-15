@@ -70,7 +70,7 @@ def plugin_wrapper_track():
     clicked_location = None
     track_centroid_tree = None
     track_centroid_list = None
-
+    cluster_class_dataset = pd.DataFrame()
     def _raise(e):
         if isinstance(e, BaseException):
             raise e
@@ -720,6 +720,12 @@ def plugin_wrapper_track():
             label="Edges/Links csv",
             mode="r",
         ),
+        cluster_csv_path=dict(
+            widget_type="FileEdit",
+            visible=True,
+            label="Cluster Labels csv",
+            mode="r",
+        ),
         axes=dict(
             widget_type="LineEdit",
             label="Image Axes",
@@ -755,6 +761,7 @@ def plugin_wrapper_track():
         track_csv_path,
         spot_csv_path,
         edges_csv_path,
+        cluster_csv_path,
         axes,
         batch_size,
         device_type,
@@ -864,6 +871,13 @@ def plugin_wrapper_track():
             name="Track",
             features=features,
         )
+
+        if not cluster_class_dataset.empty:
+            plugin.viewer.value.add_tracks(
+                cluster_class_dataset.values,
+                name="Cluster Classes",
+                properties=cluster_class_dataset.columns,
+            )
         print("Track data refreshed")
         if str(track_id) not in TrackidBox and track_id is not None:
             _to_analyze = [int(track_id)]
@@ -2211,6 +2225,14 @@ def plugin_wrapper_track():
     def _edges_csv_path_change(value):
 
         plugin_data.compute_button.enabled = True
+
+    @change_handler(plugin_data.cluster_csv_path, init=False)
+    def _cluster_csv_path_change(value):
+        cluster_class_dataset = pd.read_csv(
+            plugin_data.cluster_csv_path.value,delimiter=",", encoding="unicode_escape", low_memory=False
+    )
+
+        plugin_data.compute_button.enabled = True    
 
     @change_handler(plugin_data.master_xml_path, init=False)
     def _master_xml_path_change(value):
