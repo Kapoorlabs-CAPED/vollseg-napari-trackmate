@@ -2210,7 +2210,7 @@ def plugin_wrapper_track():
             plugin.viewer.value.add_tracks(
                 cluster_class_dataset.values[..., :-1],
                 name="Cluster Classes",
-                properties=cluster_class_dataset[..., -1],
+                properties=cluster_class_dataset.values[..., -1],
             )
         plugin_data.compute_button.enabled = False
 
