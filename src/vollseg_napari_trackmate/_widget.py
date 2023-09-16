@@ -2208,9 +2208,9 @@ def plugin_wrapper_track():
         if not cluster_class_dataset.empty:
             print(f'adding cluster classes to viewer')
             plugin.viewer.value.add_tracks(
-                cluster_class_dataset.values,
+                cluster_class_dataset.values[..., :-1],
                 name="Cluster Classes",
-                properties=cluster_class_dataset.columns,
+                properties=cluster_class_dataset[..., -1],
             )
         plugin_data.compute_button.enabled = False
 
