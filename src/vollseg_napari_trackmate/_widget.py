@@ -2207,10 +2207,11 @@ def plugin_wrapper_track():
         cluster_class_dataset = _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
         if not cluster_class_dataset.empty:
             print(f'adding cluster classes to viewer')
+            properties = {'cluster_class': cluster_class_dataset.values[..., -1]}
             plugin.viewer.value.add_tracks(
                 cluster_class_dataset.values[..., :-1],
                 name="Cluster Classes",
-                features={'cluster class':cluster_class_dataset.values[..., -1]},
+                properties=properties,
             )
         plugin_data.compute_button.enabled = False
 
