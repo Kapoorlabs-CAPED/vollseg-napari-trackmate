@@ -872,7 +872,7 @@ def plugin_wrapper_track():
             name="Track",
             features=features,
         )
-
+        cluster_class_dataset = _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
         if not cluster_class_dataset.empty:
             mask = cluster_class_dataset['Track ID'] == track_id
             chosen_track_data = cluster_class_dataset[mask]
