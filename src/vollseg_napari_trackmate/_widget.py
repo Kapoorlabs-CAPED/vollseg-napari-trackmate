@@ -876,6 +876,7 @@ def plugin_wrapper_track():
         if not cluster_class_dataset.empty:
             mask = cluster_class_dataset['Track ID'] == track_id
             chosen_track_data = cluster_class_dataset[mask]
+            chosen_track_data['Cluster'].fillna(-1, inplace=True)
             properties = {'cluster_class': chosen_track_data.values[..., -1]}
             plugin.viewer.value.add_tracks(
                 chosen_track_data.values[..., :-1],
@@ -2218,6 +2219,7 @@ def plugin_wrapper_track():
         cluster_class_dataset = _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
         if not cluster_class_dataset.empty:
             print(f'adding cluster classes to viewer')
+            cluster_class_dataset['Cluster'].fillna(-1, inplace=True) 
             properties = {'cluster_class': cluster_class_dataset.values[..., -1]}
             plugin.viewer.value.add_tracks(
                 cluster_class_dataset.values[..., :-1],
