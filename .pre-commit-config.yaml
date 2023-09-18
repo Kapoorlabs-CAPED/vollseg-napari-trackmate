@@ -31,6 +31,14 @@ repos:
     rev: v0.3.0
     hooks:
       - id: napari-plugin-checks
+  - repo: local
+    hooks:
+      - id: update-version
+        name: Update _version.py with Git tag
+        entry: python update_version.py
+        language: system
+        pass_filenames: false
+
   # https://mypy.readthedocs.io/en/stable/introduction.html
   # you may wish to add this as well!
   # - repo: https://github.com/pre-commit/mirrors-mypy

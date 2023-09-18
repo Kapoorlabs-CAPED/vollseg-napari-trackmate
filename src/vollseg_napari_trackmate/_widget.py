@@ -70,7 +70,7 @@ def plugin_wrapper_track():
     clicked_location = None
     track_centroid_tree = None
     track_centroid_list = None
-    cluster_class_dataset = pd.DataFrame()
+
     def _raise(e):
         if isinstance(e, BaseException):
             raise e
@@ -379,9 +379,7 @@ def plugin_wrapper_track():
             from types import SimpleNamespace
 
             self.debug = debug
-            self.valid = SimpleNamespace(
-                **{k: False for k in ("model_autoencoder",)}
-            )
+            self.valid = SimpleNamespace(**{k: False for k in ("model_autoencoder",)})
             self.args = SimpleNamespace()
             self.viewer = None
 
@@ -413,9 +411,7 @@ def plugin_wrapper_track():
                 )
 
             def _restore():
-                widgets_valid(
-                    plugin.image, valid=plugin.image.value is not None
-                )
+                widgets_valid(plugin.image, valid=plugin.image.value is not None)
 
             all_valid = False
             for layer in list(plugin.viewer.value.layers):
@@ -444,9 +440,7 @@ def plugin_wrapper_track():
             from types import SimpleNamespace
 
             self.debug = debug
-            self.valid = SimpleNamespace(
-                **{k: False for k in ("model_autoencoder",)}
-            )
+            self.valid = SimpleNamespace(**{k: False for k in ("model_autoencoder",)})
             self.args = SimpleNamespace()
             self.viewer = None
 
@@ -478,9 +472,7 @@ def plugin_wrapper_track():
                 )
 
             def _restore():
-                widgets_valid(
-                    plugin.image, valid=plugin.image.value is not None
-                )
+                widgets_valid(plugin.image, valid=plugin.image.value is not None)
 
             all_valid = False
             for layer in list(plugin.viewer.value.layers):
@@ -610,10 +602,7 @@ def plugin_wrapper_track():
                     model_class_cloud_auto_encoder,
                     model_name,
                 )
-                if (
-                    key_cloud_auto_encoder
-                    not in model_cloud_auto_encoder_configs
-                ):
+                if key_cloud_auto_encoder not in model_cloud_auto_encoder_configs:
 
                     @thread_worker
                     def _get_model_folder():
@@ -627,9 +616,7 @@ def plugin_wrapper_track():
                         ] = load_json(
                             str(
                                 os.path.join(
-                                    os.path.join(
-                                        path.parent.as_posix(), path.name
-                                    ),
+                                    os.path.join(path.parent.as_posix(), path.name),
                                     model_name + ".json",
                                 )
                             )
@@ -645,9 +632,7 @@ def plugin_wrapper_track():
                     # delay showing progress bar -> won't show up if model already downloaded
                     # TODO: hacky -> better way to do this?
                     time.sleep(0.1)
-                    plugin.progress_bar.label = (
-                        "Downloading Auto Encoder model"
-                    )
+                    plugin.progress_bar.label = "Downloading Auto Encoder model"
                     plugin.progress_bar.show()
 
                 else:
@@ -655,9 +640,7 @@ def plugin_wrapper_track():
         else:
             select_model_cloud_auto_encoder(None)
 
-            plugin.model_folder_cloud_auto.line_edit.tooltip = (
-                "Invalid model directory"
-            )
+            plugin.model_folder_cloud_auto.line_edit.tooltip = "Invalid model directory"
 
     @change_handler(plugin.model_folder_cloud_auto, init=False)
     def _model_cloud_auto_folder_change(_path: str):
@@ -802,60 +785,50 @@ def plugin_wrapper_track():
         nonlocal _to_analyze
         unique_tracks, unique_tracks_properties, track_id = pred
         features = {
-            "time": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 0
+            "time": np.asarray(unique_tracks_properties, dtype="float16")[:, 0],
+            "generation": np.asarray(unique_tracks_properties, dtype="float16")[:, 2],
+            "radius": np.asarray(unique_tracks_properties, dtype="float16")[:, 3],
+            "volume_pixels": np.asarray(unique_tracks_properties, dtype="float16")[
+                :, 4
             ],
-            "generation": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 2],
-            "radius": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 3
-            ],
-            "volume_pixels": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 4],
             "eccentricity_comp_first": np.asarray(
                 unique_tracks_properties, dtype="float16"
             )[:, 5],
             "eccentricity_comp_second": np.asarray(
                 unique_tracks_properties, dtype="float16"
             )[:, 6],
-            "surface_area": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 7],
-            "total_intensity": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 8],
-            "speed": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 9
+            "surface_area": np.asarray(unique_tracks_properties, dtype="float16")[:, 7],
+            "total_intensity": np.asarray(unique_tracks_properties, dtype="float16")[
+                :, 8
             ],
-            "motion_angle": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 10],
-            "acceleration": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 11],
-            "distance_cell_mask": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 12],
-            "radial_angle": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 13],
-            "cell_axis_mask": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 14],
-            "track_displacement": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 15],
+            "speed": np.asarray(unique_tracks_properties, dtype="float16")[:, 9],
+            "motion_angle": np.asarray(unique_tracks_properties, dtype="float16")[
+                :, 10
+            ],
+            "acceleration": np.asarray(unique_tracks_properties, dtype="float16")[
+                :, 11
+            ],
+            "distance_cell_mask": np.asarray(unique_tracks_properties, dtype="float16")[
+                :, 12
+            ],
+            "radial_angle": np.asarray(unique_tracks_properties, dtype="float16")[
+                :, 13
+            ],
+            "cell_axis_mask": np.asarray(unique_tracks_properties, dtype="float16")[
+                :, 14
+            ],
+            "track_displacement": np.asarray(unique_tracks_properties, dtype="float16")[
+                :, 15
+            ],
             "total_track_distance": np.asarray(
                 unique_tracks_properties, dtype="float16"
             )[:, 16],
-            "max_track_distance": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 17],
-            "track_duration": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 18],
+            "max_track_distance": np.asarray(unique_tracks_properties, dtype="float16")[
+                :, 17
+            ],
+            "track_duration": np.asarray(unique_tracks_properties, dtype="float16")[
+                :, 18
+            ],
         }
         print("Refreshing track data")
         for layer in list(plugin.viewer.value.layers):
@@ -863,7 +836,6 @@ def plugin_wrapper_track():
                 "Track" == layer.name
                 or "Boxes" == layer.name
                 or "Track_points" == layer.name
-                
             ):
                 plugin.viewer.value.layers.remove(layer)
 
@@ -872,9 +844,7 @@ def plugin_wrapper_track():
             name="Track",
             features=features,
         )
-        
 
-        
         print("Track data refreshed")
         if str(track_id) not in TrackidBox and track_id is not None:
             _to_analyze = [int(track_id)]
@@ -885,9 +855,7 @@ def plugin_wrapper_track():
 
         nonlocal _to_analyze, _trackmate_objects
 
-        phenotype_plot_class._reset_container(
-            phenotype_plot_class.scroll_layout
-        )
+        phenotype_plot_class._reset_container(phenotype_plot_class.scroll_layout)
         if _to_analyze is not None and _trackmate_objects is not None:
 
             unique_fft_properties = []
@@ -900,15 +868,11 @@ def plugin_wrapper_track():
             for unique_track_id in _to_analyze:
 
                 for countk, k in enumerate(
-                    _trackmate_objects.unique_fft_properties[
-                        unique_track_id
-                    ].keys()
+                    _trackmate_objects.unique_fft_properties[unique_track_id].keys()
                 ):
 
                     unique_fft_properties_tracklet = (
-                        _trackmate_objects.unique_fft_properties[
-                            unique_track_id
-                        ][k]
+                        _trackmate_objects.unique_fft_properties[unique_track_id][k]
                     )
 
                     (
@@ -929,9 +893,9 @@ def plugin_wrapper_track():
                     if len(_to_analyze) <= 2:
 
                         unique_shape_properties_tracklet = (
-                            _trackmate_objects.unique_shape_properties[
-                                unique_track_id
-                            ][k]
+                            _trackmate_objects.unique_shape_properties[unique_track_id][
+                                k
+                            ]
                         )
                         (
                             cluster_time,
@@ -1002,24 +966,16 @@ def plugin_wrapper_track():
                                 unique_dynamic_properties[i]
                             )
                             cluster_time = current_unique_dynamic_properties[0]
-                            cluster_speed = current_unique_dynamic_properties[
-                                1
-                            ]
-                            cluster_motion_angle = (
-                                current_unique_dynamic_properties[2]
-                            )
-                            cluster_acceleration = (
-                                current_unique_dynamic_properties[3]
-                            )
+                            cluster_speed = current_unique_dynamic_properties[1]
+                            cluster_motion_angle = current_unique_dynamic_properties[2]
+                            cluster_acceleration = current_unique_dynamic_properties[3]
                             cluster_distance_cell_mask = (
                                 current_unique_dynamic_properties[4]
                             )
-                            cluster_radial_angle = (
-                                current_unique_dynamic_properties[5]
-                            )
-                            cluster_cell_axis_mask = (
-                                current_unique_dynamic_properties[6]
-                            )
+                            cluster_radial_angle = current_unique_dynamic_properties[5]
+                            cluster_cell_axis_mask = current_unique_dynamic_properties[
+                                6
+                            ]
 
                             cluster_id = current_unique_dynamic_properties[-1]
 
@@ -1049,13 +1005,9 @@ def plugin_wrapper_track():
                                     ignore_index=True,
                                 )
 
-                        for count, i in enumerate(
-                            range(len(unique_shape_properties))
-                        ):
+                        for count, i in enumerate(range(len(unique_shape_properties))):
 
-                            current_unique_shape_properties = (
-                                unique_shape_properties[i]
-                            )
+                            current_unique_shape_properties = unique_shape_properties[i]
                             cluster_time = current_unique_shape_properties[0]
                             cluster_radius = current_unique_shape_properties[1]
                             cluster_volume = current_unique_shape_properties[2]
@@ -1066,9 +1018,7 @@ def plugin_wrapper_track():
                                 current_unique_shape_properties[4]
                             )
 
-                            cluster_surface_area = (
-                                current_unique_shape_properties[5]
-                            )
+                            cluster_surface_area = current_unique_shape_properties[5]
 
                             cluster_id = current_unique_shape_properties[-1]
 
@@ -1325,18 +1275,9 @@ def plugin_wrapper_track():
 
             for (k, v) in _trackmate_objects.unique_spot_properties.items():
                 current_spot = _trackmate_objects.unique_spot_properties[k]
-                z = int(
-                    float(current_spot[posiz])
-                    / _trackmate_objects.zcalibration
-                )
-                y = int(
-                    float(current_spot[posiy])
-                    / _trackmate_objects.ycalibration
-                )
-                x = int(
-                    float(current_spot[posix])
-                    / _trackmate_objects.xcalibration
-                )
+                z = int(float(current_spot[posiz]) / _trackmate_objects.zcalibration)
+                y = int(float(current_spot[posiy]) / _trackmate_objects.ycalibration)
+                x = int(float(current_spot[posix]) / _trackmate_objects.xcalibration)
                 time = int(float(current_spot[frame]))
 
                 if spot_attribute in current_spot.keys():
@@ -1374,16 +1315,13 @@ def plugin_wrapper_track():
                 current_spot = _trackmate_objects.unique_spot_properties[k]
                 if track_id in current_spot.keys():
                     z = int(
-                        float(current_spot[posiz])
-                        / _trackmate_objects.zcalibration
+                        float(current_spot[posiz]) / _trackmate_objects.zcalibration
                     )
                     y = int(
-                        float(current_spot[posiy])
-                        / _trackmate_objects.ycalibration
+                        float(current_spot[posiy]) / _trackmate_objects.ycalibration
                     )
                     x = int(
-                        float(current_spot[posix])
-                        / _trackmate_objects.xcalibration
+                        float(current_spot[posix]) / _trackmate_objects.xcalibration
                     )
                     time = int(float(current_spot[frame]))
 
@@ -1446,9 +1384,7 @@ def plugin_wrapper_track():
         stat_plot_class._reset_container(stat_plot_class.scroll_layout)
 
         if _trackmate_objects is not None:
-            trackid_key = _trackmate_objects.track_analysis_spot_keys[
-                "track_id"
-            ]
+            trackid_key = _trackmate_objects.track_analysis_spot_keys["track_id"]
             key = plugin.track_model_type.value
             for k in _trackmate_objects.AllTrackValues.keys():
                 if k is not trackid_key:
@@ -1459,17 +1395,11 @@ def plugin_wrapper_track():
                     ):
                         if key == track_model_type_dict[0]:
 
-                            if (
-                                int(trackid)
-                                in _trackmate_objects.DividingTrackIds
-                            ):
+                            if int(trackid) in _trackmate_objects.DividingTrackIds:
 
                                 TrackAttr.append(float(attr))
                         if key == track_model_type_dict[1]:
-                            if (
-                                int(trackid)
-                                in _trackmate_objects.NormalTrackIds
-                            ):
+                            if int(trackid) in _trackmate_objects.NormalTrackIds:
                                 TrackAttr.append(float(attr))
                         if key == track_model_type_dict[2]:
                             TrackAttr.append(float(attr))
@@ -1900,9 +1830,7 @@ def plugin_wrapper_track():
         _dividing_choices = TrackidBox
         _dividing_choices = _trackmate_objects.DividingTrackIds
 
-        _dividing_track_ids_analyze = (
-            _trackmate_objects.DividingTrackIds.copy()
-        )
+        _dividing_track_ids_analyze = _trackmate_objects.DividingTrackIds.copy()
         if None in _dividing_track_ids_analyze:
             _dividing_track_ids_analyze.remove(None)
         if TrackidBox in _dividing_track_ids_analyze:
@@ -2013,9 +1941,7 @@ def plugin_wrapper_track():
 
     def widgets_valid(*widgets, valid):
         for widget in widgets:
-            widget.native.setStyleSheet(
-                "" if valid else "background-color: red"
-            )
+            widget.native.setStyleSheet("" if valid else "background-color: red")
 
     def show_track(track_id):
 
@@ -2042,31 +1968,27 @@ def plugin_wrapper_track():
             )
             unique_tracklet_ids_list = []
             for unique_track_id in _to_analyze:
-                 track_object = _trackmate_objects.unique_tracks[unique_track_id]
-                 unique_tracklet_ids_list.append(
-                    int(track_object[0,0]))
-                
-            
-            print(unique_tracklet_ids_list)
-            cluster_class_dataset = _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
+                track_object = _trackmate_objects.unique_tracks[unique_track_id]
+                unique_tracklet_ids_list.append(int(track_object[0, 0]))
+
+            cluster_class_dataset = _cluster_csv_path_change(
+                plugin_data.cluster_csv_path.value
+            )
             if not cluster_class_dataset.empty:
-                    for layer in list(plugin.viewer.value.layers):
-                        if (
-                            "Cluster Classes" == layer.name
-                            
-                        ):
-                            plugin.viewer.value.layers.remove(layer)
-                    print('refreshing cluster classes')
-                    mask = cluster_class_dataset['Track ID'].isin(unique_tracklet_ids_list)
-                    chosen_track_data = cluster_class_dataset[mask]
-                    chosen_track_data['Cluster'].fillna(-1, inplace=True)
-                    if not chosen_track_data.empty:
-                        properties = {'cluster_class': chosen_track_data.values[..., -1]}
-                        plugin.viewer.value.add_tracks(
-                            chosen_track_data.values[..., :-1],
-                            name="Cluster Classes",
-                            properties=properties,
-                        )
+                for layer in list(plugin.viewer.value.layers):
+                    if "Cluster Classes" == layer.name:
+                        plugin.viewer.value.layers.remove(layer)
+                print("refreshing cluster classes")
+                mask = cluster_class_dataset["Track ID"].isin(unique_tracklet_ids_list)
+                chosen_track_data = cluster_class_dataset[mask]
+                chosen_track_data["Cluster"].fillna(-1, inplace=True)
+                if not chosen_track_data.empty:
+                    properties = {"cluster_class": chosen_track_data.values[..., -1]}
+                    plugin.viewer.value.add_tracks(
+                        chosen_track_data.values[..., :-1],
+                        name="Cluster Classes",
+                        properties=properties,
+                    )
 
             pred = unique_tracks, unique_tracks_properties, track_id
 
@@ -2233,17 +2155,19 @@ def plugin_wrapper_track():
         ]
         track_centroid_tree = spatial.cKDTree(track_centroid_list)
         _refreshStatPlotData()
-        cluster_class_dataset = _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
+        cluster_class_dataset = _cluster_csv_path_change(
+            plugin_data.cluster_csv_path.value
+        )
         if not cluster_class_dataset.empty:
-            print(f'adding cluster classes to viewer')
-            cluster_class_dataset['Cluster'].fillna(-1, inplace=True) 
-            properties = {'cluster_class': cluster_class_dataset.values[..., -1]}
+            print("adding cluster classes to viewer")
+            cluster_class_dataset["Cluster"].fillna(-1, inplace=True)
+            properties = {"cluster_class": cluster_class_dataset.values[..., -1]}
             plugin.viewer.value.add_tracks(
                 cluster_class_dataset.values[..., :-1],
                 name="Cluster Classes",
                 properties=properties,
             )
-        select_track_nature()    
+        select_track_nature()
         plugin_data.compute_button.enabled = True
 
     @change_handler(plugin_data.track_csv_path, init=False)
@@ -2264,15 +2188,17 @@ def plugin_wrapper_track():
     @change_handler(plugin_data.cluster_csv_path, init=False)
     def _cluster_csv_path_change(value):
         if plugin_data.cluster_csv_path.value.is_file():
-                cluster_class_dataset = pd.read_csv(
-                    plugin_data.cluster_csv_path.value,delimiter=",", encoding="unicode_escape", low_memory=False
+            cluster_class_dataset = pd.read_csv(
+                plugin_data.cluster_csv_path.value,
+                delimiter=",",
+                encoding="unicode_escape",
+                low_memory=False,
             )
-                plugin_data.compute_button.enabled = True  
-                return cluster_class_dataset
+            plugin_data.compute_button.enabled = True
+            return cluster_class_dataset
         else:
-            plugin_data.compute_button.enabled = True 
+            plugin_data.compute_button.enabled = True
             return pd.DataFrame()
-               
 
     @change_handler(plugin_data.master_xml_path, init=False)
     def _master_xml_path_change(value):
@@ -2325,9 +2251,7 @@ def plugin_wrapper_track():
 
     @change_handler(plugin_data.image, init=False)
     def _image_change(image: napari.layers.Image):
-        plugin_data.image.tooltip = (
-            f"Shape: {get_data(image).shape, str(image.name)}"
-        )
+        plugin_data.image.tooltip = f"Shape: {get_data(image).shape, str(image.name)}"
 
         # dimensionality of selected model: 2, 3, or None (unknown)
         plugin_data.compute_button.enabled = True
