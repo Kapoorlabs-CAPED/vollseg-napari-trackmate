@@ -863,7 +863,7 @@ def plugin_wrapper_track():
                 "Track" == layer.name
                 or "Boxes" == layer.name
                 or "Track_points" == layer.name
-                or "Cluster Classes" == layer.name
+                
             ):
                 plugin.viewer.value.layers.remove(layer)
 
@@ -1974,9 +1974,9 @@ def plugin_wrapper_track():
         table_tab.dividing_choices = _dividing_choices
         table_tab._set_model()
 
-        select_track_nature()
         plot_main()
         show_phenotype()
+        select_track_nature()
 
     def _analyze_tracks(v):
         float_list = list(v.values())
@@ -2043,6 +2043,12 @@ def plugin_wrapper_track():
 
             cluster_class_dataset = _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
             if not cluster_class_dataset.empty:
+                    for layer in list(plugin.viewer.value.layers):
+                        if (
+                            "Cluster Classes" == layer.name
+                            
+                        ):
+                            plugin.viewer.value.layers.remove(layer)
                     print('refreshing cluster classes')
                     mask = cluster_class_dataset['Track ID'].isin(_to_analyze)
                     chosen_track_data = cluster_class_dataset[mask]
