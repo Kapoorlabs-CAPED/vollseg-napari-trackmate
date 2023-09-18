@@ -863,6 +863,7 @@ def plugin_wrapper_track():
                 "Track" == layer.name
                 or "Boxes" == layer.name
                 or "Track_points" == layer.name
+                or "Cluster Classes" == layer.name
             ):
                 plugin.viewer.value.layers.remove(layer)
 
@@ -871,6 +872,16 @@ def plugin_wrapper_track():
             name="Track",
             features=features,
         )
+
+        if not cluster_class_dataset.empty:
+            mask = cluster_class_dataset['Track ID'] == track_id
+            chosen_track_data = cluster_class_dataset[mask]
+            properties = {'cluster_class': chosen_track_data.values[..., -1]}
+            plugin.viewer.value.add_tracks(
+                chosen_track_data.values[..., :-1],
+                name="Cluster Classes",
+                properties=properties,
+            )
 
         
         print("Track data refreshed")
@@ -2213,7 +2224,7 @@ def plugin_wrapper_track():
                 name="Cluster Classes",
                 properties=properties,
             )
-        plugin_data.compute_button.enabled = False
+        plugin_data.compute_button.enabled = True
 
     @change_handler(plugin_data.track_csv_path, init=False)
     def _track_csv_path_change(value):
