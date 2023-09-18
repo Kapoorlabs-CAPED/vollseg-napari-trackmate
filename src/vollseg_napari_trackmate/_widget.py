@@ -2041,6 +2041,11 @@ def plugin_wrapper_track():
                 ]
             )
 
+            unique_tracklet_ids_list = [
+                _trackmate_objects.unique_track_properties[unique_track_id][:,1]
+                for unique_track_id in _to_analyze
+            ]
+
             cluster_class_dataset = _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
             if not cluster_class_dataset.empty:
                     for layer in list(plugin.viewer.value.layers):
@@ -2050,7 +2055,7 @@ def plugin_wrapper_track():
                         ):
                             plugin.viewer.value.layers.remove(layer)
                     print('refreshing cluster classes')
-                    mask = cluster_class_dataset['Track ID'].isin(_to_analyze)
+                    mask = cluster_class_dataset['Track ID'].isin(unique_tracklet_ids_list)
                     chosen_track_data = cluster_class_dataset[mask]
                     chosen_track_data['Cluster'].fillna(-1, inplace=True)
                     if not chosen_track_data.empty:
