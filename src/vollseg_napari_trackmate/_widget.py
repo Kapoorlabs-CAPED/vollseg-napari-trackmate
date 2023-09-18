@@ -2040,11 +2040,13 @@ def plugin_wrapper_track():
                     for unique_track_id in _to_analyze
                 ]
             )
-
-            unique_tracklet_ids_list = [
-                int(_trackmate_objects.unique_tracks[unique_track_id][:,0])
-                for unique_track_id in _to_analyze
-            ]
+            unique_tracklet_ids_list = []
+            for unique_track_id in _to_analyze:
+                 track_object = _trackmate_objects.unique_tracks[unique_track_id]
+                 unique_tracklet_ids_list.append(
+                    int(track_object[:,0]))
+                
+            
             print(unique_tracklet_ids_list)
             cluster_class_dataset = _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
             if not cluster_class_dataset.empty:
