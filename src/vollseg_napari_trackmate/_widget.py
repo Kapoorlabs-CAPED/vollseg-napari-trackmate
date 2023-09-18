@@ -2044,7 +2044,7 @@ def plugin_wrapper_track():
             for unique_track_id in _to_analyze:
                  track_object = _trackmate_objects.unique_tracks[unique_track_id]
                  unique_tracklet_ids_list.append(
-                    int(track_object[:,0]))
+                    int(track_object[0,0]))
                 
             
             print(unique_tracklet_ids_list)
