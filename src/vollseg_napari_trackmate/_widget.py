@@ -2042,10 +2042,10 @@ def plugin_wrapper_track():
             )
 
             unique_tracklet_ids_list = [
-                _trackmate_objects.unique_track_properties[unique_track_id][:,1]
+                _trackmate_objects.unique_tracks[unique_track_id][0]
                 for unique_track_id in _to_analyze
             ]
-
+            print(unique_tracklet_ids_list)
             cluster_class_dataset = _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
             if not cluster_class_dataset.empty:
                     for layer in list(plugin.viewer.value.layers):
@@ -2241,6 +2241,7 @@ def plugin_wrapper_track():
                 name="Cluster Classes",
                 properties=properties,
             )
+        select_track_nature()    
         plugin_data.compute_button.enabled = True
 
     @change_handler(plugin_data.track_csv_path, init=False)
