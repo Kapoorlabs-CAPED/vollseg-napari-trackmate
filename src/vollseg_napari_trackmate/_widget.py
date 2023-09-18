@@ -872,17 +872,7 @@ def plugin_wrapper_track():
             name="Track",
             features=features,
         )
-        cluster_class_dataset = _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
-        if not cluster_class_dataset.empty:
-            mask = cluster_class_dataset['Track ID'] == track_id
-            chosen_track_data = cluster_class_dataset[mask]
-            chosen_track_data['Cluster'].fillna(-1, inplace=True)
-            properties = {'cluster_class': chosen_track_data.values[..., -1]}
-            plugin.viewer.value.add_tracks(
-                chosen_track_data.values[..., :-1],
-                name="Cluster Classes",
-                properties=properties,
-            )
+        
 
         
         print("Track data refreshed")
@@ -2050,6 +2040,20 @@ def plugin_wrapper_track():
                     for unique_track_id in _to_analyze
                 ]
             )
+
+            cluster_class_dataset = _cluster_csv_path_change(plugin_data.cluster_csv_path.value)
+            if not cluster_class_dataset.empty:
+                    print('refreshing cluster classes')
+                    mask = cluster_class_dataset['Track ID'].isin(_to_analyze)
+                    chosen_track_data = cluster_class_dataset[mask]
+                    chosen_track_data['Cluster'].fillna(-1, inplace=True)
+                    if not chosen_track_data.empty:
+                        properties = {'cluster_class': chosen_track_data.values[..., -1]}
+                        plugin.viewer.value.add_tracks(
+                            chosen_track_data.values[..., :-1],
+                            name="Cluster Classes",
+                            properties=properties,
+                        )
 
             pred = unique_tracks, unique_tracks_properties, track_id
 
