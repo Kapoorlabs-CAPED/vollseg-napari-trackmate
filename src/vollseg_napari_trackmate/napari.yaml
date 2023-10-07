@@ -10,7 +10,7 @@ contributions:
       title: NapaTrackMater
 
   sample_data:
-    - key: ascadian_embryo_3d
+    - key: get_test_tracks_xenopus
       display_name: Test Track Data
       command: vollseg-napari-trackmate.get_test_tracks_xenopus
   widgets:
