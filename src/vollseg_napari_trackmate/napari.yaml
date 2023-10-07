@@ -2,32 +2,17 @@ name: vollseg-napari-trackmate
 display_name: vollseg-napari-trackmate
 contributions:
   commands:
-    - id: vollseg-napari-trackmate.get_reader
-      python_name: vollseg_napari_trackmate._reader:napari_get_reader
-      title: Open data with VollSeg Napari NapaTrackMater Plugin
-    - id: vollseg-napari-trackmate.write_multiple
-      python_name: vollseg_napari_trackmate._writer:write_multiple
-      title: Save multi-layer data with VollSeg Napari NapaTrackMater Plugin
-    - id: vollseg-napari-trackmate.write_single_image
-      python_name: vollseg_napari_trackmate._writer:write_single_image
-      title: Save image data with VollSeg Napari NapaTrackMater Plugin
-    - id: vollseg-napari-trackmate.make_sample_data
-      python_name: vollseg_napari_trackmate._sample_data:make_sample_data
+    - id: vollseg-napari-trackmate.get_test_tracks_xenopus
+      python_name: vollseg_napari_trackmate._sample_data:get_test_tracks_xenopus
       title: Load sample data from VollSeg Napari NapaTrackMater Plugin
     - id: vollseg-napari-trackmate.widget
       python_name: vollseg_napari_trackmate._widget:plugin_wrapper_track
       title: NapaTrackMater
-  writers:
-    - command: vollseg-napari-trackmate.write_multiple
-      layer_types: ['image*','labels*']
-      filename_extensions: []
-    - command: vollseg-napari-trackmate.write_single_image
-      layer_types: ['image']
-      filename_extensions: ['.npy']
+
   sample_data:
-    - command: vollseg-napari-trackmate.make_sample_data
-      display_name: VollSeg Napari NapaTrackMater Plugin
-      key: unique_id.1
+    - key: ascadian_embryo_3d
+      display_name: Test Track Data
+      command: vollseg-napari-trackmate.get_test_tracks_xenopus
   widgets:
     - command: vollseg-napari-trackmate.widget
       display_name: NapaTrackMater
