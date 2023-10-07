@@ -31,6 +31,7 @@ def plugin_wrapper_track():
     from napatrackmater import (
         CloudAutoEncoder,
         load_json,
+        get_feature_dict
     )
     from kapoorlabs_lightning.optimizers import Adam
     from kapoorlabs_lightning.pytorch_losses import ChamferLoss
@@ -41,7 +42,7 @@ def plugin_wrapper_track():
     )
     from napatrackmater.Trackmate import TrackMate
     from skimage.util import map_array
-
+    
     from vollseg_napari_trackmate._temporal_plots import TemporalStatistics
 
     DEBUG = False
@@ -784,52 +785,8 @@ def plugin_wrapper_track():
 
         nonlocal _to_analyze
         unique_tracks, unique_tracks_properties, track_id = pred
-        features = {
-            "time": np.asarray(unique_tracks_properties, dtype="float16")[:, 0],
-            "generation": np.asarray(unique_tracks_properties, dtype="float16")[:, 2],
-            "radius": np.asarray(unique_tracks_properties, dtype="float16")[:, 3],
-            "volume_pixels": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 4
-            ],
-            "eccentricity_comp_first": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 5],
-            "eccentricity_comp_second": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 6],
-            "surface_area": np.asarray(unique_tracks_properties, dtype="float16")[:, 7],
-            "total_intensity": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 8
-            ],
-            "speed": np.asarray(unique_tracks_properties, dtype="float16")[:, 9],
-            "motion_angle": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 10
-            ],
-            "acceleration": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 11
-            ],
-            "distance_cell_mask": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 12
-            ],
-            "radial_angle": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 13
-            ],
-            "cell_axis_mask": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 14
-            ],
-            "track_displacement": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 15
-            ],
-            "total_track_distance": np.asarray(
-                unique_tracks_properties, dtype="float16"
-            )[:, 16],
-            "max_track_distance": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 17
-            ],
-            "track_duration": np.asarray(unique_tracks_properties, dtype="float16")[
-                :, 18
-            ],
-        }
+        features = get_feature_dict(unique_tracks_properties)
+        
         print("Refreshing track data")
         for layer in list(plugin.viewer.value.layers):
             if (
