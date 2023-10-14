@@ -28,11 +28,7 @@ flatui = ["#9b59b6", "#3498db", "orange"]
 
 def plugin_wrapper_track():
 
-    from napatrackmater import (
-        CloudAutoEncoder,
-        load_json,
-        get_feature_dict
-    )
+    from napatrackmater import CloudAutoEncoder, load_json, get_feature_dict
     from kapoorlabs_lightning.optimizers import Adam
     from kapoorlabs_lightning.pytorch_losses import ChamferLoss
     from kapoorlabs_lightning.lightning_trainer import AutoLightningModel
@@ -42,7 +38,7 @@ def plugin_wrapper_track():
     )
     from napatrackmater.Trackmate import TrackMate
     from skimage.util import map_array
-    
+
     from vollseg_napari_trackmate._temporal_plots import TemporalStatistics
 
     DEBUG = False
@@ -670,7 +666,7 @@ def plugin_wrapper_track():
             pass
         finally:
             select_model_cluster(key) """
-
+    worker = None
     _track_ids_analyze = None
     _to_analyze = None
     _trackmate_objects = None
@@ -769,24 +765,24 @@ def plugin_wrapper_track():
             value=TrackAttributeBoxname,
             label="Track Attributes",
         ),
-        progress_bar=dict(label=" ", min=0, max=0, visible=False),
-        persist=True,
+        persist=False,
         call_button=True,
     )
     def plugin_color_parameters(
         spot_attributes,
         track_attributes,
-        progress_bar: mw.ProgressBar,
-    ) -> List[napari.types.LayerDataTuple]:
+    ):
 
-        _Color_tracks(spot_attributes, track_attributes)
+        nonlocal worker
+        worker = _Color_tracks(spot_attributes, track_attributes)
+        worker.returned.connect(return_color_tracks)
 
     def _refreshTrackData(pred):
 
         nonlocal _to_analyze
         unique_tracks, unique_tracks_properties, track_id = pred
         features = get_feature_dict(unique_tracks_properties)
-        
+
         print("Refreshing track data")
         for layer in list(plugin.viewer.value.layers):
             if (
@@ -1216,9 +1212,10 @@ def plugin_wrapper_track():
                     plugin.viewer.value.layers.remove(layer)
             plugin.viewer.value.add_labels(new_seg_image, name=attribute)
 
+    @thread_worker(connect={"returned": return_color_tracks})
     def _Color_tracks(spot_attribute, track_attribute):
         nonlocal _trackmate_objects
-        yield 0
+
         x_seg = get_label_data(plugin_data.seg_image.value)
         posix = _trackmate_objects.track_analysis_spot_keys["posix"]
         posiy = _trackmate_objects.track_analysis_spot_keys["posiy"]
@@ -1926,7 +1923,7 @@ def plugin_wrapper_track():
             unique_tracklet_ids_list = []
             for unique_track_id in _to_analyze:
                 track_object = _trackmate_objects.unique_tracks[unique_track_id]
-                unique_tracklet_ids_list.append(int(track_object[0, 0]))
+                unique_tracklet_ids_list.append(int(track_object[0, 0]) + 1)
 
             cluster_class_dataset = _cluster_csv_path_change(
                 plugin_data.cluster_csv_path.value
