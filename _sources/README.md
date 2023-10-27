@@ -13,6 +13,10 @@ Track analysis using TrackMate xml and csv generated tracks using NapaTrackMater
 
 Elaborate documentation for users of this repository at this [documentation]
 
+## Tutorial
+
+- A detailed tutorial can be found at [Demo](https://youtu.be/7Yjd-Z3zJtk?si=_AksSBUJuEXbvIFM)
+
 This [napari] plugin was generated with [Cookiecutter] using [@caped]'s [cookiecutter-napari-plugin] template.
 
 <!--
