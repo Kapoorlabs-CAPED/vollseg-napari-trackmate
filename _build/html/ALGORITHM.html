@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Algorithm &#8212; VollSeg extension for cell tracking</title>
+    <title>Plugin usage &#8212; VollSeg extension for cell tracking</title>
   
   
   
@@ -156,7 +156,7 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Algorithm</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Plugin usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MITOSIS.html">Mitosis Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="RADIAL_ANGLE.html">Radial Angle Visualization</a></li>
 </ul>
@@ -342,7 +342,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Algorithm</h1>
+    <h1>Plugin usage</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -352,6 +352,8 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorial">Tutorial</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plugin-steps">Plugin Steps</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation-and-tracking">Segmentation and Tracking</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-clouds">Point Clouds</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autoencoder">Autoencoder</a></li>
@@ -369,8 +371,29 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="algorithm">
-<h1>Algorithm<a class="headerlink" href="#algorithm" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="plugin-usage">
+<h1>Plugin usage<a class="headerlink" href="#plugin-usage" title="Permalink to this headline">#</a></h1>
+<section id="tutorial">
+<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>A detailed tutorial can be found at <a class="reference external" href="https://youtu.be/7Yjd-Z3zJtk?si=_AksSBUJuEXbvIFM">Demo</a></p></li>
+</ul>
+</section>
+<section id="plugin-steps">
+<h2>Plugin Steps<a class="headerlink" href="#plugin-steps" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>Open a 3D + time raw image and optionally its segmentation image, mask image in the viewer or select the provided sample data from the Napari menu.</p></li>
+<li><p>Launch the plugin and select the raw and segmentation image, provide the paths for xml and csv files.</p></li>
+<li><p>If you want to create master xml file select a pre-trained autoencoder model or load a .ckpt file if you have trained one using our lightning library.</p></li>
+<li><p>Click the compute tracks button.</p></li>
+<li><p>Wait for computation to be over, the progress of different steps is displayed in the progress bar.</p></li>
+<li><p>Once done you can view the histogram, mean-variance, phenotype plots and a track table.</p></li>
+<li><p>You can interactively select the track anaylsis type to be dividing or non-dividing, that will update the plots too.</p></li>
+<li><p>You can selet a TrackMate track id to visualize the tracks or you can select to visualize all tracks.</p></li>
+<li><p>Tracks can be colored using different track properties or if segmentation image is also input into the plugin you can color that image with chosen track and spot attributes.</p></li>
+</ul>
+<p><img alt="plugin design" src="_images/plugin_look.jpg" /></p>
+</section>
 <section id="segmentation-and-tracking">
 <h2>Segmentation and Tracking<a class="headerlink" href="#segmentation-and-tracking" title="Permalink to this headline">#</a></h2>
 <p>VollSeg has multiple model combinations for obtaining segmentations, some of its combination are more suited for certain image and microscopy types, the details
@@ -378,8 +401,7 @@ of whcih can be found in the <a class="reference external" href="https://github.
 and 3D + time datasets. The aim of obtaining these labels is accurate quantification of cell shapes as that is usually a biological aim for researchers interested in
 cell fate quantification and this tool was made as a <a class="reference external" href="https://chanzuckerberg.com/science/programs-resources/imaging/napari/vollseg-extensions-and-workflow-development-with-user-support/">Napari grant action</a>
 to achieve that purpose in cell tracking.</p>
-<p>Simply using algorithms like Marching Cubes on the segmentation labels that come out of AI approaches is akin to giving up
-when victory is in sight, in our algorithm we train an autoencoder model to obtain point cloud representation of the segmentation labels and as is evitable from the comparision with classical computation approaches, the point cloud representation achieved therby is far superior (figure below).</p>
+<p>In our algorithm we train an autoencoder model to obtain point cloud representation of the segmentation labels (figure below).</p>
 <p>In our algorithm the segmentation labels coming from VollSeg along with Raw image of the cells and tissue boundary mask of those cells serve as an input to this plugin. The tracking is performed prior to using this plugin in Fiji using TrackMate, which is the most popular tracking solution with track editing tools in Fiji. The output of that plugin are xml and [tracks, spots and edges csv files] that serve as an input to this plugin. We also provide pre-trained auto encoder models for nuclei and membrane that can be used to obtain the point cloud representation of the segmented cells. The users can also provide their own autoencoder models if they have trained them on their data.
 <img alt="comparision" src="_images/point_clouds_compared.png" /></p>
 </section>
@@ -487,6 +509,8 @@ generate point cloud representations. KapoorLabs created a <a class="reference e
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorial">Tutorial</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plugin-steps">Plugin Steps</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation-and-tracking">Segmentation and Tracking</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-clouds">Point Clouds</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autoencoder">Autoencoder</a></li>
