@@ -860,6 +860,7 @@ def plugin_wrapper_track():
                             cluster_eccentricity_comp_first,
                             cluster_eccentricity_comp_second,
                             cluster_surface_area,
+                            _,
                         ) = unique_shape_properties_tracklet
 
                         unique_dynamic_properties_tracklet = (
