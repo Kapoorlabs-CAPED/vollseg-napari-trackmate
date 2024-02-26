@@ -859,6 +859,7 @@ def plugin_wrapper_track():
                             cluster_volume,
                             cluster_eccentricity_comp_first,
                             cluster_eccentricity_comp_second,
+                            cluster_eccentricity_comp_third,
                             cluster_surface_area,
                             _,
                         ) = unique_shape_properties_tracklet
@@ -903,6 +904,7 @@ def plugin_wrapper_track():
                                 cluster_volume,
                                 cluster_eccentricity_comp_first,
                                 cluster_eccentricity_comp_second,
+                                cluster_eccentricity_comp_third,
                                 cluster_surface_area,
                                 countk + 1,
                             ]
@@ -971,8 +973,10 @@ def plugin_wrapper_track():
                             cluster_eccentricity_comp_second = (
                                 current_unique_shape_properties[4]
                             )
-
-                            cluster_surface_area = current_unique_shape_properties[5]
+                            cluster_eccentricity_comp_third = (
+                                current_unique_shape_properties[5]
+                            )
+                            cluster_surface_area = current_unique_shape_properties[6]
 
                             cluster_id = current_unique_shape_properties[-1]
 
@@ -983,6 +987,7 @@ def plugin_wrapper_track():
                                     "Volume": cluster_volume,
                                     "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
                                     "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
+                                    "Eccentricity_Comp_Third": cluster_eccentricity_comp_third,
                                     "Surface_Area": cluster_surface_area,
                                     "id": cluster_id,
                                 }
@@ -1162,6 +1167,24 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Eccentricity Comp Second")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_cluster_plot,
+                    x="Time",
+                    y="Eccentricity_Comp_Third",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Eccentricity Comp Third")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
@@ -2103,6 +2126,7 @@ def plugin_wrapper_track():
             devices=1,
             scale_z=scale_z,
             scale_xy=scale_xy,
+            compute_with_autoencoder = False
         )
         nonlocal track_centroid_tree, track_centroid_list
         track_centroid_list = [
