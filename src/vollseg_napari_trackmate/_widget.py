@@ -872,11 +872,17 @@ def plugin_wrapper_track():
                         (
                             cluster_time,
                             cluster_speed,
-                            cluster_motion_angle,
+                            cluster_motion_angle_z,
+                            cluster_motion_angle_y,
+                            cluster_motion_angle_x,
                             cluster_acceleration,
                             cluster_distance_cell_mask,
-                            cluster_radial_angle,
-                            cluster_cell_axis_mask,
+                            cluster_radial_angle_z,
+                            cluster_radial_angle_y,
+                            cluster_radial_angle_x,
+                            cluster_cell_axis_mask_z,
+                            cluster_cell_axis_mask_y,
+                            cluster_cell_axis_mask_x,
                             _,
                             _,
                             _,
@@ -886,11 +892,17 @@ def plugin_wrapper_track():
                             [
                                 cluster_time,
                                 cluster_speed,
-                                cluster_motion_angle,
+                                cluster_motion_angle_z,
+                                cluster_motion_angle_y,
+                                cluster_motion_angle_x,
                                 cluster_acceleration,
                                 cluster_distance_cell_mask,
-                                cluster_radial_angle,
-                                cluster_cell_axis_mask,
+                                cluster_radial_angle_z,
+                                cluster_radial_angle_y,
+                                cluster_radial_angle_x,
+                                cluster_cell_axis_mask_z,
+                                cluster_cell_axis_mask_y,
+                                cluster_cell_axis_mask_x,
                                 countk + 1,
                             ]
                         )
@@ -923,14 +935,27 @@ def plugin_wrapper_track():
                             )
                             cluster_time = current_unique_dynamic_properties[0]
                             cluster_speed = current_unique_dynamic_properties[1]
-                            cluster_motion_angle = current_unique_dynamic_properties[2]
-                            cluster_acceleration = current_unique_dynamic_properties[3]
+                            cluster_motion_angle_z = current_unique_dynamic_properties[2]
+                            cluster_motion_angle_y = current_unique_dynamic_properties[3]
+                            cluster_motion_angle_x = current_unique_dynamic_properties[4]
+
+                            cluster_acceleration = current_unique_dynamic_properties[5]
                             cluster_distance_cell_mask = (
-                                current_unique_dynamic_properties[4]
+                                current_unique_dynamic_properties[6]
                             )
-                            cluster_radial_angle = current_unique_dynamic_properties[5]
-                            cluster_cell_axis_mask = current_unique_dynamic_properties[
-                                6
+                            cluster_radial_angle_z = current_unique_dynamic_properties[7]
+                            cluster_radial_angle_y = current_unique_dynamic_properties[8]
+                            cluster_radial_angle_x = current_unique_dynamic_properties[9]
+
+
+                            cluster_cell_axis_mask_z = current_unique_dynamic_properties[
+                                10
+                            ]
+                            cluster_cell_axis_mask_y = current_unique_dynamic_properties[
+                                11
+                            ]
+                            cluster_cell_axis_mask_x = current_unique_dynamic_properties[
+                                12
                             ]
 
                             cluster_id = current_unique_dynamic_properties[-1]
@@ -939,11 +964,17 @@ def plugin_wrapper_track():
                                 {
                                     "Time": cluster_time,
                                     "Speed": cluster_speed,
-                                    "Motion Angle": cluster_motion_angle,
+                                    "Motion Angle Z": cluster_motion_angle_z,
+                                    "Motion Angle Y": cluster_motion_angle_y,
+                                    "Motion Angle X": cluster_motion_angle_x,
                                     "Acceleration": cluster_acceleration,
                                     "Distance cell to tissue": cluster_distance_cell_mask,
-                                    "Radial Angle": cluster_radial_angle,
-                                    "Cell Axis Mask": cluster_cell_axis_mask,
+                                    "Radial Angle Z": cluster_radial_angle_z,
+                                    "Radial Angle Y": cluster_radial_angle_y,
+                                    "Radial Angle X": cluster_radial_angle_x,
+                                    "Cell Axis Mask Z": cluster_cell_axis_mask_z,
+                                    "Cell Axis Mask Y": cluster_cell_axis_mask_y,
+                                    "Cell Axis Mask X": cluster_cell_axis_mask_x,
                                     "id": cluster_id,
                                 }
                             )
@@ -1025,13 +1056,13 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Motion Angle",
+                    y="Motion Angle Z",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
                 )
 
-                plot_ax.set_title("Motion Angle")
+                plot_ax.set_title("Motion Angle Z")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
@@ -1040,13 +1071,74 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Radial Angle",
+                    y="Radial Angle Z",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
                 )
 
-                plot_ax.set_title("Radial Angle")
+                plot_ax.set_title("Radial Angle Z")
+                plot_ax.set_xlabel("Time (min)")
+
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Motion Angle Y",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Motion Angle Y")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Radial Angle Y",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Radial Angle Y")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Motion Angle X",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Motion Angle X")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Radial Angle X",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Radial Angle X")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
@@ -1085,13 +1177,43 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Cell Axis Mask",
+                    y="Cell Axis Mask Z",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
                 )
 
-                plot_ax.set_title("Cell Axis Mask")
+                plot_ax.set_title("Cell Axis Mask Z")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Cell Axis Mask Y",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Cell Axis Mask Y")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Cell Axis Mask X",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Cell Axis Mask X")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
