@@ -880,9 +880,9 @@ def plugin_wrapper_track():
                             cluster_radial_angle_z,
                             cluster_radial_angle_y,
                             cluster_radial_angle_x,
-                            cluster_cell_axis_mask_z,
-                            cluster_cell_axis_mask_y,
-                            cluster_cell_axis_mask_x,
+                            cluster_cell_axis_z,
+                            cluster_cell_axis_y,
+                            cluster_cell_axis_x,
                             _,
                             _,
                             _,
@@ -900,9 +900,9 @@ def plugin_wrapper_track():
                                 cluster_radial_angle_z,
                                 cluster_radial_angle_y,
                                 cluster_radial_angle_x,
-                                cluster_cell_axis_mask_z,
-                                cluster_cell_axis_mask_y,
-                                cluster_cell_axis_mask_x,
+                                cluster_cell_axis_z,
+                                cluster_cell_axis_y,
+                                cluster_cell_axis_x,
                                 countk + 1,
                             ]
                         )
@@ -959,15 +959,9 @@ def plugin_wrapper_track():
                                 9
                             ]
 
-                            cluster_cell_axis_mask_z = (
-                                current_unique_dynamic_properties[10]
-                            )
-                            cluster_cell_axis_mask_y = (
-                                current_unique_dynamic_properties[11]
-                            )
-                            cluster_cell_axis_mask_x = (
-                                current_unique_dynamic_properties[12]
-                            )
+                            cluster_cell_axis_z = current_unique_dynamic_properties[10]
+                            cluster_cell_axis_y = current_unique_dynamic_properties[11]
+                            cluster_cell_axis_x = current_unique_dynamic_properties[12]
 
                             cluster_id = current_unique_dynamic_properties[-1]
 
@@ -975,17 +969,17 @@ def plugin_wrapper_track():
                                 {
                                     "Time": cluster_time,
                                     "Speed": cluster_speed,
-                                    "Motion Angle Z": cluster_motion_angle_z,
-                                    "Motion Angle Y": cluster_motion_angle_y,
-                                    "Motion Angle X": cluster_motion_angle_x,
+                                    "Motion_Angle_Z": cluster_motion_angle_z,
+                                    "Motion_Angle_Y": cluster_motion_angle_y,
+                                    "Motion_Angle_X": cluster_motion_angle_x,
                                     "Acceleration": cluster_acceleration,
-                                    "Distance cell to tissue": cluster_distance_cell_mask,
-                                    "Radial Angle Z": cluster_radial_angle_z,
-                                    "Radial Angle Y": cluster_radial_angle_y,
-                                    "Radial Angle X": cluster_radial_angle_x,
-                                    "Cell Axis Mask Z": cluster_cell_axis_mask_z,
-                                    "Cell Axis Mask Y": cluster_cell_axis_mask_y,
-                                    "Cell Axis Mask X": cluster_cell_axis_mask_x,
+                                    "Distance_cell_to_tissue": cluster_distance_cell_mask,
+                                    "Radial_Angle_Z": cluster_radial_angle_z,
+                                    "Radial_Angle_Y": cluster_radial_angle_y,
+                                    "Radial_Angle_X": cluster_radial_angle_x,
+                                    "Cell_Axis_Z": cluster_cell_axis_z,
+                                    "Cell_Axis_Y": cluster_cell_axis_y,
+                                    "Cell_Axis_X": cluster_cell_axis_x,
                                     "id": cluster_id,
                                 }
                             )
@@ -1187,13 +1181,13 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Cell_Axis_Mask_Z",
+                    y="Cell_Axis_Z",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
                 )
 
-                plot_ax.set_title("Cell Axis Mask Z")
+                plot_ax.set_title("Cell Axis Z")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
@@ -1202,13 +1196,13 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Cell_Axis_Mask_Y",
+                    y="Aell_Axis_Y",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
                 )
 
-                plot_ax.set_title("Cell Axis Mask Y")
+                plot_ax.set_title("Cell Axis Y")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
@@ -1217,13 +1211,13 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Cell_Axis_Mask_X",
+                    y="Cell_Axis_X",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
                 )
 
-                plot_ax.set_title("Cell Axis Mask X")
+                plot_ax.set_title("Cell Axis X")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
@@ -1543,14 +1537,46 @@ def plugin_wrapper_track():
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
-                    _trackmate_objects.mitotic_mean_directional_change,
-                    _trackmate_objects.mitotic_var_directional_change,
+                    _trackmate_objects.mitotic_mean_directional_change_z,
+                    _trackmate_objects.mitotic_var_directional_change_z,
                     linestyle="None",
                     marker=".",
                     mfc="green",
                     ecolor="green",
                 )
-                plot_ax.set_title("Instantaneous Directional change")
+                plot_ax.set_title("Instantaneous Directional change in Z")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_directional_change_y,
+                    _trackmate_objects.mitotic_var_directional_change_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in Y")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_directional_change_x,
+                    _trackmate_objects.mitotic_var_directional_change_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in X")
                 plot_ax.set_xlabel("Time (min)")
                 plot_ax.set_ylabel("angle (degrees)")
 
@@ -1677,14 +1703,46 @@ def plugin_wrapper_track():
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
-                    _trackmate_objects.non_mitotic_mean_directional_change,
-                    _trackmate_objects.non_mitotic_var_directional_change,
+                    _trackmate_objects.non_mitotic_mean_directional_change_z,
+                    _trackmate_objects.non_mitotic_var_directional_change_z,
                     linestyle="None",
                     marker=".",
                     mfc="green",
                     ecolor="green",
                 )
-                plot_ax.set_title("Instantaneous Directional change")
+                plot_ax.set_title("Instantaneous Directional change in Z")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_directional_change_y,
+                    _trackmate_objects.non_mitotic_var_directional_change_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in Y")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_directional_change_x,
+                    _trackmate_objects.non_mitotic_var_directional_change_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in X")
                 plot_ax.set_xlabel("Time (min)")
                 plot_ax.set_ylabel("angle (degrees)")
 
@@ -1811,14 +1869,46 @@ def plugin_wrapper_track():
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
-                    _trackmate_objects.all_mean_directional_change,
-                    _trackmate_objects.all_var_directional_change,
+                    _trackmate_objects.all_mean_directional_change_z,
+                    _trackmate_objects.all_var_directional_change_z,
                     linestyle="None",
                     marker=".",
                     mfc="green",
                     ecolor="green",
                 )
-                plot_ax.set_title("Instantaneous Directional change")
+                plot_ax.set_title("Instantaneous Directional change in Z")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.all_mean_directional_change_y,
+                    _trackmate_objects.all_var_directional_change_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in Y")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.all_mean_directional_change_x,
+                    _trackmate_objects.all_var_directional_change_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in X")
                 plot_ax.set_xlabel("Time (min)")
                 plot_ax.set_ylabel("angle (degrees)")
 
