@@ -856,7 +856,7 @@ def plugin_wrapper_track():
                             cluster_y,
                             cluster_x,
                             cluster_radius,
-                            cluster_volume,
+                            cluster_radius_pixel,
                             cluster_eccentricity_comp_first,
                             cluster_eccentricity_comp_second,
                             cluster_eccentricity_comp_third,
@@ -913,7 +913,7 @@ def plugin_wrapper_track():
                                 cluster_y,
                                 cluster_x,
                                 cluster_radius,
-                                cluster_volume,
+                                cluster_radius_pixel,
                                 cluster_eccentricity_comp_first,
                                 cluster_eccentricity_comp_second,
                                 cluster_eccentricity_comp_third,
@@ -935,28 +935,39 @@ def plugin_wrapper_track():
                             )
                             cluster_time = current_unique_dynamic_properties[0]
                             cluster_speed = current_unique_dynamic_properties[1]
-                            cluster_motion_angle_z = current_unique_dynamic_properties[2]
-                            cluster_motion_angle_y = current_unique_dynamic_properties[3]
-                            cluster_motion_angle_x = current_unique_dynamic_properties[4]
+                            cluster_motion_angle_z = current_unique_dynamic_properties[
+                                2
+                            ]
+                            cluster_motion_angle_y = current_unique_dynamic_properties[
+                                3
+                            ]
+                            cluster_motion_angle_x = current_unique_dynamic_properties[
+                                4
+                            ]
 
                             cluster_acceleration = current_unique_dynamic_properties[5]
                             cluster_distance_cell_mask = (
                                 current_unique_dynamic_properties[6]
                             )
-                            cluster_radial_angle_z = current_unique_dynamic_properties[7]
-                            cluster_radial_angle_y = current_unique_dynamic_properties[8]
-                            cluster_radial_angle_x = current_unique_dynamic_properties[9]
+                            cluster_radial_angle_z = current_unique_dynamic_properties[
+                                7
+                            ]
+                            cluster_radial_angle_y = current_unique_dynamic_properties[
+                                8
+                            ]
+                            cluster_radial_angle_x = current_unique_dynamic_properties[
+                                9
+                            ]
 
-
-                            cluster_cell_axis_mask_z = current_unique_dynamic_properties[
-                                10
-                            ]
-                            cluster_cell_axis_mask_y = current_unique_dynamic_properties[
-                                11
-                            ]
-                            cluster_cell_axis_mask_x = current_unique_dynamic_properties[
-                                12
-                            ]
+                            cluster_cell_axis_mask_z = (
+                                current_unique_dynamic_properties[10]
+                            )
+                            cluster_cell_axis_mask_y = (
+                                current_unique_dynamic_properties[11]
+                            )
+                            cluster_cell_axis_mask_x = (
+                                current_unique_dynamic_properties[12]
+                            )
 
                             cluster_id = current_unique_dynamic_properties[-1]
 
@@ -997,7 +1008,7 @@ def plugin_wrapper_track():
                             current_unique_shape_properties = unique_shape_properties[i]
                             cluster_time = current_unique_shape_properties[0]
                             cluster_radius = current_unique_shape_properties[1]
-                            cluster_volume = current_unique_shape_properties[2]
+                            cluster_radius_pixel = current_unique_shape_properties[2]
                             cluster_eccentricity_comp_first = (
                                 current_unique_shape_properties[3]
                             )
@@ -1015,7 +1026,7 @@ def plugin_wrapper_track():
                                 {
                                     "Time": cluster_time,
                                     "Radius": cluster_radius,
-                                    "Volume": cluster_volume,
+                                    "Radius Pixel": cluster_radius_pixel,
                                     "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
                                     "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
                                     "Eccentricity_Comp_Third": cluster_eccentricity_comp_third,
@@ -1079,7 +1090,6 @@ def plugin_wrapper_track():
 
                 plot_ax.set_title("Radial Angle Z")
                 plot_ax.set_xlabel("Time (min)")
-
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1237,13 +1247,13 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
-                    y="Volume",
+                    y="Radius_pixel",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
                 )
 
-                plot_ax.set_title("Volume")
+                plot_ax.set_title("Radius_pixel")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
@@ -2248,7 +2258,7 @@ def plugin_wrapper_track():
             devices=1,
             scale_z=scale_z,
             scale_xy=scale_xy,
-            compute_with_autoencoder = False
+            compute_with_autoencoder=False,
         )
         nonlocal track_centroid_tree, track_centroid_list
         track_centroid_list = [
