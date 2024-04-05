@@ -1026,7 +1026,7 @@ def plugin_wrapper_track():
                                 {
                                     "Time": cluster_time,
                                     "Radius": cluster_radius,
-                                    "Radius Pixel": cluster_radius_pixel,
+                                    "Radius_Pixel": cluster_radius_pixel,
                                     "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
                                     "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
                                     "Eccentricity_Comp_Third": cluster_eccentricity_comp_third,
@@ -1067,7 +1067,7 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Motion Angle Z",
+                    y="Motion_Angle_Z",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
@@ -1082,7 +1082,7 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Radial Angle Z",
+                    y="Radial_Angle_Z",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
@@ -1097,7 +1097,7 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Motion Angle Y",
+                    y="Motion_Angle_Y",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
@@ -1112,7 +1112,7 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Radial Angle Y",
+                    y="Radial_Angle_Y",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
@@ -1127,7 +1127,7 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Motion Angle X",
+                    y="Motion_Angle_X",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
@@ -1142,7 +1142,7 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Radial Angle X",
+                    y="Radial_Angle_X",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
@@ -1172,7 +1172,7 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Distance cell to tissue",
+                    y="Distance_cell_to_tissue",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
@@ -1187,7 +1187,7 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Cell Axis Mask Z",
+                    y="Cell_Axis_Mask_Z",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
@@ -1202,7 +1202,7 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Cell Axis Mask Y",
+                    y="Cell_Axis_Mask_Y",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
@@ -1217,7 +1217,7 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Cell Axis Mask X",
+                    y="Cell_Axis_Mask_X",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
