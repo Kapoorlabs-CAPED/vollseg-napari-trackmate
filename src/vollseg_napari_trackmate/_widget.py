@@ -2243,24 +2243,7 @@ def plugin_wrapper_track():
                 track_object = _trackmate_objects.unique_tracks[unique_track_id]
                 unique_tracklet_ids_list.append(int(track_object[0, 0]) + 1)
 
-            cluster_class_dataset = _oneat_csv_path_change(
-                plugin_data.oneat_csv_path.value
-            )
-            if not cluster_class_dataset.empty:
-                for layer in list(plugin.viewer.value.layers):
-                    if "Cluster Classes" == layer.name:
-                        plugin.viewer.value.layers.remove(layer)
-                print("refreshing cluster classes")
-                mask = cluster_class_dataset["Track ID"].isin(unique_tracklet_ids_list)
-                chosen_track_data = cluster_class_dataset[mask]
-                chosen_track_data["Cluster"].fillna(-1, inplace=True)
-                if not chosen_track_data.empty:
-                    properties = {"cluster_class": chosen_track_data.values[..., -1]}
-                    plugin.viewer.value.add_tracks(
-                        chosen_track_data.values[..., :-1],
-                        name="Cluster Classes",
-                        properties=properties,
-                    )
+           
 
             pred = unique_tracks, unique_tracks_properties, track_id
 
@@ -2463,18 +2446,7 @@ def plugin_wrapper_track():
 
     @change_handler(plugin_data.oneat_csv_path, init=False)
     def _oneat_csv_path_change(value):
-        if plugin_data.oneat_csv_path.value.is_file():
-            cluster_class_dataset = pd.read_csv(
-                plugin_data.oneat_csv_path.value,
-                delimiter=",",
-                encoding="unicode_escape",
-                low_memory=False,
-            )
-            plugin_data.compute_button.enabled = True
-            return cluster_class_dataset
-        else:
-            plugin_data.compute_button.enabled = True
-            return pd.DataFrame()
+        plugin_data.compute_button.enabled = True
 
     @change_handler(plugin_data.master_xml_path, init=False)
     def _master_xml_path_change(value):
