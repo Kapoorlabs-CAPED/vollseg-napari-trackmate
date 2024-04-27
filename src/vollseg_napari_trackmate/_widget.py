@@ -2417,7 +2417,8 @@ def plugin_wrapper_track():
             scale_z=scale_z,
             scale_xy=scale_xy,
             compute_with_autoencoder=False,
-            oneat_csv_file=oneat_csv_path
+            oneat_csv_file=oneat_csv_path,
+            oneat_threshold_cutoff=0.9999
         )
         nonlocal track_centroid_tree, track_centroid_list
         track_centroid_list = [
