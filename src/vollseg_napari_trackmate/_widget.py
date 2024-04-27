@@ -877,6 +877,7 @@ def plugin_wrapper_track():
                             cluster_motion_angle_x,
                             cluster_acceleration,
                             cluster_distance_cell_mask,
+                            cluster_local_cell_density,
                             cluster_radial_angle_z,
                             cluster_radial_angle_y,
                             cluster_radial_angle_x,
@@ -897,6 +898,7 @@ def plugin_wrapper_track():
                                 cluster_motion_angle_x,
                                 cluster_acceleration,
                                 cluster_distance_cell_mask,
+                                cluster_local_cell_density,
                                 cluster_radial_angle_z,
                                 cluster_radial_angle_y,
                                 cluster_radial_angle_x,
@@ -949,19 +951,25 @@ def plugin_wrapper_track():
                             cluster_distance_cell_mask = (
                                 current_unique_dynamic_properties[6]
                             )
+
+                            cluster_local_cell_density = (
+                                current_unique_dynamic_properties[7]
+                            )
+
+
                             cluster_radial_angle_z = current_unique_dynamic_properties[
-                                7
-                            ]
-                            cluster_radial_angle_y = current_unique_dynamic_properties[
                                 8
                             ]
-                            cluster_radial_angle_x = current_unique_dynamic_properties[
+                            cluster_radial_angle_y = current_unique_dynamic_properties[
                                 9
                             ]
+                            cluster_radial_angle_x = current_unique_dynamic_properties[
+                                10
+                            ]
 
-                            cluster_cell_axis_z = current_unique_dynamic_properties[10]
-                            cluster_cell_axis_y = current_unique_dynamic_properties[11]
-                            cluster_cell_axis_x = current_unique_dynamic_properties[12]
+                            cluster_cell_axis_z = current_unique_dynamic_properties[11]
+                            cluster_cell_axis_y = current_unique_dynamic_properties[12]
+                            cluster_cell_axis_x = current_unique_dynamic_properties[13]
 
                             cluster_id = current_unique_dynamic_properties[-1]
 
@@ -974,6 +982,7 @@ def plugin_wrapper_track():
                                     "Motion_Angle_X": cluster_motion_angle_x,
                                     "Acceleration": cluster_acceleration,
                                     "Distance_cell_to_tissue": cluster_distance_cell_mask,
+                                    "Local_Cell_Density": cluster_local_cell_density,
                                     "Radial_Angle_Z": cluster_radial_angle_z,
                                     "Radial_Angle_Y": cluster_radial_angle_y,
                                     "Radial_Angle_X": cluster_radial_angle_x,
@@ -1173,6 +1182,21 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Distance cell to tissue")
+                plot_ax.set_xlabel("Time (min)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Local_Cell_Density",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Local Cell Density")
                 plot_ax.set_xlabel("Time (min)")
 
                 phenotype_plot_class._repeat_after_plot()
@@ -1537,6 +1561,22 @@ def plugin_wrapper_track():
 
                 plot_ax.errorbar(
                     _trackmate_objects.time,
+                    _trackmate_objects.mitotic_mean_local_cell_density,
+                    _trackmate_objects.mitotic_var_local_cell_density,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Local Cell Density")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("Density")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
                     _trackmate_objects.mitotic_mean_directional_change_z,
                     _trackmate_objects.mitotic_var_directional_change_z,
                     linestyle="None",
@@ -1697,6 +1737,24 @@ def plugin_wrapper_track():
                 plot_ax.set_title("Cell-tissue distance")
                 plot_ax.set_xlabel("Time (min)")
                 plot_ax.set_ylabel("um")
+
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.non_mitotic_mean_local_cell_density,
+                    _trackmate_objects.non_mitotic_var_local_cell_density,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Local Cell Density")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("Density")
+
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
@@ -1863,6 +1921,24 @@ def plugin_wrapper_track():
                 plot_ax.set_title("Cell-tissue distance")
                 plot_ax.set_xlabel("Time (min)")
                 plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.all_mean_local_cell_density,
+                    _trackmate_objects.all_var_local_cell_density,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Local Cell Density")
+                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_ylabel("Density")
+
+
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
