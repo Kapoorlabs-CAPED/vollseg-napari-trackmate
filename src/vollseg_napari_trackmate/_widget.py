@@ -2243,8 +2243,6 @@ def plugin_wrapper_track():
                 track_object = _trackmate_objects.unique_tracks[unique_track_id]
                 unique_tracklet_ids_list.append(int(track_object[0, 0]) + 1)
 
-           
-
             pred = unique_tracks, unique_tracks_properties, track_id
 
             _refreshTrackData(pred)
@@ -2297,12 +2295,6 @@ def plugin_wrapper_track():
 
         # Trigger model change
         selected.changed(selected.value)
-
-    # widget_for_cluster_modeltype = {
-    # DeepEmbeddedClustering: plugin.cluster_model,
-    # "No(Cluster)": plugin.cluster_model_none,
-    # CUSTOM_MODEL_CLUSTER: plugin.model_folder_cluster,
-    # }
 
     plugin_data.compute_button.native.setStyleSheet("background-color: orange")
 
@@ -2391,8 +2383,7 @@ def plugin_wrapper_track():
         if os.path.isdir(plugin_data.edges_csv_path.value):
             edges_csv_path = None
         if os.path.isdir(plugin_data.oneat_csv_path.value):
-            oneat_csv_path = None    
-
+            oneat_csv_path = None
 
         _trackmate_objects = TrackMate(
             plugin_data.xml_path.value,
@@ -2418,7 +2409,7 @@ def plugin_wrapper_track():
             scale_xy=scale_xy,
             compute_with_autoencoder=False,
             oneat_csv_file=oneat_csv_path,
-            oneat_threshold_cutoff=0.9999
+            oneat_threshold_cutoff=0.9999,
         )
         nonlocal track_centroid_tree, track_centroid_list
         track_centroid_list = [
@@ -2426,7 +2417,7 @@ def plugin_wrapper_track():
         ]
         track_centroid_tree = spatial.cKDTree(track_centroid_list)
         _refreshStatPlotData()
-       
+
         select_track_nature()
         plugin_data.compute_button.enabled = True
 
