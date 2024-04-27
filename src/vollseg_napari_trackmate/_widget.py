@@ -956,7 +956,6 @@ def plugin_wrapper_track():
                                 current_unique_dynamic_properties[7]
                             )
 
-
                             cluster_radial_angle_z = current_unique_dynamic_properties[
                                 8
                             ]
@@ -1062,7 +1061,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Speed")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1077,7 +1076,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Motion Angle Z")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1092,7 +1091,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Radial Angle Z")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1107,7 +1106,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Motion Angle Y")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1122,7 +1121,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Radial Angle Y")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1137,7 +1136,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Motion Angle X")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1152,7 +1151,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Radial Angle X")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1167,7 +1166,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Acceleration")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1182,7 +1181,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Distance cell to tissue")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1197,7 +1196,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Local Cell Density")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1212,7 +1211,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Cell Axis Z")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1220,14 +1219,14 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_dynamic_cluster_plot,
                     x="Time",
-                    y="Aell_Axis_Y",
+                    y="Cell_Axis_Y",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
                 )
 
                 plot_ax.set_title("Cell Axis Y")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1242,7 +1241,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Cell Axis X")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1257,7 +1256,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Radius")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1265,14 +1264,14 @@ def plugin_wrapper_track():
                 sns.lineplot(
                     global_data_cluster_plot,
                     x="Time",
-                    y="Radius_pixel",
+                    y="Radius_Pixel",
                     hue="id",
                     ax=plot_ax,
                     legend=False,
                 )
 
-                plot_ax.set_title("Radius_pixel")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_title("Radius_Pixel")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1287,7 +1286,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Surface_Area")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1302,7 +1301,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Eccentricity Comp First")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1317,7 +1316,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Eccentricity Comp Second")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1335,7 +1334,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Eccentricity Comp Third")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
@@ -1364,7 +1363,7 @@ def plugin_wrapper_track():
             sns.set_palette(flatui)
             sns.lineplot(data_time_plot, x="Time", y="Intensity", ax=plot_ax)
             plot_ax.set_title("Cell Intensity")
-            plot_ax.set_xlabel("Time (min)")
+            plot_ax.set_xlabel("Time (sec)")
             plot_ax.set_ylabel("Amplitude")
 
             phenotype_plot_class._repeat_after_plot()
@@ -1553,7 +1552,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Cell-tissue distance")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
@@ -1569,7 +1568,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Local Cell Density")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("Density")
 
                 stat_plot_class._repeat_after_plot()
@@ -1585,7 +1584,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous Directional change in Z")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
@@ -1601,7 +1600,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous Directional change in Y")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
@@ -1617,7 +1616,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous Directional change in X")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
@@ -1633,7 +1632,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Speed")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um/min")
 
                 stat_plot_class._repeat_after_plot()
@@ -1649,7 +1648,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Acceleration")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um/min")
 
                 stat_plot_class._repeat_after_plot()
@@ -1665,7 +1664,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Radius")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
@@ -1682,7 +1681,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Displacement in Z")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
@@ -1699,7 +1698,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Displacement in Y")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
@@ -1716,7 +1715,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Displacement in X")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
             if key == track_model_type_dict[1]:
@@ -1735,9 +1734,8 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Cell-tissue distance")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
-
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
@@ -1752,9 +1750,8 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Local Cell Density")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("Density")
-
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
@@ -1769,7 +1766,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous Directional change in Z")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
@@ -1785,7 +1782,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous Directional change in Y")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
@@ -1801,7 +1798,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous Directional change in X")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
@@ -1817,7 +1814,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous Speed")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um/min")
 
                 stat_plot_class._repeat_after_plot()
@@ -1833,7 +1830,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Acceleration")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um/min")
 
                 stat_plot_class._repeat_after_plot()
@@ -1849,7 +1846,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Radius")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
@@ -1866,7 +1863,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Displacement in Z")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
@@ -1883,7 +1880,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Displacement in Y")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
@@ -1900,7 +1897,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Displacement in X")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
             if key == track_model_type_dict[2]:
@@ -1919,7 +1916,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Cell-tissue distance")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
@@ -1935,10 +1932,8 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Local Cell Density")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("Density")
-
-
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
@@ -1953,7 +1948,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous Directional change in Z")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
@@ -1969,7 +1964,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous Directional change in Y")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
@@ -1985,7 +1980,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous Directional change in X")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("angle (degrees)")
 
                 stat_plot_class._repeat_after_plot()
@@ -2001,7 +1996,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Instantaneous  Speed")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um/min")
 
                 stat_plot_class._repeat_after_plot()
@@ -2017,7 +2012,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Acceleration")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um/min")
 
                 stat_plot_class._repeat_after_plot()
@@ -2033,7 +2028,7 @@ def plugin_wrapper_track():
                     ecolor="green",
                 )
                 plot_ax.set_title("Radius")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
@@ -2050,7 +2045,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Displacement in Z")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
@@ -2067,7 +2062,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Displacement in Y")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
                 stat_plot_class._repeat_after_plot()
@@ -2084,7 +2079,7 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("Displacement in X")
-                plot_ax.set_xlabel("Time (min)")
+                plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
             for layer in list(plugin.viewer.value.layers):
@@ -2128,12 +2123,13 @@ def plugin_wrapper_track():
         if None in _both_track_ids_analyze:
             _both_track_ids_analyze.remove(None)
 
-        plugin_color_parameters.track_attributes.choices = (
-            _trackmate_objects.TrackAttributeids
-        )
-        plugin_color_parameters.spot_attributes.choices = (
-            _trackmate_objects.Attributeids
-        )
+        if hasattr(_trackmate_objects, "TrackAttributeids"):
+            plugin_color_parameters.track_attributes.choices = (
+                _trackmate_objects.TrackAttributeids
+            )
+            plugin_color_parameters.spot_attributes.choices = (
+                _trackmate_objects.Attributeids
+            )
         plugin.progress_bar.label = "Creating Table"
         plugin.progress_bar.range = (0, len(root_spots) - 1)
 
@@ -2401,12 +2397,21 @@ def plugin_wrapper_track():
             accelerator = "gpu"
         else:
             accelerator = "cpu"
+        spot_csv_path = plugin_data.spot_csv_path.value
+        track_csv_path = plugin_data.track_csv_path.value
+        edges_csv_path = plugin_data.edges_csv_path.value
+        if os.path.isdir(plugin_data.spot_csv_path.value):
+            spot_csv_path = None
+        if os.path.isdir(plugin_data.track_csv_path.value):
+            track_csv_path = None
+        if os.path.isdir(plugin_data.edges_csv_path.value):
+            edges_csv_path = None
 
         _trackmate_objects = TrackMate(
             plugin_data.xml_path.value,
-            plugin_data.spot_csv_path.value,
-            plugin_data.track_csv_path.value,
-            plugin_data.edges_csv_path.value,
+            spot_csv_path,
+            track_csv_path,
+            edges_csv_path,
             AttributeBoxname,
             TrackAttributeBoxname,
             TrackidBox,
