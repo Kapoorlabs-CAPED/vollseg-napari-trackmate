@@ -700,10 +700,10 @@ def plugin_wrapper_track():
             label="Edges/Links csv",
             mode="r",
         ),
-        cluster_csv_path=dict(
+        oneat_csv_path=dict(
             widget_type="FileEdit",
             visible=True,
-            label="Cluster Labels csv",
+            label="Oneat Mitosis csv",
             mode="r",
         ),
         axes=dict(
@@ -741,7 +741,7 @@ def plugin_wrapper_track():
         track_csv_path,
         spot_csv_path,
         edges_csv_path,
-        cluster_csv_path,
+        oneat_csv_path,
         axes,
         batch_size,
         device_type,
@@ -2400,12 +2400,16 @@ def plugin_wrapper_track():
         spot_csv_path = plugin_data.spot_csv_path.value
         track_csv_path = plugin_data.track_csv_path.value
         edges_csv_path = plugin_data.edges_csv_path.value
+        oneat_csv_path = plugin_data.oneat_csv_path.value
         if os.path.isdir(plugin_data.spot_csv_path.value):
             spot_csv_path = None
         if os.path.isdir(plugin_data.track_csv_path.value):
             track_csv_path = None
         if os.path.isdir(plugin_data.edges_csv_path.value):
             edges_csv_path = None
+        if os.path.isdir(plugin_data.oneat_csv_path.value):
+            oneat_csv_path = None    
+
 
         _trackmate_objects = TrackMate(
             plugin_data.xml_path.value,
@@ -2430,6 +2434,7 @@ def plugin_wrapper_track():
             scale_z=scale_z,
             scale_xy=scale_xy,
             compute_with_autoencoder=False,
+            oneat_csv_file=oneat_csv_path
         )
         nonlocal track_centroid_tree, track_centroid_list
         track_centroid_list = [
