@@ -2243,8 +2243,8 @@ def plugin_wrapper_track():
                 track_object = _trackmate_objects.unique_tracks[unique_track_id]
                 unique_tracklet_ids_list.append(int(track_object[0, 0]) + 1)
 
-            cluster_class_dataset = _cluster_csv_path_change(
-                plugin_data.cluster_csv_path.value
+            cluster_class_dataset = _oneat_csv_path_change(
+                plugin_data.oneat_csv_path.value
             )
             if not cluster_class_dataset.empty:
                 for layer in list(plugin.viewer.value.layers):
@@ -2442,18 +2442,7 @@ def plugin_wrapper_track():
         ]
         track_centroid_tree = spatial.cKDTree(track_centroid_list)
         _refreshStatPlotData()
-        cluster_class_dataset = _cluster_csv_path_change(
-            plugin_data.cluster_csv_path.value
-        )
-        if not cluster_class_dataset.empty:
-            print("adding cluster classes to viewer")
-            cluster_class_dataset["Cluster"].fillna(-1, inplace=True)
-            properties = {"cluster_class": cluster_class_dataset.values[..., -1]}
-            plugin.viewer.value.add_tracks(
-                cluster_class_dataset.values[..., :-1],
-                name="Cluster Classes",
-                properties=properties,
-            )
+       
         select_track_nature()
         plugin_data.compute_button.enabled = True
 
@@ -2472,11 +2461,11 @@ def plugin_wrapper_track():
 
         plugin_data.compute_button.enabled = True
 
-    @change_handler(plugin_data.cluster_csv_path, init=False)
-    def _cluster_csv_path_change(value):
-        if plugin_data.cluster_csv_path.value.is_file():
+    @change_handler(plugin_data.oneat_csv_path, init=False)
+    def _oneat_csv_path_change(value):
+        if plugin_data.oneat_csv_path.value.is_file():
             cluster_class_dataset = pd.read_csv(
-                plugin_data.cluster_csv_path.value,
+                plugin_data.oneat_csv_path.value,
                 delimiter=",",
                 encoding="unicode_escape",
                 low_memory=False,
