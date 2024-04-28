@@ -237,7 +237,7 @@ def plugin_wrapper_track():
             mode="r",
         ),
         enhance_trackmate_xml=dict(
-            widget_type="Bool",
+            widget_type="CheckBox",
             label="Compute NPM master XML ",
             tooltip="Toggle to compute NPM master XML",
             value=DEFAULTS_PARAMETERS["enhance_trackmate_xml"],
