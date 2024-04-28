@@ -139,7 +139,7 @@ def plugin_wrapper_track():
         track_model_type="Both",
     )
     DEFAULTS_PARAMETERS = dict(
-        enhance_trackmate_xml=True, oneat_threshold_cutoff=0.9
+        enhance_trackmate_xml=True, oneat_threshold_cutoff=0.99
     )
 
     track_model_type_choices = [
