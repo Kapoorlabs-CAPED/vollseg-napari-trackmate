@@ -133,6 +133,11 @@ def plugin_wrapper_track():
 
         return decorator_change_handler
 
+
+    DEFAULTS_MODEL = dict(
+        axes="TZYX",
+        track_model_type="Both",
+    )
     DEFAULTS_PARAMETERS = dict(
         enhance_trackmate_xml=True, oneat_threshold_cutoff=0.9999
     )
@@ -155,6 +160,13 @@ def plugin_wrapper_track():
             label=f'<h1> <img src="{kapoorlogo}"> </h1>',
             value=f'<h5><a href=" {citation}"> NapaTrackMater: Track Analysis of TrackMate in Napari</a></h5>',
         ),
+        track_model_type=dict(
+            widget_type="RadioButtons",
+            label="Track Model Type",
+            orientation="horizontal",
+            choices=track_model_type_choices,
+            value=DEFAULTS_MODEL["track_model_type"],
+        ),
         track_id_box=dict(
             widget_type="ComboBox",
             visible=True,
@@ -170,6 +182,7 @@ def plugin_wrapper_track():
     def plugin(
         viewer: napari.Viewer,
         label_head,
+        track_model_type,
         track_id_box,
         track_id_value,
         progress_bar: mw.ProgressBar,
