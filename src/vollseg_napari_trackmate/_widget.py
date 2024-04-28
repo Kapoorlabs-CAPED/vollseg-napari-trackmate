@@ -1880,7 +1880,7 @@ def plugin_wrapper_track():
             enhance_trackmate_xml=plugin_data.enhance_trackmate_xml.value,
             compute_with_autoencoder=False,
             oneat_csv_file=oneat_csv_path,
-            oneat_threshold_cutoff=0.plugin_date.oneat_threshold_cutoff.value,
+            oneat_threshold_cutoff=plugin_data.oneat_threshold_cutoff.value,
         )
         nonlocal track_centroid_tree, track_centroid_list
         track_centroid_list = [
