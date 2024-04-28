@@ -139,7 +139,7 @@ def plugin_wrapper_track():
         track_model_type="Both",
     )
     DEFAULTS_PARAMETERS = dict(
-        enhance_trackmate_xml=True, oneat_threshold_cutoff=0.9999
+        enhance_trackmate_xml=True, oneat_threshold_cutoff=0.9
     )
 
     track_model_type_choices = [
@@ -1932,27 +1932,6 @@ def plugin_wrapper_track():
 
         plugin_color_parameters.track_attributes.value = value
 
-    @change_handler(plugin_data.image, init=False)
-    def _image_change(image: napari.layers.Image):
-        plugin_data.image.tooltip = f"Shape: {get_data(image).shape, str(image.name)}"
-
-        # dimensionality of selected model: 2, 3, or None (unknown)
-        plugin_data.compute_button.enabled = True
-        ndim = get_data(image).ndim
-        if ndim == 4:
-            axes = "TZYX"
-        if ndim == 3:
-            axes = "TYX"
-        if ndim == 2:
-            axes = "YX"
-        else:
-            axes = "TZYX"
-        if axes == plugin_data.axes.value:
-            # make sure to trigger a changed event, even if value didn't actually change
-            plugin_data.axes.changed(axes)
-        else:
-            plugin_data.axes.value = axes
-
-  
+ 
 
     return plugin
