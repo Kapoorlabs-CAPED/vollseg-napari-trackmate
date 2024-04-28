@@ -28,17 +28,10 @@ flatui = ["#9b59b6", "#3498db", "orange"]
 
 def plugin_wrapper_track():
 
-    from napatrackmater import CloudAutoEncoder, load_json, get_feature_dict
-    from kapoorlabs_lightning.optimizers import Adam
-    from kapoorlabs_lightning.pytorch_losses import ChamferLoss
-    from kapoorlabs_lightning.lightning_trainer import AutoLightningModel
-    from napatrackmater.pretrained import (
-        get_model_folder,
-        get_registered_models,
-    )
+    from napatrackmater import CloudAutoEncoder, get_feature_dict
+   
     from napatrackmater.Trackmate import TrackMate
     from skimage.util import map_array
-
     from vollseg_napari_trackmate._temporal_plots import TemporalStatistics
 
     DEBUG = False
@@ -142,73 +135,16 @@ def plugin_wrapper_track():
 
         return decorator_change_handler
 
-    (
-        _models_cloud_auto_encoder,
-        _aliases_cloud_auto_encoder,
-    ) = get_registered_models(CloudAutoEncoder)
 
-    # _models_cluster, _aliases_cluster = get_registered_models(
-    #    DeepEmbeddedClustering
-    # )
+    DEFAULTS_PARAMETERS = dict(enhance_trackmate_xml=True, oneat_threshold_cutoff=0.9999)
 
-    models_cloud_auto_encoder = [
-        (
-            (
-                _aliases_cloud_auto_encoder[m][0]
-                if len(_aliases_cloud_auto_encoder[m]) > 0
-                else m
-            ),
-            m,
-        )
-        for m in _models_cloud_auto_encoder
-    ]
-
-    # models_cluster = [
-    #    ((_aliases_cluster[m][0] if len(_aliases_cluster[m]) > 0 else m), m)
-    #    for m in _models_cluster
-    # ]
-
-    model_cloud_auto_encoder_configs = dict()
-    # model_cluster_configs = dict()
-
-    model_selected_cloud_auto_encoder = None
-    # model_selected_cluster = None
-
-    DEFAULTS_MODEL = dict(
-        cloud_auto_encoder_model_type=CloudAutoEncoder,
-        # cluster_model_type=DeepEmbeddedClustering,
-        model_cloud_auto_encoder=models_cloud_auto_encoder[0][0],
-        # model_cluster=models_cluster[0][0],
-        model_cloud_auto_encoder_none="No(Encoder)",
-        # model_cluster_none="No(Cluster)",
-        axes="TZYX",
-        track_model_type="Both",
-        device_type="cpu",
-    )
-    DEFAULTS_PARAMETERS = dict(batch_size=8, step_size=10)
-
-    CUSTOM_MODEL_CLOUD_AUTO_ENCODER = "CUSTOM_MODEL_CLOUD_AUTO_ENCODER"
-
-    cloud_auto_encoder_model_type_choices = [
-        ("PreTrained(Encoder)", CloudAutoEncoder),
-        ("No(Encoder)", "No(Encoder)"),
-        ("Custom Encoder", CUSTOM_MODEL_CLOUD_AUTO_ENCODER),
-    ]
-    """  cluster_model_type_choices = [
-        ("PreTrained(Cluster)", DeepEmbeddedClustering),
-        ("No(Cluster)", "No(Cluster)"),
-        ("Custom Cluster", CUSTOM_MODEL_CLUSTER),
-    ] """
 
     track_model_type_choices = [
         ("Dividing", "Dividing"),
         ("Non-Dividing", "Non-Dividing"),
         ("Both", "Both"),
     ]
-    device_type_choices = [
-        ("CPU", "cpu"),
-        ("GPU", "cuda"),
-    ]
+
 
     track_model_type_dict = {
         0: track_model_type_choices[0][0],
@@ -216,51 +152,7 @@ def plugin_wrapper_track():
         2: track_model_type_choices[2][0],
     }
 
-    @functools.lru_cache(maxsize=None)
-    def get_model_cloud_auto_encoder(
-        cloud_auto_encoder_model_type, model_cloud_auto_encoder
-    ):
-        if cloud_auto_encoder_model_type == CUSTOM_MODEL_CLOUD_AUTO_ENCODER:
-            path_auto = Path(model_cloud_auto_encoder)
-            path_auto.is_file() or _raise(
-                FileNotFoundError(f"{path_auto} is not a file")
-            )
-            config_cloud_auto_encoder = model_cloud_auto_encoder_configs[
-                (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
-            ]
-
-            model_class_cloud_auto_encoder = CloudAutoEncoder
-            autoencoder = model_class_cloud_auto_encoder(
-                num_features=config_cloud_auto_encoder["num_features"],
-                k=config_cloud_auto_encoder["k_nearest_neighbours"],
-                encoder_type=config_cloud_auto_encoder["encoder_type"],
-                decoder_type=config_cloud_auto_encoder["decoder_type"],
-            )
-            if torch.cuda.is_available():
-                map_location = torch.device("cuda")
-            else:
-                map_location = torch.device("cpu")
-
-            autoencoder_model = AutoLightningModel.load_from_checkpoint(
-                path_auto,
-                network=autoencoder,
-                loss_func=ChamferLoss(),
-                optim_func=Adam(lr=0.001),
-                scale_z=config_cloud_auto_encoder["scale_z"],
-                scale_xy=config_cloud_auto_encoder["scale_xy"],
-                map_location=map_location,
-            )
-            return autoencoder_model
-
-        elif (
-            cloud_auto_encoder_model_type
-            != DEFAULTS_MODEL["model_cloud_auto_encoder_none"]
-        ):
-            return cloud_auto_encoder_model_type.local_from_pretrained(
-                model_cloud_auto_encoder
-            )
-        else:
-            return None
+    
 
     @magicgui(
         label_head=dict(
@@ -268,13 +160,7 @@ def plugin_wrapper_track():
             label=f'<h1> <img src="{kapoorlogo}"> </h1>',
             value=f'<h5><a href=" {citation}"> NapaTrackMater: Track Analysis of TrackMate in Napari</a></h5>',
         ),
-        track_model_type=dict(
-            widget_type="RadioButtons",
-            label="Track Model Type",
-            orientation="horizontal",
-            choices=track_model_type_choices,
-            value=DEFAULTS_MODEL["track_model_type"],
-        ),
+        
         track_id_value=dict(widget_type="Label", label="Track ID chosen"),
         track_id_box=dict(
             widget_type="ComboBox",
@@ -282,20 +168,7 @@ def plugin_wrapper_track():
             label="Select Track ID to analyze",
             choices=_current_choices,
         ),
-        cloud_auto_encoder_model_type=dict(
-            widget_type="RadioButtons",
-            label="Cloud Auto Encoder Model Type",
-            orientation="horizontal",
-            choices=cloud_auto_encoder_model_type_choices,
-            value=DEFAULTS_MODEL["cloud_auto_encoder_model_type"],
-        ),
-        cloud_auto_encoder_model=dict(
-            widget_type="ComboBox",
-            visible=False,
-            label="Pre-trained Auto Encoder Models",
-            choices=models_cloud_auto_encoder,
-            value=DEFAULTS_MODEL["model_cloud_auto_encoder"],
-        ),
+       
         cloud_auto_encoder_model_none=dict(
             widget_type="Label", visible=False, label="No(Encoder)"
         ),
@@ -305,29 +178,7 @@ def plugin_wrapper_track():
             label="Custom Auto Encoder",
             mode="r",
         ),
-        # cluster_model_type=dict(
-        #    widget_type="RadioButtons",
-        #    label="Cluster Model Type",
-        #    orientation="horizontal",
-        #    choices=cluster_model_type_choices,
-        #    value=DEFAULTS_MODEL["cluster_model_type"],
-        # ),
-        # cluster_model=dict(
-        #    widget_type="ComboBox",
-        #    visible=False,
-        #    label="Pre-trained Clustering Models",
-        #    choices=models_cluster,
-        #    value=DEFAULTS_MODEL["model_cluster"],
-        # ),
-        # cluster_model_none=dict(
-        #    widget_type="Label", visible=False, label="No(Cluster)"
-        # ),
-        # model_folder_cluster=dict(
-        #    widget_type="FileEdit",
-        #    visible=False,
-        #    label="Custom Cluster Model",
-        #    mode="r",
-        # ),
+       
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
         persist=True,
@@ -339,14 +190,6 @@ def plugin_wrapper_track():
         track_model_type,
         track_id_box,
         track_id_value,
-        cloud_auto_encoder_model_type,
-        cloud_auto_encoder_model,
-        cloud_auto_encoder_model_none,
-        model_folder_cloud_auto,
-        # cluster_model_type,
-        # cluster_model,
-        # cluster_model_none,
-        # model_folder_cluster,
         progress_bar: mw.ProgressBar,
     ) -> List[napari.types.LayerDataTuple]:
 
@@ -371,301 +214,7 @@ def plugin_wrapper_track():
                 )
                 show_track(nearest_track_id)
 
-    class Updater_Auto_Encoder:
-        def __init__(self, debug=DEBUG):
-            from types import SimpleNamespace
-
-            self.debug = debug
-            self.valid = SimpleNamespace(**{k: False for k in ("model_autoencoder",)})
-            self.args = SimpleNamespace()
-            self.viewer = None
-
-        def __call__(self, k, valid, args=None):
-            assert k in vars(self.valid)
-            setattr(self.valid, k, bool(valid))
-            setattr(self.args, k, args)
-            self._update()
-
-        def help(self, msg):
-            if self.viewer is not None:
-                self.viewer.help = msg
-            elif len(str(msg)) > 0:
-                print(f"HELP: {msg}")
-
-        def _update(self):
-
-            if self.viewer is None:
-
-                if plugin.viewer.value is not None:
-                    self.viewer = plugin.viewer.value
-
-            def _model(valid):
-
-                widgets_valid(
-                    plugin.cloud_auto_encoder_model,
-                    plugin.model_folder_cloud_auto,
-                    valid=valid,
-                )
-
-            def _restore():
-                widgets_valid(plugin.image, valid=plugin.image.value is not None)
-
-            all_valid = False
-            for layer in list(plugin.viewer.value.layers):
-                if isinstance(layer, napari.layers.Labels):
-                    all_valid = True
-                    break
-            help_msg = ""
-
-            if self.valid.model_autoencoder:
-
-                widgets_valid(
-                    plugin.cloud_auto_encoder_model,
-                    plugin.model_folder_cloud_auto.line_edit,
-                    valid=all_valid,
-                )
-
-            else:
-
-                _model(self.valid.model_autoencoder)
-
-                _restore()
-            self.help(help_msg)
-
-    class Updater_Cluster:
-        def __init__(self, debug=DEBUG):
-            from types import SimpleNamespace
-
-            self.debug = debug
-            self.valid = SimpleNamespace(**{k: False for k in ("model_autoencoder",)})
-            self.args = SimpleNamespace()
-            self.viewer = None
-
-        def __call__(self, k, valid, args=None):
-            assert k in vars(self.valid)
-            setattr(self.valid, k, bool(valid))
-            setattr(self.args, k, args)
-            self._update()
-
-        def help(self, msg):
-            if self.viewer is not None:
-                self.viewer.help = msg
-            elif len(str(msg)) > 0:
-                print(f"HELP: {msg}")
-
-        def _update(self):
-
-            if self.viewer is None:
-
-                if plugin.viewer.value is not None:
-                    self.viewer = plugin.viewer.value
-
-            def _model(valid):
-
-                widgets_valid(
-                    plugin.cluster_model,
-                    plugin.model_folder_cluster,
-                    valid=valid,
-                )
-
-            def _restore():
-                widgets_valid(plugin.image, valid=plugin.image.value is not None)
-
-            all_valid = False
-            for layer in list(plugin.viewer.value.layers):
-                if isinstance(layer, napari.layers.Labels):
-                    all_valid = True
-                    break
-            help_msg = ""
-
-            if self.valid.model_autoencoder:
-
-                widgets_valid(
-                    plugin.cluster_model,
-                    plugin.model_folder_cluster.line_edit,
-                    valid=all_valid,
-                )
-
-            else:
-
-                _model(self.valid.model_autoencoder)
-
-                _restore()
-            self.help(help_msg)
-
-    update_cloud_auto_encoder = Updater_Auto_Encoder()
-    # update_cluster = Updater_Cluster()
-
-    def select_model_cloud_auto_encoder(key):
-        nonlocal model_selected_cloud_auto_encoder
-        if key is not None:
-            model_selected_cloud_auto_encoder = key
-            # config_cloud_auto_encoder = model_cloud_auto_encoder_configs.get(
-            #    key
-            # )
-            update_cloud_auto_encoder("model_autoencoder", True)
-        if (
-            plugin.cloud_auto_encoder_model_type.value
-            == DEFAULTS_MODEL["model_cloud_auto_encoder_none"]
-        ):
-            model_selected_cloud_auto_encoder = None
-
-    """ def select_model_cluster(key):
-        nonlocal model_selected_cluster
-        if key is not None:
-            model_selected_cluster = key
-            # config_cloud_auto_encoder = model_cloud_auto_encoder_configs.get(
-            #    key
-            # )
-            update_cluster("model_autoencoder", True)
-        if (
-            plugin.cluster_model_type.value
-            == DEFAULTS_MODEL["model_cluster_none"]
-        ):
-            model_selected_cluster = None """
-
-    """ @change_handler(
-        plugin.cluster_model,
-        plugin.cluster_model_none,
-        init=False,
-    )
-    def _model_change_cluster(model_name_cluster: str):
-
-        if Signal.sender() is not plugin.cluster_model_none:
-            model_class_cluster = DeepEmbeddedClustering
-
-            if model_class_cluster is not None:
-                if Signal.sender is not None:
-                    model_name = model_name_cluster
-                elif plugin.cluster_model.value is not None:
-                    model_name = plugin.cluster_model.value
-
-                key_cluster = (
-                    model_class_cluster,
-                    model_name,
-                )
-                if key_cluster not in model_cluster_configs:
-
-                    @thread_worker
-                    def _get_model_folder():
-                        return get_model_folder(*key_cluster)
-
-                    def _process_model_folder(rpath):
-
-                        path = rpath[0]
-                        model_cluster_configs[key_cluster] = str(path)
-                        select_model_cluster(key_cluster)
-                        plugin.progress_bar.hide()
-
-                    worker = _get_model_folder()
-                    worker.returned.connect(_process_model_folder)
-                    worker.start()
-
-                    # delay showing progress bar -> won't show up if model already downloaded
-                    # TODO: hacky -> better way to do this?
-                    time.sleep(0.1)
-                    plugin.progress_bar.label = (
-                        "Downloading Auto Encoder model"
-                    )
-                    plugin.progress_bar.show()
-
-                else:
-                    select_model_cluster(key_cluster)
-        else:
-            select_model_cluster(None)
-
-            plugin.model_folder_cluster.line_edit.tooltip = (
-                "Invalid model file"
-            )
- """
-
-    @change_handler(
-        plugin.cloud_auto_encoder_model,
-        plugin.cloud_auto_encoder_model_none,
-        init=False,
-    )
-    def _model_change_cloud_auto_encoder(model_name_cloud_auto_encoder: str):
-
-        if Signal.sender() is not plugin.cloud_auto_encoder_model_none:
-            model_class_cloud_auto_encoder = CloudAutoEncoder
-
-            if model_class_cloud_auto_encoder is not None:
-                if Signal.sender is not None:
-                    model_name = model_name_cloud_auto_encoder
-                elif plugin.cloud_auto_encoder_model.value is not None:
-                    model_name = plugin.cloud_auto_encoder_model.value
-
-                key_cloud_auto_encoder = (
-                    model_class_cloud_auto_encoder,
-                    model_name,
-                )
-                if key_cloud_auto_encoder not in model_cloud_auto_encoder_configs:
-
-                    @thread_worker
-                    def _get_model_folder():
-                        return get_model_folder(*key_cloud_auto_encoder)
-
-                    def _process_model_folder(rpath):
-
-                        path = rpath[0]
-                        model_cloud_auto_encoder_configs[
-                            key_cloud_auto_encoder
-                        ] = load_json(
-                            str(
-                                os.path.join(
-                                    os.path.join(path.parent.as_posix(), path.name),
-                                    model_name + ".json",
-                                )
-                            )
-                        )
-
-                        select_model_cloud_auto_encoder(key_cloud_auto_encoder)
-                        plugin.progress_bar.hide()
-
-                    worker = _get_model_folder()
-                    worker.returned.connect(_process_model_folder)
-                    worker.start()
-
-                    # delay showing progress bar -> won't show up if model already downloaded
-                    # TODO: hacky -> better way to do this?
-                    time.sleep(0.1)
-                    plugin.progress_bar.label = "Downloading Auto Encoder model"
-                    plugin.progress_bar.show()
-
-                else:
-                    select_model_cloud_auto_encoder(key_cloud_auto_encoder)
-        else:
-            select_model_cloud_auto_encoder(None)
-
-            plugin.model_folder_cloud_auto.line_edit.tooltip = "Invalid model directory"
-
-    @change_handler(plugin.model_folder_cloud_auto, init=False)
-    def _model_cloud_auto_folder_change(_path: str):
-        path = Path(_path)
-        key = CUSTOM_MODEL_CLOUD_AUTO_ENCODER, path
-        try:
-            if not path.is_file():
-                return
-            model_cloud_auto_encoder_configs[key] = load_json(
-                str(os.path.join(path.parent.as_posix(), path.stem + ".json"))
-            )
-        except FileNotFoundError:
-            print(f"file not found in {path.parent}, {path.stem}]")
-        finally:
-            select_model_cloud_auto_encoder(key)
-
-    """     @change_handler(plugin.model_folder_cluster, init=False)
-    def _model_cluster_folder_change(_path: str):
-        path = Path(_path)
-        key = CUSTOM_MODEL_CLUSTER, path
-        try:
-            if not path.is_file():
-                return
-
-        except FileNotFoundError:
-            pass
-        finally:
-            select_model_cluster(key) """
+    
     worker = None
     _track_ids_analyze = None
     _to_analyze = None
@@ -706,26 +255,22 @@ def plugin_wrapper_track():
             label="Oneat Mitosis csv",
             mode="r",
         ),
-        axes=dict(
-            widget_type="LineEdit",
-            label="Image Axes",
-            value=DEFAULTS_MODEL["axes"],
+        
+        enhance_trackmate_xml=dict(
+            widget_type="Bool",
+            label="Compute NPM master XML ",
+            tooltip="Toggle to compute NPM master XML",
+            value=DEFAULTS_PARAMETERS["enhance_trackmate_xml"],
         ),
-        batch_size=dict(
-            widget_type="SpinBox",
-            label="Batch size ",
-            min=1,
-            max=10000000,
-            step=1,
-            value=DEFAULTS_PARAMETERS["batch_size"],
+
+        oneat_threshold_cutoff = dict(
+            widget_type="FloatSpinBox",
+            label="Oneat Threshold",
+            min = 0.0,
+            max = 1.0,
+            value=DEFAULTS_PARAMETERS["oneat_threshold_cutoff"],
         ),
-        device_type=dict(
-            widget_type="RadioButtons",
-            label="Device type (CPU/GPU)",
-            orientation="horizontal",
-            choices=device_type_choices,
-            value=DEFAULTS_MODEL["device_type"],
-        ),
+       
         compute_button=dict(widget_type="PushButton", text="Compute"),
         layout="vertical",
         persist=False,
@@ -742,9 +287,8 @@ def plugin_wrapper_track():
         spot_csv_path,
         edges_csv_path,
         oneat_csv_path,
-        axes,
-        batch_size,
-        device_type,
+        enhance_trackmate_xml,
+        oneat_threshold_cutoff,
         compute_button,
     ) -> List[napari.types.LayerDataTuple]:
 
@@ -2247,11 +1791,7 @@ def plugin_wrapper_track():
 
             _refreshTrackData(pred)
 
-    @change_handler(plugin_data.batch_size)
-    def _batch_size_change(value: int):
-
-        plugin_data.compute_button.enabled = True
-        plugin_data.batch_size.value = value
+ 
 
     @change_handler(plugin.track_id_box, init=False)
     def _track_id_box_change(value):
@@ -2270,31 +1810,6 @@ def plugin_wrapper_track():
 
             show_track(track_id)
 
-    widget_for_cloud_auto_encoder_modeltype = {
-        CloudAutoEncoder: plugin.cloud_auto_encoder_model,
-        "No(Encoder)": plugin.cloud_auto_encoder_model_none,
-        CUSTOM_MODEL_CLOUD_AUTO_ENCODER: plugin.model_folder_cloud_auto,
-    }
-
-    @change_handler(plugin.cloud_auto_encoder_model_type, init=False)
-    def _cloud_auto_encoder_model_type_change(
-        cloud_auto_encoder_model_type: Union[str, type]
-    ):
-        plugin_data.compute_button.enabled = True
-        selected = widget_for_cloud_auto_encoder_modeltype[
-            cloud_auto_encoder_model_type
-        ]
-        for w in {
-            plugin.cloud_auto_encoder_model,
-            plugin.cloud_auto_encoder_model_none,
-            plugin.model_folder_cloud_auto,
-        } - {selected}:
-            w.hide()
-
-        selected.show()
-
-        # Trigger model change
-        selected.changed(selected.value)
 
     plugin_data.compute_button.native.setStyleSheet("background-color: orange")
 
@@ -2332,46 +1847,9 @@ def plugin_wrapper_track():
 
         nonlocal _trackmate_objects
 
-        if model_selected_cloud_auto_encoder is not None:
-            model_cloud_auto_encoder = get_model_cloud_auto_encoder(
-                *model_selected_cloud_auto_encoder,
-            )
-
-            device_cuda = torch.device("cuda:0")
-            device_cpu = torch.device("cpu")
-
-            if plugin_data.device_type.value == "GPU":
-                model_cloud_auto_encoder.to(device_cuda)
-            if plugin_data.device_type.value == "CPU":
-                model_cloud_auto_encoder.to(device_cpu)
-
-        else:
-            model_cloud_auto_encoder = None
-        autoencoder_model = model_cloud_auto_encoder
-
-        plugin.progress_bar.value = 0
+        
         plugin.progress_bar.show()
-        num_points = 0
-        scale_z = 1
-        scale_xy = 1
-        if model_selected_cloud_auto_encoder is not None:
-            (
-                cloud_auto_encoder_model_type,
-                model_cloud_auto_encoder,
-            ) = model_selected_cloud_auto_encoder
-            config = model_cloud_auto_encoder_configs[
-                (cloud_auto_encoder_model_type, model_cloud_auto_encoder)
-            ]
-
-            if len(config) > 0:
-                num_points = config["num_points"]
-                scale_z = config["scale_z"]
-                scale_xy = config["scale_xy"]
-
-        if plugin_data.device_type.value == "GPU":
-            accelerator = "gpu"
-        else:
-            accelerator = "cpu"
+        
         spot_csv_path = plugin_data.spot_csv_path.value
         track_csv_path = plugin_data.track_csv_path.value
         edges_csv_path = plugin_data.edges_csv_path.value
@@ -2393,23 +1871,16 @@ def plugin_wrapper_track():
             AttributeBoxname,
             TrackAttributeBoxname,
             TrackidBox,
-            plugin_data.axes.value,
             master_xml_path=plugin_data.master_xml_path.value,
             channel_seg_image=x_channel_seg,
             seg_image=x_seg,
             image=x,
             mask=x_mask,
-            autoencoder_model=autoencoder_model,
-            num_points=num_points,
             progress_bar=plugin.progress_bar,
-            batch_size=plugin_data.batch_size.value,
-            accelerator=accelerator,
-            devices=1,
-            scale_z=scale_z,
-            scale_xy=scale_xy,
+            enhance_trackmate_xml=plugin_data.enhance_trackmate_xml.value,
             compute_with_autoencoder=False,
             oneat_csv_file=oneat_csv_path,
-            oneat_threshold_cutoff=0.9999,
+            oneat_threshold_cutoff=0.plugin_date.oneat_threshold_cutoff.value,
         )
         nonlocal track_centroid_tree, track_centroid_list
         track_centroid_list = [
@@ -2450,20 +1921,6 @@ def plugin_wrapper_track():
 
         plugin_data.compute_button.enabled = True
 
-    """  @change_handler(plugin.cluster_model_type, init=False)
-    def _cluster_model_type_change(cluster_model_type: Union[str, type]):
-        selected = widget_for_cluster_modeltype[cluster_model_type]
-        for w in {
-            plugin.cluster_model,
-            plugin.cluster_model_none,
-            plugin.model_folder_cluster,
-        } - {selected}:
-            w.hide()
-
-        selected.show()
-        plugin_data.compute_button.enabled = True
-        # Trigger model change
-        selected.changed(selected.value) """
 
     @change_handler(plugin.track_model_type, init=False)
     def _change_track_model_type(value):
@@ -2510,16 +1967,12 @@ def plugin_wrapper_track():
         else:
             plugin_data.axes.value = axes
 
-    @change_handler(plugin_data.device_type)
-    def _device_type(value: float):
-        print(value)
-        plugin_data.device_type.value = value
+
 
     # -> triggered by _image_change
     @change_handler(plugin_data.axes, init=False)
     def _axes_change():
         plugin_data.compute_button.enabled = True
-        value = plugin_data.axes.value
-        print(f"axes is {value}")
+       
 
     return plugin
