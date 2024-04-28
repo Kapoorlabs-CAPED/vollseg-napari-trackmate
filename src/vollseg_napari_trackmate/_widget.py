@@ -260,6 +260,7 @@ def plugin_wrapper_track():
             label="Oneat Threshold",
             min=0.0,
             max=1.0,
+            step=0.0001,
             value=DEFAULTS_PARAMETERS["oneat_threshold_cutoff"],
         ),
         compute_button=dict(widget_type="PushButton", text="Compute"),
