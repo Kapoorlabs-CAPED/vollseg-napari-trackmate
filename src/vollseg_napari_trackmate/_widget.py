@@ -133,13 +133,12 @@ def plugin_wrapper_track():
 
         return decorator_change_handler
 
-
     DEFAULTS_MODEL = dict(
         axes="TZYX",
         track_model_type="Both",
     )
     DEFAULTS_PARAMETERS = dict(
-        enhance_trackmate_xml=True, oneat_threshold_cutoff=0.99
+        enhance_trackmate_xml=True, oneat_threshold_cutoff=0.9999
     )
 
     track_model_type_choices = [
@@ -1932,7 +1931,5 @@ def plugin_wrapper_track():
     def _track_attribute_color(value):
 
         plugin_color_parameters.track_attributes.value = value
-
- 
 
     return plugin
