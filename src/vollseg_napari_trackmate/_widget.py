@@ -1953,9 +1953,6 @@ def plugin_wrapper_track():
         else:
             plugin_data.axes.value = axes
 
-    # -> triggered by _image_change
-    @change_handler(plugin_data.axes, init=False)
-    def _axes_change():
-        plugin_data.compute_button.enabled = True
+  
 
     return plugin
