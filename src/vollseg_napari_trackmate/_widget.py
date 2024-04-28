@@ -395,6 +395,7 @@ def plugin_wrapper_track():
                             cluster_eccentricity_comp_first,
                             cluster_eccentricity_comp_second,
                             cluster_eccentricity_comp_third,
+                            cluster_local_cell_density,
                             cluster_surface_area,
                             _,
                         ) = unique_shape_properties_tracklet
@@ -412,7 +413,6 @@ def plugin_wrapper_track():
                             cluster_motion_angle_x,
                             cluster_acceleration,
                             cluster_distance_cell_mask,
-                            cluster_local_cell_density,
                             cluster_radial_angle_z,
                             cluster_radial_angle_y,
                             cluster_radial_angle_x,
@@ -433,7 +433,6 @@ def plugin_wrapper_track():
                                 cluster_motion_angle_x,
                                 cluster_acceleration,
                                 cluster_distance_cell_mask,
-                                cluster_local_cell_density,
                                 cluster_radial_angle_z,
                                 cluster_radial_angle_y,
                                 cluster_radial_angle_x,
@@ -454,6 +453,7 @@ def plugin_wrapper_track():
                                 cluster_eccentricity_comp_first,
                                 cluster_eccentricity_comp_second,
                                 cluster_eccentricity_comp_third,
+                                cluster_local_cell_density,
                                 cluster_surface_area,
                                 countk + 1,
                             ]
@@ -555,7 +555,10 @@ def plugin_wrapper_track():
                             cluster_eccentricity_comp_third = (
                                 current_unique_shape_properties[5]
                             )
-                            cluster_surface_area = current_unique_shape_properties[6]
+                            cluster_local_cell_density = (
+                                current_unique_shape_properties[6]
+                            )
+                            cluster_surface_area = current_unique_shape_properties[7]
 
                             cluster_id = current_unique_shape_properties[-1]
 
@@ -567,6 +570,7 @@ def plugin_wrapper_track():
                                     "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
                                     "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
                                     "Eccentricity_Comp_Third": cluster_eccentricity_comp_third,
+                                    "Local_Cell_Density": cluster_local_cell_density,
                                     "Surface_Area": cluster_surface_area,
                                     "id": cluster_id,
                                 }
