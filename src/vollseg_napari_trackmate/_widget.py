@@ -6,7 +6,6 @@ Made by Kapoorlabs, 2022
 import functools
 import math
 import os
-import time
 from pathlib import Path
 from typing import List, Union
 
@@ -14,7 +13,6 @@ import napari
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import torch
 from caped_ai_tabulour._tabulour import Tabulour, pandasModel
 from magicgui import magicgui
 from magicgui import widgets as mw
@@ -28,8 +26,8 @@ flatui = ["#9b59b6", "#3498db", "orange"]
 
 def plugin_wrapper_track():
 
-    from napatrackmater import CloudAutoEncoder, get_feature_dict
-   
+    from napatrackmater import get_feature_dict
+
     from napatrackmater.Trackmate import TrackMate
     from skimage.util import map_array
     from vollseg_napari_trackmate._temporal_plots import TemporalStatistics
@@ -135,9 +133,9 @@ def plugin_wrapper_track():
 
         return decorator_change_handler
 
-
-    DEFAULTS_PARAMETERS = dict(enhance_trackmate_xml=True, oneat_threshold_cutoff=0.9999)
-
+    DEFAULTS_PARAMETERS = dict(
+        enhance_trackmate_xml=True, oneat_threshold_cutoff=0.9999
+    )
 
     track_model_type_choices = [
         ("Dividing", "Dividing"),
@@ -145,14 +143,11 @@ def plugin_wrapper_track():
         ("Both", "Both"),
     ]
 
-
     track_model_type_dict = {
         0: track_model_type_choices[0][0],
         1: track_model_type_choices[1][0],
         2: track_model_type_choices[2][0],
     }
-
-    
 
     @magicgui(
         label_head=dict(
@@ -160,25 +155,13 @@ def plugin_wrapper_track():
             label=f'<h1> <img src="{kapoorlogo}"> </h1>',
             value=f'<h5><a href=" {citation}"> NapaTrackMater: Track Analysis of TrackMate in Napari</a></h5>',
         ),
-        
-        track_id_value=dict(widget_type="Label", label="Track ID chosen"),
         track_id_box=dict(
             widget_type="ComboBox",
             visible=True,
             label="Select Track ID to analyze",
             choices=_current_choices,
         ),
-       
-        cloud_auto_encoder_model_none=dict(
-            widget_type="Label", visible=False, label="No(Encoder)"
-        ),
-        model_folder_cloud_auto=dict(
-            widget_type="FileEdit",
-            visible=False,
-            label="Custom Auto Encoder",
-            mode="r",
-        ),
-       
+        track_id_value=dict(widget_type="Label", label="Track ID chosen"),
         progress_bar=dict(label=" ", min=0, max=0, visible=False),
         layout="vertical",
         persist=True,
@@ -187,7 +170,6 @@ def plugin_wrapper_track():
     def plugin(
         viewer: napari.Viewer,
         label_head,
-        track_model_type,
         track_id_box,
         track_id_value,
         progress_bar: mw.ProgressBar,
@@ -214,7 +196,6 @@ def plugin_wrapper_track():
                 )
                 show_track(nearest_track_id)
 
-    
     worker = None
     _track_ids_analyze = None
     _to_analyze = None
@@ -255,22 +236,19 @@ def plugin_wrapper_track():
             label="Oneat Mitosis csv",
             mode="r",
         ),
-        
         enhance_trackmate_xml=dict(
             widget_type="Bool",
             label="Compute NPM master XML ",
             tooltip="Toggle to compute NPM master XML",
             value=DEFAULTS_PARAMETERS["enhance_trackmate_xml"],
         ),
-
-        oneat_threshold_cutoff = dict(
+        oneat_threshold_cutoff=dict(
             widget_type="FloatSpinBox",
             label="Oneat Threshold",
-            min = 0.0,
-            max = 1.0,
+            min=0.0,
+            max=1.0,
             value=DEFAULTS_PARAMETERS["oneat_threshold_cutoff"],
         ),
-       
         compute_button=dict(widget_type="PushButton", text="Compute"),
         layout="vertical",
         persist=False,
@@ -1791,8 +1769,6 @@ def plugin_wrapper_track():
 
             _refreshTrackData(pred)
 
- 
-
     @change_handler(plugin.track_id_box, init=False)
     def _track_id_box_change(value):
 
@@ -1809,7 +1785,6 @@ def plugin_wrapper_track():
             track_id = value
 
             show_track(track_id)
-
 
     plugin_data.compute_button.native.setStyleSheet("background-color: orange")
 
@@ -1847,9 +1822,8 @@ def plugin_wrapper_track():
 
         nonlocal _trackmate_objects
 
-        
         plugin.progress_bar.show()
-        
+
         spot_csv_path = plugin_data.spot_csv_path.value
         track_csv_path = plugin_data.track_csv_path.value
         edges_csv_path = plugin_data.edges_csv_path.value
@@ -1921,7 +1895,6 @@ def plugin_wrapper_track():
 
         plugin_data.compute_button.enabled = True
 
-
     @change_handler(plugin.track_model_type, init=False)
     def _change_track_model_type(value):
 
@@ -1967,12 +1940,9 @@ def plugin_wrapper_track():
         else:
             plugin_data.axes.value = axes
 
-
-
     # -> triggered by _image_change
     @change_handler(plugin_data.axes, init=False)
     def _axes_change():
         plugin_data.compute_button.enabled = True
-       
 
     return plugin
