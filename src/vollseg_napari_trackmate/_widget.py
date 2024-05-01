@@ -391,7 +391,6 @@ def plugin_wrapper_track():
                             cluster_y,
                             cluster_x,
                             cluster_radius,
-                            cluster_radius_pixel,
                             cluster_eccentricity_comp_first,
                             cluster_eccentricity_comp_second,
                             cluster_eccentricity_comp_third,
@@ -449,7 +448,6 @@ def plugin_wrapper_track():
                                 cluster_y,
                                 cluster_x,
                                 cluster_radius,
-                                cluster_radius_pixel,
                                 cluster_eccentricity_comp_first,
                                 cluster_eccentricity_comp_second,
                                 cluster_eccentricity_comp_third,
@@ -545,20 +543,19 @@ def plugin_wrapper_track():
                             current_unique_shape_properties = unique_shape_properties[i]
                             cluster_time = current_unique_shape_properties[0]
                             cluster_radius = current_unique_shape_properties[1]
-                            cluster_radius_pixel = current_unique_shape_properties[2]
                             cluster_eccentricity_comp_first = (
-                                current_unique_shape_properties[3]
+                                current_unique_shape_properties[2]
                             )
                             cluster_eccentricity_comp_second = (
-                                current_unique_shape_properties[4]
+                                current_unique_shape_properties[3]
                             )
                             cluster_eccentricity_comp_third = (
-                                current_unique_shape_properties[5]
+                                current_unique_shape_properties[4]
                             )
                             cluster_local_cell_density = (
-                                current_unique_shape_properties[6]
+                                current_unique_shape_properties[5]
                             )
-                            cluster_surface_area = current_unique_shape_properties[7]
+                            cluster_surface_area = current_unique_shape_properties[6]
 
                             cluster_id = current_unique_shape_properties[-1]
 
@@ -566,7 +563,6 @@ def plugin_wrapper_track():
                                 {
                                     "Time": cluster_time,
                                     "Radius": cluster_radius,
-                                    "Radius_Pixel": cluster_radius_pixel,
                                     "Eccentricity_Comp_First": cluster_eccentricity_comp_first,
                                     "Eccentricity_Comp_Second": cluster_eccentricity_comp_second,
                                     "Eccentricity_Comp_Third": cluster_eccentricity_comp_third,
@@ -797,20 +793,7 @@ def plugin_wrapper_track():
                 plot_ax.set_title("Radius")
                 plot_ax.set_xlabel("Time (sec)")
 
-                phenotype_plot_class._repeat_after_plot()
-                plot_ax = phenotype_plot_class.plot_ax
-                sns.set_palette(flatui)
-                sns.lineplot(
-                    global_data_cluster_plot,
-                    x="Time",
-                    y="Radius_Pixel",
-                    hue="id",
-                    ax=plot_ax,
-                    legend=False,
-                )
-
-                plot_ax.set_title("Radius_Pixel")
-                plot_ax.set_xlabel("Time (sec)")
+              
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
