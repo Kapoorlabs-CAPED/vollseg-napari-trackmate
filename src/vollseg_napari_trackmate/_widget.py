@@ -1917,9 +1917,6 @@ def plugin_wrapper_track():
         if plugin_data.seg_image.value is not None:
             x_seg = get_label_data(plugin_data.seg_image.value)
             print(x_seg.shape)
-        if plugin_data.mask_image.value is not None:
-            x_mask = get_label_data(plugin_data.mask_image.value)
-            print(x_mask.shape)
         if plugin_data.channel_seg_image.value is not None:
             x_channel_seg = get_label_data(plugin_data.channel_seg_image.value)
             print(x_channel_seg.shape)
