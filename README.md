@@ -3,7 +3,6 @@
 [![License BSD-3](https://img.shields.io/pypi/l/vollseg-napari-trackmate.svg?color=green)](https://github.com/Kapoorlabs-CAPED/vollseg-napari-trackmate/raw/main/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/vollseg-napari-trackmate.svg?color=green)](https://pypi.org/project/vollseg-napari-trackmate)
 [![Python Version](https://img.shields.io/pypi/pyversions/vollseg-napari-trackmate.svg?color=green)](https://python.org)
-[![tests](https://github.com/Kapoorlabs-CAPED/vollseg-napari-trackmate/workflows/tests/badge.svg)](https://github.com/Kapoorlabs-CAPED/vollseg-napari-trackmate/actions)
 [![codecov](https://codecov.io/gh/Kapoorlabs-CAPED/vollseg-napari-trackmate/branch/main/graph/badge.svg)](https://codecov.io/gh/Kapoorlabs-CAPED/vollseg-napari-trackmate)
 [![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/vollseg-napari-trackmate)](https://napari-hub.org/plugins/vollseg-napari-trackmate)
 
