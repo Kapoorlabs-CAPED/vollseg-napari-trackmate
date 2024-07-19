@@ -1070,7 +1070,6 @@ def plugin_wrapper_track():
         if _trackmate_objects is not None:
             trackid_key = _trackmate_objects.track_analysis_spot_keys["track_id"]
             key = plugin.track_model_type.value
-            print(_trackmate_objects.BasalTrackIds)
             for k in _trackmate_objects.AllTrackValues.keys():
                 if k is not trackid_key:
                     TrackAttr = []
@@ -1833,6 +1832,7 @@ def plugin_wrapper_track():
             _track_ids_analyze = list(map(int, _track_ids_analyze))
             if _to_analyze is None:
                 _to_analyze = _track_ids_analyze
+            print(key, _track_ids_analyze)    
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
