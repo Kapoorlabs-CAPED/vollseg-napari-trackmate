@@ -51,10 +51,13 @@ def plugin_wrapper_track():
     _dividing_choices = ()
     _current_choices = ()
     _normal_choices = ()
-    _both_choices = ()
+    _all_choices = ()
     _dividing_track_ids_analyze = ()
     _normal_track_ids_analyze = ()
-    _both_track_ids_analyze = ()
+    _goblet_track_ids_analyze = ()
+    _basal_track_ids_analyze = ()
+    _radial_track_ids_analyze = ()
+    _all_track_ids_analyze = ()
     clicked_location = None
     track_centroid_tree = None
     track_centroid_list = None
@@ -142,15 +145,22 @@ def plugin_wrapper_track():
     )
 
     track_model_type_choices = [
-        ("Dividing", "Dividing"),
-        ("Non-Dividing", "Non-Dividing"),
-        ("Both", "Both"),
+        ("Mitosis", "Mitosis"),
+        ("Non-Mitosis", "Non-Mitosis"),
+        ("Goblet", "Goblet"),
+        ("Basal", "Basal"),
+        ("Radial", "Radial"),
+        ("All", "All"),
     ]
 
     track_model_type_dict = {
         0: track_model_type_choices[0][0],
         1: track_model_type_choices[1][0],
         2: track_model_type_choices[2][0],
+        3: track_model_type_choices[3][0],
+        4: track_model_type_choices[4][0],
+        5: track_model_type_choices[5][0],
+
     }
 
     @magicgui(
@@ -1050,8 +1060,29 @@ def plugin_wrapper_track():
                         if key == track_model_type_dict[1]:
                             if int(trackid) in _trackmate_objects.NormalTrackIds:
                                 TrackAttr.append(float(attr))
-                        if key == track_model_type_dict[2]:
+
+                        if key == track_model_type_dict[3]:
+
+                            if int(trackid) in _trackmate_objects.GobletTrackIds:
+                                TrackAttr.append(float(attr))  
+
+                        if key == track_model_type_dict[4]:
+
+                            if int(trackid) in _trackmate_objects.BasalTrackIds:
+                                TrackAttr.append(float(attr))           
+
+                        if key == track_model_type_dict[5]:
+
+                            if int(trackid) in _trackmate_objects.RadialTrackIds:
+                                TrackAttr.append(float(attr))         
+
+                        if key == track_model_type_dict[-1]:
                             TrackAttr.append(float(attr))
+
+                        
+                                
+
+
 
                     hist_plot_class._repeat_after_plot()
                     hist_ax = hist_plot_class.plot_ax
@@ -1609,7 +1640,7 @@ def plugin_wrapper_track():
                     table_tab.layer = layer
 
     def _refreshStatPlotData():
-        nonlocal _trackmate_objects, _current_choices, _dividing_choices, _normal_choices, _both_choices, _dividing_track_ids_analyze, _normal_track_ids_analyze, _both_track_ids_analyze
+        nonlocal _trackmate_objects, _current_choices, _dividing_choices, _normal_choices, _all_choices, _dividing_track_ids_analyze, _normal_track_ids_analyze, _all_track_ids_analyze, _goblet_track_ids_analyze, _basal_track_ids_analyze, _radial_track_ids_analyze
         plugin.progress_bar.label = "Analyzing Tracks"
         columns = None
         root_cells = None
@@ -1619,6 +1650,7 @@ def plugin_wrapper_track():
         time_key = _trackmate_objects.frameid_key
         id_key = _trackmate_objects.trackid_key
         size_key = _trackmate_objects.quality_key
+
         dividing_key = _trackmate_objects.dividing_key
         _dividing_choices = TrackidBox
         _dividing_choices = _trackmate_objects.DividingTrackIds
@@ -1637,13 +1669,41 @@ def plugin_wrapper_track():
         if TrackidBox in _normal_track_ids_analyze:
             _normal_track_ids_analyze.remove(TrackidBox)
 
-        _both_choices = TrackidBox
-        _both_choices = _trackmate_objects.AllTrackIds
-        _both_track_ids_analyze = _trackmate_objects.AllTrackIds.copy()
-        if TrackidBox in _both_track_ids_analyze:
-            _both_track_ids_analyze.remove(TrackidBox)
-        if None in _both_track_ids_analyze:
-            _both_track_ids_analyze.remove(None)
+        
+        _goblet_choices = TrackidBox
+        _goblet_choices = _trackmate_objects.GobletTrackIds
+        _goblet_track_ids_analyze = _trackmate_objects.GobletTrackIds.copy()
+        if None in _goblet_track_ids_analyze:
+            _goblet_track_ids_analyze.remove(None)
+        if TrackidBox in _goblet_track_ids_analyze:
+            _goblet_track_ids_analyze.remove(TrackidBox)
+
+
+        _basal_choices = TrackidBox
+        _basal_choices = _trackmate_objects.BasalTrackIds
+        _basal_track_ids_analyze = _trackmate_objects.BasalTrackIds.copy()
+        if None in _basal_track_ids_analyze:
+            _basal_track_ids_analyze.remove(None)
+        if TrackidBox in _basal_track_ids_analyze:
+            _basal_track_ids_analyze.remove(TrackidBox)
+
+
+        _radial_choices = TrackidBox
+        _radial_choices = _trackmate_objects.RadialTrackIds
+        _radial_track_ids_analyze = _trackmate_objects.RadialTrackIds.copy()
+        if None in _radial_track_ids_analyze:
+            _radial_track_ids_analyze.remove(None)
+        if TrackidBox in _radial_track_ids_analyze:
+            _radial_track_ids_analyze.remove(TrackidBox)    
+
+
+        _all_choices = TrackidBox
+        _all_choices = _trackmate_objects.AllTrackIds
+        _all_track_ids_analyze = _trackmate_objects.AllTrackIds.copy()
+        if TrackidBox in _all_track_ids_analyze:
+            _all_track_ids_analyze.remove(TrackidBox)
+        if None in _all_track_ids_analyze:
+            _all_track_ids_analyze.remove(None)
 
         if hasattr(_trackmate_objects, "TrackAttributeids"):
             plugin_color_parameters.track_attributes.choices = (
@@ -1694,6 +1754,7 @@ def plugin_wrapper_track():
         table_tab._plugin = plugin
         table_tab.normal_choices = _normal_choices
         table_tab.dividing_choices = _dividing_choices
+
         table_tab._set_model()
 
         plot_main()
@@ -1713,7 +1774,7 @@ def plugin_wrapper_track():
 
     def select_track_nature():
         key = plugin.track_model_type.value
-        nonlocal _trackmate_objects, _track_ids_analyze, _dividing_track_ids_analyze, _normal_track_ids_analyze, _both_track_ids_analyze, _current_choices, _to_analyze
+        nonlocal _trackmate_objects, _track_ids_analyze, _dividing_track_ids_analyze, _normal_track_ids_analyze, _all_track_ids_analyze, _current_choices, _to_analyze
         if _trackmate_objects is not None:
             if key == track_model_type_dict[0]:
                 plugin.track_id_box.choices = _dividing_choices
@@ -1721,9 +1782,11 @@ def plugin_wrapper_track():
             if key == track_model_type_dict[1]:
                 plugin.track_id_box.choices = _normal_choices
                 _track_ids_analyze = _normal_track_ids_analyze
-            if key == track_model_type_dict[2]:
-                plugin.track_id_box.choices = _both_choices
-                _track_ids_analyze = _both_track_ids_analyze
+
+
+            if key == track_model_type_dict[-1]:
+                plugin.track_id_box.choices = _all_choices
+                _track_ids_analyze = _all_track_ids_analyze
 
             _track_ids_analyze = list(map(int, _track_ids_analyze))
             if _to_analyze is None:
