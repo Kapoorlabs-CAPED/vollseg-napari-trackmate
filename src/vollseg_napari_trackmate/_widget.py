@@ -1061,22 +1061,22 @@ def plugin_wrapper_track():
                             if int(trackid) in _trackmate_objects.NormalTrackIds:
                                 TrackAttr.append(float(attr))
 
-                        if key == track_model_type_dict[3]:
+                        if key == track_model_type_dict[2]:
 
                             if int(trackid) in _trackmate_objects.GobletTrackIds:
                                 TrackAttr.append(float(attr))  
 
-                        if key == track_model_type_dict[4]:
+                        if key == track_model_type_dict[3]:
 
                             if int(trackid) in _trackmate_objects.BasalTrackIds:
                                 TrackAttr.append(float(attr))           
 
-                        if key == track_model_type_dict[5]:
+                        if key == track_model_type_dict[4]:
 
                             if int(trackid) in _trackmate_objects.RadialTrackIds:
                                 TrackAttr.append(float(attr))         
 
-                        if key == track_model_type_dict[-1]:
+                        if key == track_model_type_dict[5]:
                             TrackAttr.append(float(attr))
 
                         
@@ -1784,7 +1784,7 @@ def plugin_wrapper_track():
                 _track_ids_analyze = _normal_track_ids_analyze
 
 
-            if key == track_model_type_dict[-1]:
+            if key == track_model_type_dict[5]:
                 plugin.track_id_box.choices = _all_choices
                 _track_ids_analyze = _all_track_ids_analyze
 
