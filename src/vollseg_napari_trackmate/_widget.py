@@ -49,6 +49,9 @@ def plugin_wrapper_track():
     TrackAttributeBoxname = "TrackAttributeIDBox"
     TrackidBox = "All"
     _dividing_choices = ()
+    _goblet_choices = ()
+    _basal_choices = ()
+    _radial_choices = ()
     _current_choices = ()
     _normal_choices = ()
     _all_choices = ()
@@ -226,8 +229,8 @@ def plugin_wrapper_track():
     @magicgui(
         image=dict(label="Input Image"),
         seg_image=dict(label="Optional Segmentation Image"),
-        channel_seg_image=dict(label="Second channel (new XML)"),
-        mask_image=dict(label="Optional Mask Image"),
+      
+       
         xml_path=dict(
             widget_type="FileEdit",
             visible=True,
@@ -258,6 +261,25 @@ def plugin_wrapper_track():
             label="Oneat Mitosis csv",
             mode="r",
         ),
+        goblet_csv_path=dict(
+            widget_type="FileEdit",
+            visible=True,
+            label="Goblet Location csv",
+            mode="r",
+        ),
+        basal_csv_path=dict(
+            widget_type="FileEdit",
+            visible=True,
+            label="Basal Location csv",
+            mode="r",
+        ),
+        radial_csv_path=dict(
+            widget_type="FileEdit",
+            visible=True,
+            label="Radial Location csv",
+            mode="r",
+        ),
+
         enhance_trackmate_xml=dict(
             widget_type="CheckBox",
             label="Compute NPM master XML ",
@@ -280,14 +302,17 @@ def plugin_wrapper_track():
     def plugin_data(
         image: Union[napari.layers.Image, None],
         seg_image: Union[napari.layers.Labels, None],
-        channel_seg_image: Union[napari.layers.Labels, None],
-        mask_image: Union[napari.layers.Labels, None],
+       
+       
         xml_path,
         master_xml_path,
         track_csv_path,
         spot_csv_path,
         edges_csv_path,
         oneat_csv_path,
+        goblet_csv_path,
+        basal_csv_path,
+        radial_csv_path,
         enhance_trackmate_xml,
         oneat_threshold_cutoff,
         compute_button,
@@ -1754,6 +1779,9 @@ def plugin_wrapper_track():
         table_tab._plugin = plugin
         table_tab.normal_choices = _normal_choices
         table_tab.dividing_choices = _dividing_choices
+        table_tab.goblet_choices = _goblet_choices
+        table_tab.basal_choices = _basal_choices 
+        table_tab.radial_choices = _radial_choices
 
         table_tab._set_model()
 
@@ -1774,14 +1802,27 @@ def plugin_wrapper_track():
 
     def select_track_nature():
         key = plugin.track_model_type.value
-        nonlocal _trackmate_objects, _track_ids_analyze, _dividing_track_ids_analyze, _normal_track_ids_analyze, _all_track_ids_analyze, _current_choices, _to_analyze
+        nonlocal _trackmate_objects, _track_ids_analyze, _dividing_track_ids_analyze, _normal_track_ids_analyze, _goblet_track_ids_analyze,_basal_track_ids_analyze,_radial_track_ids_analyze, _all_track_ids_analyze, _current_choices, _to_analyze
         if _trackmate_objects is not None:
             if key == track_model_type_dict[0]:
                 plugin.track_id_box.choices = _dividing_choices
                 _track_ids_analyze = _dividing_track_ids_analyze
+
             if key == track_model_type_dict[1]:
                 plugin.track_id_box.choices = _normal_choices
                 _track_ids_analyze = _normal_track_ids_analyze
+            
+            if key == track_model_type_dict[2]:
+                plugin.track_id_box.choices = _goblet_choices
+                _track_ids_analyze = _goblet_track_ids_analyze
+
+            if key == track_model_type_dict[3]:
+                plugin.track_id_box.choices = _basal_choices
+                _track_ids_analyze = _basal_track_ids_analyze
+
+            if key == track_model_type_dict[4]:
+                plugin.track_id_box.choices = _radial_choices
+                _track_ids_analyze = _radial_track_ids_analyze        
 
 
             if key == track_model_type_dict[5]:
@@ -1891,6 +1932,9 @@ def plugin_wrapper_track():
         track_csv_path = plugin_data.track_csv_path.value
         edges_csv_path = plugin_data.edges_csv_path.value
         oneat_csv_path = plugin_data.oneat_csv_path.value
+        goblet_csv_path = plugin_data.goblet_csv_path.value
+        basal_csv_path = plugin_data.basal_csv_path.value
+        radial_csv_path = plugin_data.radial_csv_path.value
         if os.path.isdir(plugin_data.spot_csv_path.value):
             spot_csv_path = None
         if os.path.isdir(plugin_data.track_csv_path.value):
@@ -1899,6 +1943,13 @@ def plugin_wrapper_track():
             edges_csv_path = None
         if os.path.isdir(plugin_data.oneat_csv_path.value):
             oneat_csv_path = None
+        if os.path.isdir(plugin_data.goblet_csv_path.value):
+            goblet_csv_path = None
+        if os.path.isdir(plugin_data.basal_csv_path.value):
+            basal_csv_path = None
+        if os.path.isdir(plugin_data.radial_csv_path.value):
+            radial_csv_path = None            
+
 
         _trackmate_objects = TrackMate(
             plugin_data.xml_path.value,
@@ -1917,6 +1968,9 @@ def plugin_wrapper_track():
             enhance_trackmate_xml=plugin_data.enhance_trackmate_xml.value,
             compute_with_autoencoder=False,
             oneat_csv_file=oneat_csv_path,
+            goblet_csv_file=goblet_csv_path,
+            basal_csv_file=basal_csv_path,
+            radial_csv_file=radial_csv_path,
             oneat_threshold_cutoff=plugin_data.oneat_threshold_cutoff.value,
         )
         nonlocal track_centroid_tree, track_centroid_list
@@ -1924,8 +1978,9 @@ def plugin_wrapper_track():
             k for k in _trackmate_objects.unique_track_centroid.keys()
         ]
         track_centroid_tree = spatial.cKDTree(track_centroid_list)
+        plugin.track_id_box.choices = _all_choices
         _refreshStatPlotData()
-
+      
         select_track_nature()
         plugin_data.compute_button.enabled = True
 
@@ -1947,6 +2002,18 @@ def plugin_wrapper_track():
     @change_handler(plugin_data.oneat_csv_path, init=False)
     def _oneat_csv_path_change(value):
         plugin_data.compute_button.enabled = True
+
+    @change_handler(plugin_data.goblet_csv_path, init=False)
+    def _goblet_csv_path_change(value):
+        plugin_data.compute_button.enabled = True
+
+    @change_handler(plugin_data.basal_csv_path, init=False)
+    def _basal_csv_path_change(value):
+        plugin_data.compute_button.enabled = True
+
+    @change_handler(plugin_data.radial_csv_path, init=False)
+    def _radial_csv_path_change(value):
+        plugin_data.compute_button.enabled = True            
 
     @change_handler(plugin_data.master_xml_path, init=False)
     def _master_xml_path_change(value):
