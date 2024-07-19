@@ -172,7 +172,7 @@ def plugin_wrapper_track():
         track_model_type=dict(
             widget_type="RadioButtons",
             label="Track Model Type",
-            orientation="horizontal",
+            #orientation="horizontal",
             choices=track_model_type_choices,
             value=DEFAULTS_MODEL["track_model_type"],
         ),
