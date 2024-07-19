@@ -138,7 +138,7 @@ def plugin_wrapper_track():
 
     DEFAULTS_MODEL = dict(
         axes="TZYX",
-        track_model_type="Both",
+        track_model_type="All",
     )
     DEFAULTS_PARAMETERS = dict(
         enhance_trackmate_xml=True, oneat_threshold_cutoff=0.9999
