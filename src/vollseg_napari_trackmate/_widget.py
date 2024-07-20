@@ -175,7 +175,6 @@ def plugin_wrapper_track():
         track_model_type=dict(
             widget_type="RadioButtons",
             label="Track Model Type",
-            #orientation="horizontal",
             choices=track_model_type_choices,
             value=DEFAULTS_MODEL["track_model_type"],
         ),
@@ -2216,7 +2215,7 @@ def plugin_wrapper_track():
                     table_tab.layer = layer
 
     def _refreshStatPlotData():
-        nonlocal _trackmate_objects, _current_choices, _dividing_choices, _normal_choices, _all_choices, _dividing_track_ids_analyze, _normal_track_ids_analyze, _all_track_ids_analyze, _goblet_track_ids_analyze, _basal_track_ids_analyze, _radial_track_ids_analyze
+        nonlocal _trackmate_objects, _current_choices, _dividing_choices, _goblet_choices, _basal_choices, _radial_choices, _normal_choices, _all_choices, _dividing_track_ids_analyze, _normal_track_ids_analyze, _all_track_ids_analyze, _goblet_track_ids_analyze, _basal_track_ids_analyze, _radial_track_ids_analyze
         plugin.progress_bar.label = "Analyzing Tracks"
         columns = None
         root_cells = None
