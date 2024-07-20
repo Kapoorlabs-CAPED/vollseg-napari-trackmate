@@ -2226,6 +2226,7 @@ def plugin_wrapper_track():
         size_key = _trackmate_objects.quality_key
 
         dividing_key = _trackmate_objects.dividing_key
+        fate_key = _trackmate_objects.fate_key
         _dividing_choices = TrackidBox
         _dividing_choices = _trackmate_objects.DividingTrackIds
 
@@ -2322,6 +2323,7 @@ def plugin_wrapper_track():
         table_tab.time_key = time_key
         table_tab.id_key = id_key
         table_tab.dividing_key = dividing_key
+        table_tab.fate_key = fate_key
         table_tab.zcalibration = _trackmate_objects.zcalibration
         table_tab.ycalibration = _trackmate_objects.ycalibration
         table_tab.xcalibration = _trackmate_objects.xcalibration
@@ -2381,7 +2383,6 @@ def plugin_wrapper_track():
             _track_ids_analyze = list(map(int, _track_ids_analyze))
             if _to_analyze is None:
                 _to_analyze = _track_ids_analyze
-            print(key, _track_ids_analyze)    
 
     def widgets_inactive(*widgets, active):
         for widget in widgets:
