@@ -1478,7 +1478,556 @@ def plugin_wrapper_track():
                 plot_ax.set_xlabel("Time (sec)")
                 plot_ax.set_ylabel("um")
 
+
             if key == track_model_type_dict[2]:
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+                plot_ax.cla()
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.goblet_mean_distance_cell_mask,
+                    _trackmate_objects.goblet_var_distance_cell_mask,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Cell-tissue distance")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.goblet_mean_local_cell_density,
+                    _trackmate_objects.goblet_var_local_cell_density,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Local Cell Density")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("Density")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.goblet_mean_directional_change_z,
+                    _trackmate_objects.goblet_var_directional_change_z,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in Z")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.goblet_mean_directional_change_y,
+                    _trackmate_objects.goblet_var_directional_change_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in Y")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.goblet_mean_directional_change_x,
+                    _trackmate_objects.goblet_var_directional_change_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in X")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.goblet_mean_speed,
+                    _trackmate_objects.goblet_var_speed,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Speed")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um/min")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.goblet_mean_acc,
+                    _trackmate_objects.goblet_var_acc,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Acceleration")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um/min")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.goblet_mean_radius,
+                    _trackmate_objects.goblet_var_radius,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Radius")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.goblet_mean_disp_z,
+                    _trackmate_objects.goblet_var_disp_z,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                plot_ax.set_title("Displacement in Z")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.goblet_mean_disp_y,
+                    _trackmate_objects.goblet_var_disp_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                plot_ax.set_title("Displacement in Y")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.goblet_mean_disp_x,
+                    _trackmate_objects.goblet_var_disp_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                plot_ax.set_title("Displacement in X")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+
+            if key == track_model_type_dict[3]:
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+                plot_ax.cla()
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.basal_mean_distance_cell_mask,
+                    _trackmate_objects.basal_var_distance_cell_mask,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Cell-tissue distance")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.basal_mean_local_cell_density,
+                    _trackmate_objects.basal_var_local_cell_density,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Local Cell Density")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("Density")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.basal_mean_directional_change_z,
+                    _trackmate_objects.basal_var_directional_change_z,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in Z")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.basal_mean_directional_change_y,
+                    _trackmate_objects.basal_var_directional_change_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in Y")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.basal_mean_directional_change_x,
+                    _trackmate_objects.basal_var_directional_change_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in X")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.basal_mean_speed,
+                    _trackmate_objects.basal_var_speed,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Speed")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um/min")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.basal_mean_acc,
+                    _trackmate_objects.basal_var_acc,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Acceleration")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um/min")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.basal_mean_radius,
+                    _trackmate_objects.basal_var_radius,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Radius")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.basal_mean_disp_z,
+                    _trackmate_objects.basal_var_disp_z,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                plot_ax.set_title("Displacement in Z")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.basal_mean_disp_y,
+                    _trackmate_objects.basal_var_disp_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                plot_ax.set_title("Displacement in Y")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.basal_mean_disp_x,
+                    _trackmate_objects.basal_var_disp_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                plot_ax.set_title("Displacement in X")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+            if key == track_model_type_dict[4]:
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+                plot_ax.cla()
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.radial_mean_distance_cell_mask,
+                    _trackmate_objects.radial_var_distance_cell_mask,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Cell-tissue distance")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.radial_mean_local_cell_density,
+                    _trackmate_objects.radial_var_local_cell_density,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Local Cell Density")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("Density")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.radial_mean_directional_change_z,
+                    _trackmate_objects.radial_var_directional_change_z,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in Z")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.radial_mean_directional_change_y,
+                    _trackmate_objects.radial_var_directional_change_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in Y")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.radial_mean_directional_change_x,
+                    _trackmate_objects.radial_var_directional_change_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Instantaneous Directional change in X")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("angle (degrees)")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.radial_mean_speed,
+                    _trackmate_objects.radial_var_speed,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Speed")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um/min")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.radial_mean_acc,
+                    _trackmate_objects.radial_var_acc,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Acceleration")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um/min")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.radial_mean_radius,
+                    _trackmate_objects.radial_var_radius,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+                plot_ax.set_title("Radius")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.radial_mean_disp_z,
+                    _trackmate_objects.radial_var_disp_z,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                plot_ax.set_title("Displacement in Z")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.radial_mean_disp_y,
+                    _trackmate_objects.radial_var_disp_y,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                plot_ax.set_title("Displacement in Y")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+                stat_plot_class._repeat_after_plot()
+                plot_ax = stat_plot_class.plot_ax
+
+                plot_ax.errorbar(
+                    _trackmate_objects.time,
+                    _trackmate_objects.radial_mean_disp_x,
+                    _trackmate_objects.radial_var_disp_x,
+                    linestyle="None",
+                    marker=".",
+                    mfc="green",
+                    ecolor="green",
+                )
+
+                plot_ax.set_title("Displacement in X")
+                plot_ax.set_xlabel("Time (sec)")
+                plot_ax.set_ylabel("um")
+
+
+            if key == track_model_type_dict[5]:
 
                 stat_plot_class._repeat_after_plot()
                 plot_ax = stat_plot_class.plot_ax
