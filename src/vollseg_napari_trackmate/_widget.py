@@ -2516,7 +2516,10 @@ def plugin_wrapper_track():
         if os.path.isdir(plugin_data.radial_csv_path.value):
             radial_csv_path = None            
 
-
+        if plugin_data.enhance_trackmate_xml.value:
+            enhanced_computation= True
+        else:
+            enhanced_computation= False    
         _trackmate_objects = TrackMate(
             plugin_data.xml_path.value,
             spot_csv_path,
@@ -2532,6 +2535,7 @@ def plugin_wrapper_track():
             mask=x_mask,
             progress_bar=plugin.progress_bar,
             enhance_trackmate_xml=plugin_data.enhance_trackmate_xml.value,
+            enhanced_computation = enhanced_computation, 
             compute_with_autoencoder=False,
             oneat_csv_file=oneat_csv_path,
             goblet_csv_file=goblet_csv_path,
