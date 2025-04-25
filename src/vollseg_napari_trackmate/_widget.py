@@ -915,42 +915,7 @@ def plugin_wrapper_track():
 
                 phenotype_plot_class._repeat_after_plot()
                 plot_ax = phenotype_plot_class.plot_ax
-            summed_amplitude = []
-            for i in range(len(unique_fft_properties)):
-                summed_amplitude.append(unique_fft_properties[i][3] ** 2)
-            summed_amplitude = np.sum(summed_amplitude, axis=0)
-            summed_intesity = []
-            for i in range(len(unique_fft_properties)):
-                summed_intesity.append(unique_fft_properties[i][1])
-            summed_intesity = np.sum(summed_intesity, axis=0)
-            data_fft_plot = pd.DataFrame(
-                {
-                    "Frequ": unique_fft_properties[0][2],
-                    "Amplitude": summed_amplitude,
-                }
-            )
-
-            data_time_plot = pd.DataFrame(
-                {
-                    "Time": unique_fft_properties[0][0],
-                    "Intensity": summed_intesity,
-                }
-            )
-
-            sns.set_palette(flatui)
-            sns.lineplot(data_time_plot, x="Time", y="Intensity", ax=plot_ax)
-            plot_ax.set_title("Cell Intensity")
-            plot_ax.set_xlabel("Time (sec)")
-            plot_ax.set_ylabel("Amplitude")
-
-            phenotype_plot_class._repeat_after_plot()
-            plot_ax = phenotype_plot_class.plot_ax
-
-            sns.set_palette(flatui)
-            sns.lineplot(data_fft_plot, x="Frequ", y="Amplitude", ax=plot_ax)
-            plot_ax.set_title("FFT Intensity")
-            plot_ax.set_xlabel("Frequency (1/min)")
-            plot_ax.set_ylabel("Amplitude")
+           
 
     def return_color_tracks(pred):
 
