@@ -2634,7 +2634,7 @@ def plugin_wrapper_track():
             return
 
         if n < 1:
-            print("Please enter a number >= 1.")
+            print("Please enter a number > 1.")
             return
 
         if n > len(sorted_ids):
