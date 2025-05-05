@@ -2405,12 +2405,16 @@ def plugin_wrapper_track():
 
         nonlocal _track_ids_analyze, _to_analyze
 
-        if str(track_id) not in TrackidBox and track_id is not None:
+        if str(track_id) not in TrackidBox and track_id is not None and not isinstance(track_id, list):
             _to_analyze = [int(track_id)]
-        elif not isinstance(track_id, list):
-            _to_analyze = _track_ids_analyze
+            
         elif isinstance(track_id, list):
-            _to_analyze = track_id    
+            _to_analyze = track_id 
+            
+        else:
+
+            _to_analyze = _track_ids_analyze
+
 
         if _to_analyze is not None:
 
