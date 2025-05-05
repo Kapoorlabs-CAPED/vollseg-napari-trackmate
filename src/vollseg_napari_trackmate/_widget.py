@@ -33,7 +33,7 @@ def plugin_wrapper_track():
     from vollseg_napari_trackmate._temporal_plots import TemporalStatistics
 
     DEBUG = False
-
+    sorted_ids = []
     def abspath(root, relpath):
         root = Path(root)
         if root.is_dir():
@@ -1045,6 +1045,30 @@ def plugin_wrapper_track():
     tabs.addTab(table_tab, "Table")
 
     plugin.native.layout().addWidget(tabs)
+    @magicgui(
+        n_longest={
+            "widget_type": "Slider",
+            "label": "Show top-N longest tracks",
+            "min": 1,
+            "max": 1,         # we'll bump this up after compute
+            "step": 1,
+            "value": 5,
+        },
+        call_button=False,
+        layout="vertical",
+        persist=False,
+    )
+    def top_n_slider(n_longest: int = 5):
+        # pick the first n_longest sorted IDs, display them
+        nonlocal sorted_ids
+        if not sorted_ids:
+            return
+        keep = sorted_ids[:n_longest]
+        show_multiple_tracks(keep)
+
+    # once you have your TabWidget, insert this slider *before* the other tabs:
+    tabs.insertTab(0, top_n_slider.native, "Top-N Tracks")
+
 
     def plot_main():
 
@@ -2517,6 +2541,21 @@ def plugin_wrapper_track():
         _refreshStatPlotData()
       
         select_track_nature()
+
+            # at the end of your compute routine, once _trackmate_objects is ready:
+        nonlocal sorted_ids
+        all_ids = list(_trackmate_objects.unique_tracks.keys())
+        sorted_ids = sorted(
+            all_ids,
+            key=lambda tid: len(_trackmate_objects.unique_tracks[tid]),
+            reverse=True
+        )
+
+            # right after you build sorted_ids
+        top_n_slider.n_longest.max = len(sorted_ids)
+        # clamp the current value to the new max
+        top_n_slider.n_longest.value = min(top_n_slider.n_longest.value, len(sorted_ids))
+
         plugin_data.compute_button.enabled = True
 
     @change_handler(plugin_data.track_csv_path, init=False)
@@ -2583,5 +2622,19 @@ def plugin_wrapper_track():
     def _track_attribute_color(value):
 
         plugin_color_parameters.track_attributes.value = value
+
+    
+    def show_multiple_tracks(track_id_list):
+        """
+        Replace the Napari Tracks layer with exactly these track IDs.
+        """
+        # build the concatenated point & feature arrays
+        pts = [ _trackmate_objects.unique_tracks[tid] for tid in track_id_list ]
+        feats = [ _trackmate_objects.unique_track_properties[tid] for tid in track_id_list ]
+        pts_all = np.concatenate(pts, axis=0)
+        feats_all = np.concatenate(feats, axis=0)
+
+        # feed them back into your existing refresh routine:
+        _refreshTrackData((pts_all, feats_all, None))
 
     return plugin
