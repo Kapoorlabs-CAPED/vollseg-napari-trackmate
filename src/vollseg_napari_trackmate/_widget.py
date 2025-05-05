@@ -368,7 +368,7 @@ def plugin_wrapper_track():
         )
 
         print("Track data refreshed")
-        if str(track_id) not in TrackidBox and track_id is not None:
+        if str(track_id) not in TrackidBox and track_id is not None and not isinstance(track_id, list):
             _to_analyze = [int(track_id)]
         show_phenotype()
         select_track_nature()
@@ -2410,7 +2410,7 @@ def plugin_wrapper_track():
             
         elif isinstance(track_id, list):
             _to_analyze = track_id 
-            
+
         else:
 
             _to_analyze = _track_ids_analyze
