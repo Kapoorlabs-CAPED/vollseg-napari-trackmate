@@ -2407,8 +2407,10 @@ def plugin_wrapper_track():
 
         if str(track_id) not in TrackidBox and track_id is not None:
             _to_analyze = [int(track_id)]
-        else:
+        elif not isinstance(track_id, list):
             _to_analyze = _track_ids_analyze
+        elif isinstance(track_id, list):
+            _to_analyze = track_id    
 
         if _to_analyze is not None:
 
@@ -2625,9 +2627,8 @@ def plugin_wrapper_track():
 
     @change_handler(top_n_slider.n_longest)
     def show_multiple_tracks(value):
-        nonlocal _to_analyze, sorted_ids
+        nonlocal  sorted_ids
         keep = sorted_ids[:value]
-        _to_analyze = keep
-        show_track()
+        show_track(keep)
 
     return plugin
