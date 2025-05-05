@@ -1046,28 +1046,23 @@ def plugin_wrapper_track():
 
     plugin.native.layout().addWidget(tabs)
     @magicgui(
-        n_longest={
-            "widget_type": "Slider",
-            "label": "Show top-N longest tracks",
-            "min": 1,
-            "max": 1,         # we'll bump this up after compute
-            "step": 1,
-            "value": 1,
-        },
-        call_button=False,
-        layout="vertical",
-        persist=False,
+    n_longest_input={
+        "widget_type": "LineEdit",
+        "label": "Enter number of longest tracks to show",
+        "tooltip": "Max available will be shown below",
+    },
+    show_tracks_button={"widget_type": "PushButton", "text": "Show Top-N Tracks"},
+    max_available_label={"widget_type": "Label", "label": "Max available: unknown"},
+    layout="vertical",
+    persist=False,
+    call_button=False,
     )
-    def top_n_slider(n_longest: int = 1):
-        # pick the first n_longest sorted IDs, display them
-        nonlocal sorted_ids
-        if not sorted_ids:
-            return
-        
-        show_multiple_tracks()
+    
+    def top_n_tracks_gui(n_longest_input, show_tracks_button, max_available_label):
+            pass
 
     # once you have your TabWidget, insert this slider *before* the other tabs:
-    tabs.insertTab(0, top_n_slider.native, "Top-N Tracks")
+    tabs.insertTab(0, top_n_tracks_gui.native, "Top-N Tracks")
 
 
     def plot_main():
@@ -2558,10 +2553,8 @@ def plugin_wrapper_track():
         )
 
             # right after you build sorted_ids
-        top_n_slider.n_longest.max = len(sorted_ids)
-        # clamp the current value to the new max
-        top_n_slider.n_longest.value = min(top_n_slider.n_longest.value, len(sorted_ids))
-
+        top_n_tracks_gui.max_available_label.value = f"Max available: {len(sorted_ids)}"
+    
         plugin_data.compute_button.enabled = True
 
     @change_handler(plugin_data.track_csv_path, init=False)
@@ -2629,10 +2622,27 @@ def plugin_wrapper_track():
 
         plugin_color_parameters.track_attributes.value = value
 
-    @change_handler(top_n_slider.n_longest)
-    def show_multiple_tracks(value):
-        nonlocal  sorted_ids
-        keep = sorted_ids[:value]
+
+
+    @change_handler(top_n_tracks_gui.show_tracks_button)
+    def _show_tracks_clicked():
+        nonlocal sorted_ids
+        try:
+            n = int(top_n_tracks_gui.n_longest_input.value)
+        except (TypeError, ValueError):
+            print("Please enter a valid integer.")
+            return
+
+        if n < 1:
+            print("Please enter a number >= 1.")
+            return
+
+        if n > len(sorted_ids):
+            print(f"Only {len(sorted_ids)} tracks available.")
+            n = len(sorted_ids)
+
+        keep = sorted_ids[:n]
         show_track(keep)
+        
 
     return plugin
