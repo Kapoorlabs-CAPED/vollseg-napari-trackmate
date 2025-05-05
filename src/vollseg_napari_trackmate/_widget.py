@@ -1058,7 +1058,7 @@ def plugin_wrapper_track():
         layout="vertical",
         persist=False,
     )
-    def top_n_slider(n_longest: int = 5):
+    def top_n_slider(n_longest: int = 1):
         # pick the first n_longest sorted IDs, display them
         nonlocal sorted_ids
         if not sorted_ids:
