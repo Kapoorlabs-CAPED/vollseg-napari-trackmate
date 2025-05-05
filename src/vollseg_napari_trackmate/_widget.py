@@ -1052,7 +1052,7 @@ def plugin_wrapper_track():
             "min": 1,
             "max": 1,         # we'll bump this up after compute
             "step": 1,
-            "value": 5,
+            "value": 1,
         },
         call_button=False,
         layout="vertical",
