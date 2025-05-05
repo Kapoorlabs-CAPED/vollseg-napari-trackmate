@@ -1063,8 +1063,8 @@ def plugin_wrapper_track():
         nonlocal sorted_ids
         if not sorted_ids:
             return
-        keep = sorted_ids[:n_longest]
-        show_multiple_tracks(keep)
+        
+        show_multiple_tracks()
 
     # once you have your TabWidget, insert this slider *before* the other tabs:
     tabs.insertTab(0, top_n_slider.native, "Top-N Tracks")
@@ -2623,18 +2623,11 @@ def plugin_wrapper_track():
 
         plugin_color_parameters.track_attributes.value = value
 
-    
-    def show_multiple_tracks(track_id_list):
-        """
-        Replace the Napari Tracks layer with exactly these track IDs.
-        """
-        # build the concatenated point & feature arrays
-        pts = [ _trackmate_objects.unique_tracks[tid] for tid in track_id_list ]
-        feats = [ _trackmate_objects.unique_track_properties[tid] for tid in track_id_list ]
-        pts_all = np.concatenate(pts, axis=0)
-        feats_all = np.concatenate(feats, axis=0)
-
-        # feed them back into your existing refresh routine:
-        _refreshTrackData((pts_all, feats_all, None))
+    @change_handler(top_n_slider.n_longest)
+    def show_multiple_tracks(value):
+        nonlocal _to_analyze, sorted_ids
+        keep = sorted_ids[:value]
+        _to_analyze = keep
+        show_track()
 
     return plugin
