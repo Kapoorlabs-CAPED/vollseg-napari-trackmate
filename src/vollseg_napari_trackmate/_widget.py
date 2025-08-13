@@ -458,6 +458,7 @@ def plugin_wrapper_track():
                             _,
                             _,
                             msd,
+                            recoil
                         ) = unique_dynamic_properties_tracklet
                         unique_dynamic_properties.append(
                             [
@@ -475,6 +476,7 @@ def plugin_wrapper_track():
                                 cluster_cell_axis_y,
                                 cluster_cell_axis_x,
                                 msd,
+                                recoil,
                                 countk + 1,
                             ]
                         )
@@ -540,6 +542,7 @@ def plugin_wrapper_track():
                             cluster_cell_axis_y = current_unique_dynamic_properties[12]
                             cluster_cell_axis_x = current_unique_dynamic_properties[13]
                             cluster_msd = current_unique_dynamic_properties[14]
+                            cluster_recoil = current_unique_dynamic_properties[15]
 
                             cluster_id = current_unique_dynamic_properties[-1]
 
@@ -560,6 +563,7 @@ def plugin_wrapper_track():
                                     "Cell_Axis_Y": cluster_cell_axis_y,
                                     "Cell_Axis_X": cluster_cell_axis_x,
                                     "MSD": cluster_msd,
+                                    "Recoil": cluster_recoil,
                                     "id": cluster_id,
                                 }
                             )
@@ -786,6 +790,21 @@ def plugin_wrapper_track():
                 )
 
                 plot_ax.set_title("MSD")
+                plot_ax.set_xlabel("Time (sec)")
+
+                phenotype_plot_class._repeat_after_plot()
+                plot_ax = phenotype_plot_class.plot_ax
+                sns.set_palette(flatui)
+                sns.lineplot(
+                    global_data_dynamic_cluster_plot,
+                    x="Time",
+                    y="Recoil",
+                    hue="id",
+                    ax=plot_ax,
+                    legend=False,
+                )
+
+                plot_ax.set_title("Recoil")
                 plot_ax.set_xlabel("Time (sec)")
 
                 phenotype_plot_class._repeat_after_plot()
